@@ -41,6 +41,7 @@ gh talk resolve PRRT_abc123
 
 - [SPEC.md](docs/SPEC.md) - Complete specification and technical design
 - [API.md](docs/API.md) - GitHub API capabilities and reference
+- [REAL-DATA.md](docs/REAL-DATA.md) - Real API responses and data structures
 - [GH-CLI.md](docs/GH-CLI.md) - GitHub CLI analysis and integration
 - [WORKFLOWS.md](docs/WORKFLOWS.md) - Real-world usage patterns and workflows
 - [STRUCTURE.md](docs/STRUCTURE.md) - Project structure and design decisions

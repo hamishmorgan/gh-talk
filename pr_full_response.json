@@ -1,0 +1,354 @@
+{
+  "data": {
+    "repository": {
+      "pullRequest": {
+        "id": "PR_kwDOQN97u86xFPR4",
+        "number": 1,
+        "title": "Test PR for API Exploration",
+        "url": "https://github.com/hamishmorgan/gh-talk/pull/1",
+        "state": "OPEN",
+        "reviewThreads": {
+          "totalCount": 2,
+          "nodes": [
+            {
+              "id": "PRRT_kwDOQN97u85gQeTN",
+              "isResolved": false,
+              "isCollapsed": false,
+              "isOutdated": false,
+              "path": "test_file.go",
+              "line": 7,
+              "startLine": 7,
+              "diffSide": "RIGHT",
+              "startDiffSide": null,
+              "subjectType": "LINE",
+              "resolvedBy": null,
+              "viewerCanResolve": true,
+              "viewerCanUnresolve": false,
+              "viewerCanReply": true,
+              "comments": {
+                "totalCount": 2,
+                "nodes": [
+                  {
+                    "id": "PRRC_kwDOQN97u86UHqK7",
+                    "databaseId": 2485035707,
+                    "body": "Consider using a constant for the TODO comment",
+                    "path": "test_file.go",
+                    "position": 7,
+                    "originalPosition": 7,
+                    "diffHunk": "@@ -0,0 +1,25 @@\n+package main\n+\n+import \"fmt\"\n+\n+// TestFunction demonstrates some code for review testing\n+func TestFunction() {\n+\t// TODO: This could be improved",
+                    "createdAt": "2025-11-02T21:43:10Z",
+                    "updatedAt": "2025-11-02T21:43:10Z",
+                    "author": {
+                      "login": "hamishmorgan"
+                    },
+                    "authorAssociation": "OWNER",
+                    "replyTo": null,
+                    "isMinimized": false,
+                    "minimizedReason": null,
+                    "viewerCanReact": true,
+                    "viewerCanUpdate": true,
+                    "viewerCanDelete": true,
+                    "viewerCanMinimize": true,
+                    "reactionGroups": [
+                      {
+                        "content": "THUMBS_UP",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "THUMBS_DOWN",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "LAUGH",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "HOORAY",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "CONFUSED",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "HEART",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "ROCKET",
+                        "createdAt": "2025-11-02T21:43:33Z",
+                        "users": {
+                          "totalCount": 1,
+                          "nodes": [
+                            {
+                              "login": "hamishmorgan"
+                            }
+                          ]
+                        },
+                        "viewerHasReacted": true
+                      },
+                      {
+                        "content": "EYES",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      }
+                    ]
+                  },
+                  {
+                    "id": "PRRC_kwDOQN97u86UHqOo",
+                    "databaseId": 2485035944,
+                    "body": "Good point! I will refactor this to use a constant.",
+                    "path": "test_file.go",
+                    "position": 7,
+                    "originalPosition": 7,
+                    "diffHunk": "@@ -0,0 +1,25 @@\n+package main\n+\n+import \"fmt\"\n+\n+// TestFunction demonstrates some code for review testing\n+func TestFunction() {\n+\t// TODO: This could be improved",
+                    "createdAt": "2025-11-02T21:43:42Z",
+                    "updatedAt": "2025-11-02T21:43:42Z",
+                    "author": {
+                      "login": "hamishmorgan"
+                    },
+                    "authorAssociation": "OWNER",
+                    "replyTo": {
+                      "id": "PRRC_kwDOQN97u86UHqK7"
+                    },
+                    "isMinimized": false,
+                    "minimizedReason": null,
+                    "viewerCanReact": true,
+                    "viewerCanUpdate": true,
+                    "viewerCanDelete": true,
+                    "viewerCanMinimize": true,
+                    "reactionGroups": [
+                      {
+                        "content": "THUMBS_UP",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "THUMBS_DOWN",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "LAUGH",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "HOORAY",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "CONFUSED",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "HEART",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "ROCKET",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "EYES",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "PRRT_kwDOQN97u85gQecu",
+              "isResolved": false,
+              "isCollapsed": false,
+              "isOutdated": false,
+              "path": "test_file.go",
+              "line": 14,
+              "startLine": 14,
+              "diffSide": "RIGHT",
+              "startDiffSide": null,
+              "subjectType": "LINE",
+              "resolvedBy": null,
+              "viewerCanResolve": true,
+              "viewerCanUnresolve": false,
+              "viewerCanReply": true,
+              "comments": {
+                "totalCount": 1,
+                "nodes": [
+                  {
+                    "id": "PRRC_kwDOQN97u86UHqWJ",
+                    "databaseId": 2485036425,
+                    "body": "This loop could be optimized using a range",
+                    "path": "test_file.go",
+                    "position": 14,
+                    "originalPosition": 14,
+                    "diffHunk": "@@ -0,0 +1,25 @@\n+package main\n+\n+import \"fmt\"\n+\n+// TestFunction demonstrates some code for review testing\n+func TestFunction() {\n+\t// TODO: This could be improved\n+\tx := 1\n+\ty := 2\n+\tz := x + y\n+\t\n+\t// This is a comment that might get feedback\n+\tfor i := 0; i < 10; i++ {\n+\t\tfmt.Println(i)",
+                    "createdAt": "2025-11-02T21:44:40Z",
+                    "updatedAt": "2025-11-02T21:44:40Z",
+                    "author": {
+                      "login": "hamishmorgan"
+                    },
+                    "authorAssociation": "OWNER",
+                    "replyTo": null,
+                    "isMinimized": false,
+                    "minimizedReason": null,
+                    "viewerCanReact": true,
+                    "viewerCanUpdate": true,
+                    "viewerCanDelete": true,
+                    "viewerCanMinimize": true,
+                    "reactionGroups": [
+                      {
+                        "content": "THUMBS_UP",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "THUMBS_DOWN",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "LAUGH",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "HOORAY",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "CONFUSED",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "HEART",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "ROCKET",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      },
+                      {
+                        "content": "EYES",
+                        "createdAt": null,
+                        "users": {
+                          "totalCount": 0,
+                          "nodes": []
+                        },
+                        "viewerHasReacted": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

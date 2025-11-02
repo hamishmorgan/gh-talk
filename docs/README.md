@@ -24,6 +24,13 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
   - Rate limits and best practices
   - Code examples and workflows
 
+- **[REAL-DATA.md](REAL-DATA.md)** - Real API response data and analysis
+  - Actual ID formats from production
+  - Complete data structures from live testing
+  - Thread, comment, and reaction examples
+  - Error responses and edge cases
+  - Design implications from real data
+
 - **[GH-CLI.md](GH-CLI.md)** - GitHub CLI (`gh`) analysis
   - Core `gh` capabilities and commands
   - PR and issue comment features
