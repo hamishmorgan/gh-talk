@@ -1,0 +1,139 @@
+{
+  "data": {
+    "repository": {
+      "pullRequest": {
+        "reviewThreads": {
+          "totalCount": 4,
+          "nodes": [
+            {
+              "id": "PRRT_kwDOQN97u85gQeTN",
+              "isResolved": false,
+              "isCollapsed": false,
+              "isOutdated": false,
+              "path": "test_file.go",
+              "line": 7,
+              "resolvedBy": null,
+              "viewerCanResolve": true,
+              "viewerCanUnresolve": false,
+              "comments": {
+                "totalCount": 2,
+                "nodes": [
+                  {
+                    "id": "PRRC_kwDOQN97u86UHqK7",
+                    "body": "Consider using a constant for the TODO comment",
+                    "author": {
+                      "login": "hamishmorgan"
+                    },
+                    "createdAt": "2025-11-02T21:43:10Z",
+                    "replyTo": null
+                  },
+                  {
+                    "id": "PRRC_kwDOQN97u86UHqOo",
+                    "body": "Good point! I will refactor this to use a constant.",
+                    "author": {
+                      "login": "hamishmorgan"
+                    },
+                    "createdAt": "2025-11-02T21:43:42Z",
+                    "replyTo": {
+                      "id": "PRRC_kwDOQN97u86UHqK7"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "PRRT_kwDOQN97u85gQecu",
+              "isResolved": false,
+              "isCollapsed": false,
+              "isOutdated": false,
+              "path": "test_file.go",
+              "line": 14,
+              "resolvedBy": null,
+              "viewerCanResolve": true,
+              "viewerCanUnresolve": false,
+              "comments": {
+                "totalCount": 1,
+                "nodes": [
+                  {
+                    "id": "PRRC_kwDOQN97u86UHqWJ",
+                    "body": "This loop could be optimized using a range",
+                    "author": {
+                      "login": "hamishmorgan"
+                    },
+                    "createdAt": "2025-11-02T21:44:40Z",
+                    "replyTo": null
+                  }
+                ]
+              }
+            },
+            {
+              "id": "PRRT_kwDOQN97u85gQfgh",
+              "isResolved": true,
+              "isCollapsed": true,
+              "isOutdated": false,
+              "path": "test_file.go",
+              "line": 10,
+              "resolvedBy": {
+                "login": "hamishmorgan"
+              },
+              "viewerCanResolve": false,
+              "viewerCanUnresolve": true,
+              "comments": {
+                "totalCount": 2,
+                "nodes": [
+                  {
+                    "id": "PRRC_kwDOQN97u86UHrl7",
+                    "body": "Good naming for variables x, y, z",
+                    "author": {
+                      "login": "hamishmorgan"
+                    },
+                    "createdAt": "2025-11-02T21:58:05Z",
+                    "replyTo": null
+                  },
+                  {
+                    "id": "PRRC_kwDOQN97u86UHroG",
+                    "body": "Thanks for the positive feedback! 👍",
+                    "author": {
+                      "login": "hamishmorgan"
+                    },
+                    "createdAt": "2025-11-02T21:58:24Z",
+                    "replyTo": {
+                      "id": "PRRC_kwDOQN97u86UHrl7"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "PRRT_kwDOQN97u85gQfgi",
+              "isResolved": true,
+              "isCollapsed": true,
+              "isOutdated": false,
+              "path": "test_file.go",
+              "line": 18,
+              "resolvedBy": {
+                "login": "hamishmorgan"
+              },
+              "viewerCanResolve": false,
+              "viewerCanUnresolve": true,
+              "comments": {
+                "totalCount": 1,
+                "nodes": [
+                  {
+                    "id": "PRRC_kwDOQN97u86UHrl9",
+                    "body": "Consider extracting this condition to a named variable for clarity",
+                    "author": {
+                      "login": "hamishmorgan"
+                    },
+                    "createdAt": "2025-11-02T21:58:06Z",
+                    "replyTo": null
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

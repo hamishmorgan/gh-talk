@@ -1507,15 +1507,173 @@ PR Review Comment (PRRC_):
 - Treat issue comments like PR top-level comments
 - Review comments (PRRC_) are special case
 
+## Resolved vs Unresolved Thread Examples
+
+### Current Test State
+
+**PR #1 has 4 threads with mixed resolution status:**
+
+**Resolved Threads (2):**
+```json
+{
+  "id": "PRRT_kwDOQN97u85gQfgh",
+  "path": "test_file.go",
+  "line": 10,
+  "isResolved": true,
+  "resolvedBy": {
+    "login": "hamishmorgan"
+  },
+  "viewerCanResolve": false,
+  "viewerCanUnresolve": true,
+  "comments": {
+    "totalCount": 2,
+    "nodes": [
+      {
+        "id": "PRRC_kwDOQN97u86UHrl7",
+        "body": "Good naming for variables x, y, z",
+        "replyTo": null
+      },
+      {
+        "id": "PRRC_kwDOQN97u86UHroG",
+        "body": "Thanks for the positive feedback! 👍",
+        "replyTo": {
+          "id": "PRRC_kwDOQN97u86UHrl7"
+        }
+      }
+    ]
+  }
+}
+```
+
+```json
+{
+  "id": "PRRT_kwDOQN97u85gQfgi",
+  "path": "test_file.go",
+  "line": 18,
+  "isResolved": true,
+  "resolvedBy": {
+    "login": "hamishmorgan"
+  },
+  "viewerCanResolve": false,
+  "viewerCanUnresolve": true,
+  "comments": {
+    "totalCount": 1,
+    "nodes": [
+      {
+        "id": "PRRC_kwDOQN97u86UHrl9",
+        "body": "Consider extracting this condition to a named variable for clarity",
+        "replyTo": null
+      }
+    ]
+  }
+}
+```
+
+**Unresolved Threads (2):**
+```json
+{
+  "id": "PRRT_kwDOQN97u85gQeTN",
+  "path": "test_file.go",
+  "line": 7,
+  "isResolved": false,
+  "resolvedBy": null,
+  "viewerCanResolve": true,
+  "viewerCanUnresolve": false,
+  "comments": {
+    "totalCount": 2,
+    "nodes": [
+      {
+        "id": "PRRC_kwDOQN97u86UHqK7",
+        "body": "Consider using a constant for the TODO comment",
+        "replyTo": null
+      },
+      {
+        "id": "PRRC_kwDOQN97u86UHqOo",
+        "body": "Good point! I will refactor this to use a constant.",
+        "replyTo": {
+          "id": "PRRC_kwDOQN97u86UHqK7"
+        }
+      }
+    ]
+  }
+}
+```
+
+```json
+{
+  "id": "PRRT_kwDOQN97u85gQecu",
+  "path": "test_file.go",
+  "line": 14,
+  "isResolved": false,
+  "resolvedBy": null,
+  "viewerCanResolve": true,
+  "viewerCanUnresolve": false,
+  "comments": {
+    "totalCount": 1,
+    "nodes": [
+      {
+        "id": "PRRC_kwDOQN97u86UHqWJ",
+        "body": "This loop could be optimized using a range",
+        "replyTo": null
+      }
+    ]
+  }
+}
+```
+
+### Key Observations: Resolved vs Unresolved
+
+**Resolved Thread Characteristics:**
+- ✅ `isResolved: true`
+- ✅ `resolvedBy` contains user who resolved it
+- ✅ `viewerCanResolve: false` (already resolved)
+- ✅ `viewerCanUnresolve: true` (can reopen)
+- ✅ Comments remain accessible
+- ✅ Thread data unchanged except resolution status
+
+**Unresolved Thread Characteristics:**
+- ✅ `isResolved: false`
+- ✅ `resolvedBy: null` (no resolver)
+- ✅ `viewerCanResolve: true` (can resolve)
+- ✅ `viewerCanUnresolve: false` (nothing to unresolve)
+- ✅ Active conversation state
+
+**Important:** Resolution is just a status flag - comments and data remain intact
+
+### Display Implications
+
+**List View Should Show:**
+```
+UNRESOLVED THREADS (2):
+  1. test_file.go:7   Consider using a constant... (2 comments)
+  2. test_file.go:14  This loop could be optimized... (1 comment)
+
+RESOLVED THREADS (2):
+  3. test_file.go:10  Good naming for variables... (2 comments) ✓ hamishmorgan
+  4. test_file.go:18  Consider extracting this... (1 comment) ✓ hamishmorgan
+```
+
+**Filtering:**
+```bash
+# Show only unresolved (default for active work)
+gh talk list threads --unresolved
+
+# Show only resolved (to verify fixes)
+gh talk list threads --resolved
+
+# Show all (see everything)
+gh talk list threads --all
+```
+
 ## Test Data Summary (Complete)
 
 **Created in Testing:**
 
 **PR #1:**
 - 1 Pull Request (`PR_kwDOQN97u86xFPR4`)
-- 3 Reviews (`PRR_...`)
-- 2 Review Threads (`PRRT_...`)
-- 3 Review Comments (`PRRC_...`)
+- 5 Reviews (`PRR_...`) - including auto-created from replies
+- 4 Review Threads (`PRRT_...`) - 2 resolved, 2 unresolved
+- 6 Review Comments (`PRRC_...`)
 - 1 Top-Level Comment (`IC_...`, minimized)
 - 2 Reactions on PR comments
 
@@ -1531,21 +1689,36 @@ PR Review Comment (PRRC_):
 ```
 # Pull Requests
 PR:      PR_kwDOQN97u86xFPR4
-PRRT:    PRRT_kwDOQN97u85gQeTN (thread 1)
-PRRT:    PRRT_kwDOQN97u85gQecu (thread 2)
-PRRC:    PRRC_kwDOQN97u86UHqK7 (review comment 1)
-PRRC:    PRRC_kwDOQN97u86UHqOo (review comment 2, reply)
-PRRC:    PRRC_kwDOQN97u86UHqWJ (review comment 3)
-PRR:     PRR_kwDOQN97u87LMeCy (review 1)
-PRR:     PRR_kwDOQN97u87LMeGr (review 2, auto-created)
-PRR:     PRR_kwDOQN97u87LMePc (review 3)
-IC:      IC_kwDOQN97u87PVA8l (top-level PR comment)
+
+# Review Threads (4 total: 2 unresolved, 2 resolved)
+PRRT:    PRRT_kwDOQN97u85gQeTN (thread 1, line 7, UNRESOLVED)
+PRRT:    PRRT_kwDOQN97u85gQecu (thread 2, line 14, UNRESOLVED)
+PRRT:    PRRT_kwDOQN97u85gQfgh (thread 3, line 10, RESOLVED)
+PRRT:    PRRT_kwDOQN97u85gQfgi (thread 4, line 18, RESOLVED)
+
+# Review Comments (6 total)
+PRRC:    PRRC_kwDOQN97u86UHqK7 (thread 1, original comment)
+PRRC:    PRRC_kwDOQN97u86UHqOo (thread 1, reply)
+PRRC:    PRRC_kwDOQN97u86UHqWJ (thread 2, original comment)
+PRRC:    PRRC_kwDOQN97u86UHrl7 (thread 3, original comment)
+PRRC:    PRRC_kwDOQN97u86UHroG (thread 3, reply)
+PRRC:    PRRC_kwDOQN97u86UHrl9 (thread 4, original comment)
+
+# Reviews (5 total - some auto-created from replies)
+PRR:     PRR_kwDOQN97u87LMeCy (review 1, with thread 1 original)
+PRR:     PRR_kwDOQN97u87LMeGr (review 2, auto-created from thread 1 reply)
+PRR:     PRR_kwDOQN97u87LMePc (review 3, with thread 2)
+PRR:     PRR_kwDOQN97u87LMfVg (review 4, with threads 3 and 4)
+PRR:     [additional auto-created review from thread 3 reply]
+
+# Top-Level PR Comment
+IC:      IC_kwDOQN97u87PVA8l (top-level PR comment, minimized)
 
 # Issues
-I:       I_kwDOQN97u87VYpUq (issue)
+I:       I_kwDOQN97u87VYpUq (issue #2)
 IC:      IC_kwDOQN97u87PVCb0 (issue comment 1)
 IC:      IC_kwDOQN97u87PVCcO (issue comment 2, minimized)
-LA:      LA_kwDOQN97u88AAAACOo1ePQ (label)
+LA:      LA_kwDOQN97u88AAAACOo1ePQ (label: documentation)
 
 # Reactions
 REA:     REA_lALOQN97u87PVA8lzhKY8PA (THUMBS_UP on PR comment)
