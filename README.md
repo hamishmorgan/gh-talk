@@ -44,8 +44,11 @@ gh talk resolve PRRT_abc123
 - [GH-CLI.md](docs/GH-CLI.md) - GitHub CLI analysis and integration
 - [WORKFLOWS.md](docs/WORKFLOWS.md) - Real-world usage patterns and workflows
 - [STRUCTURE.md](docs/STRUCTURE.md) - Project structure and design decisions
-- [AGENTS.md](docs/AGENTS.md) - AI agent development guidelines
 - [GitHub CLI Extension Docs](https://docs.github.com/en/github-cli/github-cli/using-github-cli-extensions)
+
+## For AI Agents
+
+- [AGENTS.md](AGENTS.md) - Development guidelines and standards for AI agents working on this project
 
 ## Development
 
