@@ -1091,10 +1091,615 @@ reviewThreads(first: 20) {
 
 **Why:** Hidden comments affect UX, need to handle appropriately
 
+## Issue Data Structures
+
+### Issue vs Pull Request Differences
+
+**Key Insight:** Issues are simpler than PRs - no review threads, no diff context, but otherwise very similar comment/reaction model.
+
+### Real Issue ID Format
+
+**From Testing:**
+
+| Type | Prefix | Example | Notes |
+|------|--------|---------|-------|
+| Issue | `I_` | `I_kwDOQN97u87VYpUq` | Issue Node ID |
+| Issue Comment | `IC_` | `IC_kwDOQN97u87PVCb0` | Same as top-level PR comment |
+| Label | `LA_` | `LA_kwDOQN97u88AAAACOo1ePQ` | Label ID |
+
+**Observation:**
+- Issue IDs use `I_` prefix (vs `PR_` for pull requests)
+- Issue comments use `IC_` prefix (same as top-level PR comments)
+- Same base64-encoded format (20-30 characters)
+
+### Complete Issue Object
+
+**Real Response from Testing:**
+```json
+{
+  "id": "I_kwDOQN97u87VYpUq",
+  "number": 2,
+  "title": "Test Issue for API Exploration",
+  "url": "https://github.com/hamishmorgan/gh-talk/issues/2",
+  "state": "OPEN",
+  "body": "This issue is for testing...",
+  "createdAt": "2025-11-02T21:51:08Z",
+  "updatedAt": "2025-11-02T21:52:08Z",
+  "closed": false,
+  "closedAt": null,
+  "stateReason": null,
+  "author": {
+    "login": "hamishmorgan"
+  },
+  "authorAssociation": "OWNER",
+  "viewerCanReact": true,
+  "viewerCanUpdate": true,
+  "viewerSubscription": "SUBSCRIBED",
+  "labels": {
+    "totalCount": 1,
+    "nodes": [
+      {
+        "id": "LA_kwDOQN97u88AAAACOo1ePQ",
+        "name": "documentation",
+        "color": "0075ca",
+        "description": "Improvements or additions to documentation"
+      }
+    ]
+  },
+  "assignees": {
+    "totalCount": 0,
+    "nodes": []
+  },
+  "participants": {
+    "totalCount": 1,
+    "nodes": [
+      {
+        "login": "hamishmorgan"
+      }
+    ]
+  },
+  "reactionGroups": [...],
+  "comments": {
+    "totalCount": 2,
+    "nodes": [...]
+  }
+}
+```
+
+### Issue-Specific Fields
+
+**Not in PRs:**
+- `stateReason` - Why issue was closed
+  - `COMPLETED` - Work is done
+  - `NOT_PLANNED` - Won't be worked on
+  - `REOPENED` - Issue was reopened
+  - `null` - Issue is open
+- `participants` - Users who commented or were mentioned
+- No `reviewThreads` (issues don't have code review)
+- No `files` or `diff` fields
+
+**State Transitions:**
+```
+OPEN → CLOSED (stateReason: COMPLETED or NOT_PLANNED)
+CLOSED → OPEN (stateReason: REOPENED)
+```
+
+### Issue Comment Object
+
+**Structure (Identical to Top-Level PR Comment):**
+```json
+{
+  "id": "IC_kwDOQN97u87PVCb0",
+  "databaseId": 3478398708,
+  "body": "This is the first test comment...",
+  "createdAt": "2025-11-02T21:51:27Z",
+  "updatedAt": "2025-11-02T21:51:27Z",
+  "author": {
+    "login": "hamishmorgan"
+  },
+  "authorAssociation": "OWNER",
+  "isMinimized": false,
+  "minimizedReason": null,
+  "viewerCanReact": true,
+  "viewerCanUpdate": true,
+  "viewerCanDelete": true,
+  "viewerCanMinimize": true,
+  "reactionGroups": [
+    {
+      "content": "HEART",
+      "createdAt": "2025-11-02T21:51:57Z",
+      "users": {
+        "totalCount": 1,
+        "nodes": [
+          {
+            "login": "hamishmorgan"
+          }
+        ]
+      },
+      "viewerHasReacted": true
+    },
+    // ... all 8 reaction types
+  ]
+}
+```
+
+**Key Observations:**
+- ✅ Same structure as top-level PR comments
+- ✅ Same `IC_` prefix for comments
+- ✅ Same reaction system (8 types, always present)
+- ✅ Same minimization capability
+- ✅ Same permission fields
+- ❌ No `path` or `position` (no code context)
+- ❌ No `diffHunk` (issues aren't diffs)
+- ❌ No `replyTo` field (no threading in issues)
+
+### Issue Reactions
+
+**Issue Body Can Have Reactions:**
+```json
+{
+  "id": "I_kwDOQN97u87VYpUq",
+  "reactionGroups": [
+    {
+      "content": "EYES",
+      "createdAt": "2025-11-02T21:52:06Z",
+      "users": {
+        "totalCount": 1,
+        "nodes": [
+          {
+            "login": "hamishmorgan"
+          }
+        ]
+      },
+      "viewerHasReacted": true
+    },
+    // ... all 8 types
+  ]
+}
+```
+
+**What Can Be Reacted To:**
+- ✅ Issue body (the main issue description)
+- ✅ Issue comments
+- ✅ Same 8 reaction types as PRs
+- ✅ Same structure and behavior
+
+### Issue Comments vs PR Review Comments
+
+**Similarities:**
+- ✅ Same ID format (`IC_` prefix)
+- ✅ Same reaction system
+- ✅ Same minimization
+- ✅ Same permission model
+- ✅ Same creation/update timestamps
+- ✅ Same author association
+
+**Differences:**
+
+| Feature | Issue Comments | PR Review Comments |
+|---------|---------------|-------------------|
+| ID Prefix | `IC_` | `IC_` (top-level) or `PRRC_` (review) |
+| Code Context | ❌ No path/position | ✅ path, position, diffHunk |
+| Threading | ❌ Flat list only | ✅ Review threads (PRRT_) |
+| Resolution | ❌ Cannot resolve | ✅ Can resolve threads |
+| Location | ❌ No file reference | ✅ File + line number |
+| Review | ❌ No review parent | ✅ Part of review (PRR_) |
+
+### Issue Mutations
+
+#### Add Issue Comment
+
+**Mutation:**
+```graphql
+mutation {
+  addComment(input: {
+    subjectId: "I_kwDOQN97u87VYpUq"
+    body: "Comment text"
+  }) {
+    commentEdge {
+      node {
+        id
+        body
+        createdAt
+      }
+    }
+  }
+}
+```
+
+**Note:** Uses generic `addComment` mutation (works for issues and PRs)
+
+#### Update Issue Comment
+
+**Mutation:**
+```graphql
+mutation {
+  updateIssueComment(input: {
+    id: "IC_kwDOQN97u87PVCb0"
+    body: "Updated comment text"
+  }) {
+    issueComment {
+      id
+      body
+      updatedAt
+    }
+  }
+}
+```
+
+#### Delete Issue Comment
+
+**Mutation:**
+```graphql
+mutation {
+  deleteIssueComment(input: {
+    id: "IC_kwDOQN97u87PVCb0"
+  }) {
+    clientMutationId
+  }
+}
+```
+
+**Note:** Permanent deletion (unlike minimize which just hides)
+
+#### Close/Reopen Issue
+
+**Close:**
+```graphql
+mutation {
+  closeIssue(input: {
+    issueId: "I_kwDOQN97u87VYpUq"
+    stateReason: COMPLETED  # or NOT_PLANNED
+  }) {
+    issue {
+      id
+      state
+      stateReason
+      closedAt
+    }
+  }
+}
+```
+
+**Reopen:**
+```graphql
+mutation {
+  reopenIssue(input: {
+    issueId: "I_kwDOQN97u87VYpUq"
+  }) {
+    issue {
+      id
+      state
+      stateReason
+    }
+  }
+}
+```
+
+**State After Close:**
+```json
+{
+  "state": "CLOSED",
+  "closed": true,
+  "closedAt": "2025-11-02T21:52:34Z",
+  "stateReason": "COMPLETED"
+}
+```
+
+**State After Reopen:**
+```json
+{
+  "state": "OPEN",
+  "closed": false,
+  "closedAt": null,
+  "stateReason": "REOPENED"
+}
+```
+
+### Issue Labels
+
+**Label Structure:**
+```json
+{
+  "id": "LA_kwDOQN97u88AAAACOo1ePQ",
+  "name": "documentation",
+  "color": "0075ca",
+  "description": "Improvements or additions to documentation"
+}
+```
+
+**Key Fields:**
+- `id` - Label Node ID (LA_ prefix)
+- `name` - Label text
+- `color` - Hex color (6 digits, no #)
+- `description` - Optional description
+
+### Participants Field
+
+**Unique to Issues:**
+```json
+{
+  "participants": {
+    "totalCount": 1,
+    "nodes": [
+      {
+        "login": "hamishmorgan"
+      }
+    ]
+  }
+}
+```
+
+**Definition:** Users who have:
+- Created the issue
+- Commented on the issue
+- Been mentioned in the issue
+- Been assigned to the issue
+
+**Use Case:** Tracking who's involved in the conversation
+
+### Subscription Status
+
+**viewerSubscription Field:**
+- `SUBSCRIBED` - Receiving notifications
+- `UNSUBSCRIBED` - Not receiving notifications
+- `IGNORED` - Explicitly ignoring
+
+**From Testing:**
+```json
+{
+  "viewerSubscription": "SUBSCRIBED"
+}
+```
+
+**Note:** Auto-subscribed when you create/comment on issue
+
+## Issue vs PR: What gh-talk Supports
+
+### Issue Commands
+
+**Supported:**
+```bash
+gh talk list comments --issue 2           # List issue comments
+gh talk react IC_... 👍                   # React to issue comment
+gh talk react I_... 🎉                    # React to issue body
+gh talk hide IC_... --reason spam         # Minimize comment
+gh talk show 2 --type issue               # Show issue details
+```
+
+**NOT Supported (Issue Limitations):**
+```bash
+# ❌ No review threads on issues
+gh talk list threads --issue 2            # N/A - issues don't have threads
+
+# ❌ No thread resolution
+gh talk resolve ...                       # N/A - only for PR threads
+
+# ❌ No code-specific comments
+# Issues are discussions, not code reviews
+```
+
+### Unified Comment Model
+
+**Critical Discovery:**
+Both Issues and PRs use `IC_` for top-level comments:
+
+```
+Issue Comment (IC_):
+- Created via: gh issue comment
+- Structure: Same as PR top-level comment
+- Capabilities: React, minimize, update, delete
+
+PR Top-Level Comment (IC_):
+- Created via: gh pr comment
+- Structure: Identical to issue comment
+- Capabilities: Same
+
+PR Review Comment (PRRC_):
+- Created via: addPullRequestReview mutation
+- Structure: Extended with path/position/diffHunk
+- Capabilities: React, minimize, AND part of threads
+```
+
+**Implication for gh-talk:**
+- Single code path for issue/PR comments
+- Check parent type (Issue vs PullRequest)
+- Treat issue comments like PR top-level comments
+- Review comments (PRRC_) are special case
+
+## Test Data Summary (Complete)
+
+**Created in Testing:**
+
+**PR #1:**
+- 1 Pull Request (`PR_kwDOQN97u86xFPR4`)
+- 3 Reviews (`PRR_...`)
+- 2 Review Threads (`PRRT_...`)
+- 3 Review Comments (`PRRC_...`)
+- 1 Top-Level Comment (`IC_...`, minimized)
+- 2 Reactions on PR comments
+
+**Issue #2:**
+- 1 Issue (`I_kwDOQN97u87VYpUq`)
+- 2 Issue Comments (`IC_...`)
+- 3 Reactions (1 on issue body, 2 on comments)
+- 1 Label (`LA_...`)
+- 1 Minimized comment
+- State changes (OPEN → CLOSED → OPEN)
+
+**All IDs Collected:**
+```
+# Pull Requests
+PR:      PR_kwDOQN97u86xFPR4
+PRRT:    PRRT_kwDOQN97u85gQeTN (thread 1)
+PRRT:    PRRT_kwDOQN97u85gQecu (thread 2)
+PRRC:    PRRC_kwDOQN97u86UHqK7 (review comment 1)
+PRRC:    PRRC_kwDOQN97u86UHqOo (review comment 2, reply)
+PRRC:    PRRC_kwDOQN97u86UHqWJ (review comment 3)
+PRR:     PRR_kwDOQN97u87LMeCy (review 1)
+PRR:     PRR_kwDOQN97u87LMeGr (review 2, auto-created)
+PRR:     PRR_kwDOQN97u87LMePc (review 3)
+IC:      IC_kwDOQN97u87PVA8l (top-level PR comment)
+
+# Issues
+I:       I_kwDOQN97u87VYpUq (issue)
+IC:      IC_kwDOQN97u87PVCb0 (issue comment 1)
+IC:      IC_kwDOQN97u87PVCcO (issue comment 2, minimized)
+LA:      LA_kwDOQN97u88AAAACOo1ePQ (label)
+
+# Reactions
+REA:     REA_lALOQN97u87PVA8lzhKY8PA (THUMBS_UP on PR comment)
+REA:     REA_lATOQN97u86UHqK7zhQo4hY (ROCKET on review comment)
+REA:     REA_lALOQN97u87PVCb0zhKY8tQ (HEART on issue comment)
+REA:     REA_lALOQN97u87PVCcOzhKY8tU (HOORAY on issue comment)
+REA:     REA_lAHOQN97u87VYpUqzg3x5G8 (EYES on issue body)
+```
+
+## Key Differences: Issues vs PRs
+
+### What's the Same
+
+**Comment System:**
+- ✅ Same `IC_` prefix for comments
+- ✅ Same reaction system (8 types)
+- ✅ Same minimization capability
+- ✅ Same permission model
+- ✅ Same creation/update timestamps
+- ✅ Same author association
+
+**Reactions:**
+- ✅ Same for issue body and comments
+- ✅ All 8 types always in reactionGroups
+- ✅ Same mutation (addReaction/removeReaction)
+- ✅ Same structure and behavior
+
+### What's Different
+
+**Issues DO NOT Have:**
+- ❌ Review threads (`reviewThreads` field doesn't exist)
+- ❌ Review comments (`PRRC_` type)
+- ❌ Reviews (`PRR_` type)
+- ❌ Code context (path, position, diffHunk)
+- ❌ Thread resolution
+- ❌ Diff-related fields
+
+**Issues Have Unique:**
+- ✅ `stateReason` field (COMPLETED, NOT_PLANNED, REOPENED)
+- ✅ `participants` field (conversation participants)
+- ✅ Simpler close/reopen workflow
+- ✅ Can be transferred between repos
+
+**PRs Have Unique:**
+- ✅ Review threads and thread resolution
+- ✅ Review comments with code context
+- ✅ Reviews (approve, request changes)
+- ✅ Diff information
+- ✅ File and line numbers
+- ✅ CI/CD status checks
+
+## Implications for gh-talk
+
+### Unified vs Separate Commands
+
+**Option A: Unified Commands**
+```bash
+gh talk list comments              # Auto-detect PR or Issue
+gh talk react IC_... 👍            # Works for both
+gh talk hide IC_... --reason spam  # Works for both
+```
+
+**Option B: Separate Commands**
+```bash
+gh talk list threads               # PR only
+gh talk list comments --pr 1       # PR comments
+gh talk list comments --issue 2    # Issue comments
+```
+
+**Recommendation:** Hybrid approach
+- Commands that work for both: unified (react, hide, show)
+- PR-specific commands: explicit (list threads, resolve)
+- Auto-detect when possible, allow explicit override
+
+### Comment Type Detection
+
+**Strategy:**
+```go
+// Detect comment type from ID prefix
+func GetCommentType(id string) CommentType {
+    switch {
+    case strings.HasPrefix(id, "IC_"):
+        return IssueComment  // Could be issue OR PR top-level
+    case strings.HasPrefix(id, "PRRC_"):
+        return ReviewComment  // PR review comment only
+    case strings.HasPrefix(id, "I_"):
+        return Issue
+    case strings.HasPrefix(id, "PR_"):
+        return PullRequest
+    case strings.HasPrefix(id, "PRRT_"):
+        return ReviewThread
+    default:
+        return Unknown
+    }
+}
+```
+
+**Challenge:** `IC_` is ambiguous (issue or PR)
+- Must query to determine parent
+- Or require context flag (--issue vs --pr)
+
+### Issue-Specific Features
+
+**Close with Reason:**
+```bash
+gh talk close issue 2 --reason completed
+gh talk close issue 2 --reason "not planned"
+```
+
+**List Participants:**
+```bash
+gh talk show issue 2 --participants
+# Shows: Users involved in conversation
+```
+
+**Filter by Label:**
+```bash
+gh talk list comments --issue 2 --label documentation
+```
+
+### What gh-talk Should Support for Issues
+
+**Phase 1 (MVP):**
+- ✅ List issue comments
+- ✅ Add reactions to issue comments
+- ✅ Add reactions to issue body
+- ✅ Minimize/hide issue comments
+- ✅ View issue details
+
+**Phase 2:**
+- ✅ Add comments to issues
+- ✅ Edit comments
+- ✅ Filter comments by author, date
+- ✅ Show participants
+- ✅ Close/reopen issues
+
+**Phase 3:**
+- ✅ Bulk comment operations
+- ✅ Issue templates
+- ✅ Label management
+- ✅ Assignee management
+
+**NOT Supported (Issue Limitations):**
+- ❌ Review threads (issues don't have them)
+- ❌ Thread resolution (no threads)
+- ❌ Code-specific comments (no diff)
+- ❌ File/line filtering (no code context)
+
 ## References
 
 - **Test PR:** https://github.com/hamishmorgan/gh-talk/pull/1
-- **Full Response:** `pr_full_response.json` (saved in project root)
+- **Test Issue:** https://github.com/hamishmorgan/gh-talk/issues/2
+- **Full PR Response:** `pr_full_response.json` (saved in project root)
+- **Full Issue Response:** `issue_full_response.json` (saved in project root)
 - **Test Date:** 2025-11-02
 - **gh Version:** 2.x
 - **GraphQL API Version:** v4
@@ -1103,5 +1708,5 @@ reviewThreads(first: 20) {
 
 **Last Updated**: 2025-11-02  
 **Test Environment**: Real GitHub repository with live API  
-**Data Source**: PR #1 in hamishmorgan/gh-talk
+**Data Sources**: PR #1 and Issue #2 in hamishmorgan/gh-talk
 
