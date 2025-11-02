@@ -1871,8 +1871,9 @@ gh talk list comments --issue 2 --label documentation
 
 - **Test PR:** https://github.com/hamishmorgan/gh-talk/pull/1
 - **Test Issue:** https://github.com/hamishmorgan/gh-talk/issues/2
-- **Full PR Response:** `pr_full_response.json` (saved in project root)
-- **Full Issue Response:** `issue_full_response.json` (saved in project root)
+- **Full PR Response:** `testdata/pr_full_response.json`
+- **Full Issue Response:** `testdata/issue_full_response.json`
+- **PR with Mixed States:** `testdata/pr_with_resolved_threads.json`
 - **Test Date:** 2025-11-02
 - **gh Version:** 2.x
 - **GraphQL API Version:** v4
@@ -1881,5 +1882,6 @@ gh talk list comments --issue 2 --label documentation
 
 **Last Updated**: 2025-11-02  
 **Test Environment**: Real GitHub repository with live API  
-**Data Sources**: PR #1 and Issue #2 in hamishmorgan/gh-talk
+**Data Sources**: PR #1 and Issue #2 in hamishmorgan/gh-talk  
+**Test Fixtures**: `testdata/` directory contains real API responses
 
