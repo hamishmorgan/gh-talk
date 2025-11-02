@@ -3,12 +3,13 @@ package main
 import (
 	"testing"
 
+	_ "github.com/hamishmorgan/gh-talk/internal/api"
 	_ "github.com/hamishmorgan/gh-talk/internal/cache"
+	_ "github.com/hamishmorgan/gh-talk/internal/commands"
+	_ "github.com/hamishmorgan/gh-talk/internal/config"
+	_ "github.com/hamishmorgan/gh-talk/internal/filter"
+	_ "github.com/hamishmorgan/gh-talk/internal/format"
 	_ "github.com/hamishmorgan/gh-talk/internal/tui"
-	_ "github.com/hamishmorgan/gh-talk/pkg/api"
-	_ "github.com/hamishmorgan/gh-talk/pkg/config"
-	_ "github.com/hamishmorgan/gh-talk/pkg/filter"
-	_ "github.com/hamishmorgan/gh-talk/pkg/format"
 )
 
 func TestDirectoryStructure(t *testing.T) {
@@ -16,10 +17,11 @@ func TestDirectoryStructure(t *testing.T) {
 		name    string
 		pkgPath string
 	}{
-		{"API package", "github.com/hamishmorgan/gh-talk/pkg/api"},
-		{"Filter package", "github.com/hamishmorgan/gh-talk/pkg/filter"},
-		{"Format package", "github.com/hamishmorgan/gh-talk/pkg/format"},
-		{"Config package", "github.com/hamishmorgan/gh-talk/pkg/config"},
+		{"API package", "github.com/hamishmorgan/gh-talk/internal/api"},
+		{"Commands package", "github.com/hamishmorgan/gh-talk/internal/commands"},
+		{"Filter package", "github.com/hamishmorgan/gh-talk/internal/filter"},
+		{"Format package", "github.com/hamishmorgan/gh-talk/internal/format"},
+		{"Config package", "github.com/hamishmorgan/gh-talk/internal/config"},
 		{"Cache package", "github.com/hamishmorgan/gh-talk/internal/cache"},
 		{"TUI package", "github.com/hamishmorgan/gh-talk/internal/tui"},
 	}
