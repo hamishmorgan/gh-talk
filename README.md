@@ -41,7 +41,7 @@ gh talk resolve PRRT_abc123
 
 - [SPEC.md](docs/SPEC.md) - Complete specification and technical design
 - [STRUCTURE.md](docs/STRUCTURE.md) - Project structure and design decisions
-- [AGENTS.md](docs/AGENTS.md) - AI agent development guidelines
+- [AGENTS.md](AGENTS.md) - AI agent development guidelines
 - [GitHub CLI Extension Docs](https://docs.github.com/en/github-cli/github-cli/using-github-cli-extensions)
 
 ## Development

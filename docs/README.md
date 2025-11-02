@@ -23,7 +23,7 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
   - Design decision explanations
   - Evolution path
 
-- **[AGENTS.md](AGENTS.md)** - AI agent development guidelines
+- **[AGENTS.md](../AGENTS.md)** - AI agent development guidelines
   - Project context
   - Go code standards
   - Testing requirements
@@ -38,7 +38,7 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
 3. Check [STRUCTURE.md](STRUCTURE.md) to understand the codebase layout
 
 ### Contributing
-1. Review [AGENTS.md](AGENTS.md) for coding standards
+1. Review [AGENTS.md](../AGENTS.md) for coding standards
 2. Understand the [project structure](STRUCTURE.md)
 3. Follow the implementation plan in [SPEC.md](SPEC.md)
 
