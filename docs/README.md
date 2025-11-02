@@ -17,6 +17,13 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
   - Implementation phases
   - Performance goals
 
+- **[API.md](API.md)** - GitHub API capabilities and reference
+  - GraphQL schema details
+  - Available queries and mutations
+  - Data types and structures
+  - Rate limits and best practices
+  - Code examples and workflows
+
 - **[STRUCTURE.md](STRUCTURE.md)** - Project structure and design decisions
   - Directory layout rationale
   - Package responsibilities
