@@ -24,6 +24,13 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
   - Rate limits and best practices
   - Code examples and workflows
 
+- **[GH-CLI.md](GH-CLI.md)** - GitHub CLI (`gh`) analysis
+  - Core `gh` capabilities and commands
+  - PR and issue comment features
+  - Strengths and limitations
+  - Extension integration patterns
+  - What gh-talk adds to the ecosystem
+
 - **[STRUCTURE.md](STRUCTURE.md)** - Project structure and design decisions
   - Directory layout rationale
   - Package responsibilities

@@ -41,6 +41,7 @@ gh talk resolve PRRT_abc123
 
 - [SPEC.md](docs/SPEC.md) - Complete specification and technical design
 - [API.md](docs/API.md) - GitHub API capabilities and reference
+- [GH-CLI.md](docs/GH-CLI.md) - GitHub CLI analysis and integration
 - [STRUCTURE.md](docs/STRUCTURE.md) - Project structure and design decisions
 - [AGENTS.md](AGENTS.md) - AI agent development guidelines
 - [GitHub CLI Extension Docs](https://docs.github.com/en/github-cli/github-cli/using-github-cli-extensions)
