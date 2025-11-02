@@ -31,6 +31,13 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
   - Extension integration patterns
   - What gh-talk adds to the ecosystem
 
+- **[WORKFLOWS.md](WORKFLOWS.md)** - Real-world usage patterns and workflows
+  - How developers interact with PR conversations
+  - Common code review patterns
+  - Bot and automation workflows
+  - AI agent integration scenarios
+  - Best practices and team collaboration
+
 - **[STRUCTURE.md](STRUCTURE.md)** - Project structure and design decisions
   - Directory layout rationale
   - Package responsibilities
