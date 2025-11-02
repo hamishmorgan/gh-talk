@@ -6,7 +6,7 @@ A terminal-native tool for managing all aspects of GitHub PR and Issue conversat
 
 ## Status
 
-🚧 **Early Development** - See [SPEC.md](SPEC.md) for full specification
+🚧 **Early Development** - See [SPEC.md](docs/SPEC.md) for full specification
 
 ## Quick Start
 
@@ -39,7 +39,9 @@ gh talk resolve PRRT_abc123
 
 ## Documentation
 
-- [SPEC.md](SPEC.md) - Complete specification and technical design
+- [SPEC.md](docs/SPEC.md) - Complete specification and technical design
+- [STRUCTURE.md](docs/STRUCTURE.md) - Project structure and design decisions
+- [AGENTS.md](docs/AGENTS.md) - AI agent development guidelines
 - [GitHub CLI Extension Docs](https://docs.github.com/en/github-cli/github-cli/using-github-cli-extensions)
 
 ## Development
