@@ -5,9 +5,11 @@ alwaysApply: false
 
 # Merging Pull Requests
 
-**Purpose**: Final verification and merge request workflow.
+**Purpose**: Final verification, status update, and merge workflow.
 
-**When to Use**: When all feedback addressed and CI passing (invoke with `/pr-merge`)
+**When to Use**: 
+- When all feedback addressed and CI passing (invoke with `/pr-merge`)
+- User can instruct to merge by running `/pr-merge` or explicitly saying "merge this"
 
 **Previous Step**: Iterations complete via `/pr-iterate`
 
@@ -16,6 +18,10 @@ alwaysApply: false
 - All review feedback addressed
 - All CI checks passing (verified)
 - Copilot review satisfied
+
+**Behavior**:
+- **With explicit merge instruction**: Verifies CI, then merges PR
+- **Without merge instruction**: Verifies CI, posts status update, awaits approval
 
 ## Final Verification
 
@@ -88,9 +94,26 @@ Awaiting your approval to merge.
 
 ## Request Merge
 
-**DO NOT merge yourself** - wait for user approval
+**Merge Policy:**
 
-**Only post when `gh pr checks` returns 0:**
+- **CAN merge** when explicitly instructed by user (e.g., user runs `/pr-merge` or directly says "merge this")
+- **DO NOT merge** automatically without explicit instruction
+- **ALWAYS verify** `gh pr checks` returns exit code 0 before merging
+
+**When user explicitly instructs to merge:**
+
+```bash
+# Verify one final time
+gh pr checks <PR>  # MUST be exit code 0
+
+# Merge the PR
+gh pr merge <PR> --squash --delete-branch
+
+# Confirm completion
+echo "✓ Merged and branch deleted"
+```
+
+**When verification complete but no explicit merge instruction:**
 
 ```bash
 gh pr comment <PR> --body "## Status Update
@@ -107,26 +130,29 @@ Awaiting your approval to merge.
 
 ## Post-Merge Cleanup
 
-**After user merges:**
+**After PR is merged:**
 
 ```bash
 # Update local main
 git checkout main
 git pull origin main
 
-# Delete feature branch
+# Delete feature branch (if not auto-deleted by --delete-branch)
 git branch -d <branch-name>
 
 # Delete remote if not auto-deleted
 git push origin --delete <branch-name>
 ```
 
+**Note:** If using `gh pr merge --delete-branch`, the remote branch is automatically deleted.
+
 ## Anti-Patterns
 
-❌ **Merging yourself** - Always wait for user
+❌ **Merging without explicit instruction** - Only merge when user directly instructs
 ❌ **Claiming ready without exit code 0** - Verify CI!
 ❌ **Skipping status update** - Keep PR updated
 ❌ **Leaving old status comments** - Hide as outdated
+❌ **Merging while CI failing** - Always verify `gh pr checks` returns 0
 
 ## Quick Reference
 
@@ -144,7 +170,11 @@ gh pr view <PR> --comments --json comments | \
 gh pr comment <PR> --body "...
 🤖 Cursor"
 
-# After merge
+# When user instructs to merge
+gh pr checks <PR>  # Verify one final time (must be 0)
+gh pr merge <PR> --squash --delete-branch
+
+# After merge (cleanup)
 git checkout main && git pull
 git branch -d <branch>
 ```
