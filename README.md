@@ -63,7 +63,11 @@ gh talk resolve PRRT_abc123
 - [CRITICAL-REVIEW.md](docs/CRITICAL-REVIEW.md) - Honest assessment of problems and risks
 - [ACTION-PLAN.md](docs/ACTION-PLAN.md) - Immediate actions to start implementation
 
-**Current Status:** Research complete (11,882 lines), ready to implement TRUE MVP (3 commands in 2 weeks)
+**Current Status:** ✅ **MVP Complete and Enhanced!**
+- 9 working commands
+- Real-world tested and iterated
+- 5 user feedback issues implemented
+- All pushed to GitHub
 
 ## Usage
 
@@ -121,11 +125,34 @@ gh talk resolve PRRT_abc --message "All fixed"
 # Add thumbs up
 gh talk react PRRC_kwDOQN97u86UHqK7 👍
 
+# Add to multiple comments (bulk operation)
+gh talk react PRRC_aaa PRRC_bbb PRRC_ccc 👍
+
 # Add rocket (by name)
 gh talk react PRRC_kwDOQN97u86UHqK7 ROCKET
 
 # Remove reaction
 gh talk react PRRC_kwDOQN97u86UHqK7 👍 --remove
+```
+
+### Check PR Status
+
+```bash
+# Show review progress
+gh talk status --pr 137
+
+# Quick one-line summary
+gh talk status --compact
+```
+
+### Combined Workflow
+
+```bash
+# Reply, react, and resolve in one command
+gh talk reply PRRT_xxx "Fixed!" --react 👍 --resolve
+
+# Get JSON output for scripting
+gh talk list threads --format json | jq '.[] | select(.isResolved == false)'
 ```
 
 ### View Thread Details
