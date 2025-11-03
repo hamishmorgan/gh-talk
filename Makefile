@@ -41,6 +41,14 @@ fmt: ## Format code
 	gofmt -w .
 	goimports -w .
 
+.PHONY: lint-md
+lint-md: ## Lint markdown files
+	markdownlint '**/*.md' '**/*.mdc' --ignore node_modules
+
+.PHONY: lint-md-fix
+lint-md-fix: ## Fix markdown issues
+	markdownlint '**/*.md' '**/*.mdc' --ignore node_modules --fix
+
 .PHONY: clean
 clean: ## Clean build artifacts
 	rm -f gh-talk

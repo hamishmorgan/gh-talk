@@ -13,6 +13,7 @@ These are automatically used by go-gh and require no additional code:
 **Default:** Token from `gh auth login`
 
 **Example:**
+
 ```bash
 export GH_TOKEN=ghp_abc123xyz456
 gh talk list threads
@@ -25,6 +26,7 @@ gh talk list threads
 **Default:** `github.com`
 
 **Example (GitHub Enterprise):**
+
 ```bash
 export GH_HOST=github.example.com
 gh talk list threads
@@ -37,6 +39,7 @@ gh talk list threads
 **Default:** Detected from git remotes
 
 **Example:**
+
 ```bash
 export GH_REPO=owner/repo
 gh talk list threads  # Uses owner/repo
@@ -49,12 +52,14 @@ gh talk list threads  # Uses owner/repo
 **Default:** Auto-detected
 
 **Example:**
+
 ```bash
 export GH_FORCE_TTY=1
 gh talk list threads | less  # Still shows table format
 ```
 
 **Value Options:**
+
 - `1` or `true` - Force TTY mode
 - `<number>` - Force specific width (e.g., `80`)
 - `<percentage>%` - Force percentage of actual width (e.g., `50%`)
@@ -66,6 +71,7 @@ gh talk list threads | less  # Still shows table format
 **Default:** Disabled
 
 **Example:**
+
 ```bash
 export GH_DEBUG=1
 gh talk list threads
@@ -79,10 +85,11 @@ These control color and terminal behavior:
 ### `NO_COLOR`
 
 **Purpose:** Disable all color output  
-**Standard:** https://no-color.org  
+**Standard:** <https://no-color.org>  
 **Default:** Not set (colors enabled in TTY)
 
 **Example:**
+
 ```bash
 NO_COLOR=1 gh talk list threads
 # Output without ANSI color codes
@@ -95,6 +102,7 @@ NO_COLOR=1 gh talk list threads
 **Default:** Auto-detected from terminal
 
 **Example:**
+
 ```bash
 export CLICOLOR=0  # Disable colors
 ```
@@ -105,6 +113,7 @@ export CLICOLOR=0  # Disable colors
 **Default:** Not set
 
 **Example:**
+
 ```bash
 export CLICOLOR_FORCE=1
 gh talk list threads | cat  # Colors even though piped
@@ -117,6 +126,7 @@ gh talk list threads | cat  # Colors even though piped
 **Default:** Set by terminal
 
 **Common Values:**
+
 - `xterm-256color` - 256 color support
 - `xterm` - Basic color support
 - `dumb` - No special features
@@ -135,6 +145,7 @@ gh talk list threads | cat  # Colors even though piped
 **Default:** `~/.config/gh-talk/config.yml`
 
 **Example:**
+
 ```bash
 export GH_TALK_CONFIG=/path/to/custom-config.yml
 gh talk list threads
@@ -146,12 +157,14 @@ gh talk list threads
 **Default:** `~/.cache/gh-talk`
 
 **Example:**
+
 ```bash
 export GH_TALK_CACHE_DIR=/tmp/gh-talk-cache
 gh talk list threads
 ```
 
 **Cache Contents:**
+
 - Thread data (5 minute TTL)
 - Repository metadata
 - User information
@@ -162,12 +175,14 @@ gh talk list threads
 **Default:** `5`
 
 **Example:**
+
 ```bash
 export GH_TALK_CACHE_TTL=10  # Cache for 10 minutes
 gh talk list threads
 ```
 
 **Values:**
+
 - `0` - Disable caching
 - `<number>` - Minutes to cache
 
@@ -178,12 +193,14 @@ gh talk list threads
 **Values:** `table`, `json`, `tsv`
 
 **Example:**
+
 ```bash
 export GH_TALK_FORMAT=json
 gh talk list threads  # Always outputs JSON
 ```
 
 **Override:**
+
 ```bash
 # Environment says json, but flag overrides
 export GH_TALK_FORMAT=json
@@ -196,12 +213,14 @@ gh talk list threads --format table  # Shows table
 **Default:** Value of `$EDITOR`, falls back to `vim`
 
 **Example:**
+
 ```bash
 export GH_TALK_EDITOR=nano
 gh talk reply --editor  # Opens nano
 ```
 
 **Fallback Chain:**
+
 1. `GH_TALK_EDITOR`
 2. `EDITOR`
 3. `vim` (hardcoded fallback)
@@ -217,6 +236,7 @@ These are standard shell variables gh-talk respects:
 **Default:** `vim`
 
 **Example:**
+
 ```bash
 export EDITOR=code
 gh talk reply --editor  # Opens VS Code
@@ -229,6 +249,7 @@ gh talk reply --editor  # Opens VS Code
 **Default:** Set by system
 
 **Used For:**
+
 - `~/.config/gh-talk/` → `$HOME/.config/gh-talk/`
 - `~/.cache/gh-talk/` → `$HOME/.cache/gh-talk/`
 
@@ -238,6 +259,7 @@ gh talk reply --editor  # Opens VS Code
 **Default:** `~/.config`
 
 **Used For:**
+
 ```bash
 export XDG_CONFIG_HOME=/custom/config
 # Config: /custom/config/gh-talk/config.yml
@@ -249,6 +271,7 @@ export XDG_CONFIG_HOME=/custom/config
 **Default:** `~/.cache`
 
 **Used For:**
+
 ```bash
 export XDG_CACHE_HOME=/custom/cache
 # Cache: /custom/cache/gh-talk/
@@ -303,16 +326,19 @@ export GH_FORCE_TTY=0
 **For all settings, priority is:**
 
 1. **Command-line flags** (highest priority)
+
    ```bash
    gh talk list threads --format json
    ```
 
 2. **gh-talk environment variables**
+
    ```bash
    export GH_TALK_FORMAT=json
    ```
 
 3. **Configuration file**
+
    ```yaml
    # ~/.config/gh-talk/config.yml
    defaults:
@@ -320,6 +346,7 @@ export GH_FORCE_TTY=0
    ```
 
 4. **GitHub CLI environment variables**
+
    ```bash
    export GH_REPO=owner/repo
    ```
@@ -328,6 +355,7 @@ export GH_FORCE_TTY=0
    - Built-in sensible defaults
 
 **Example:**
+
 ```bash
 # Config file says: format=table
 # Environment says: GH_TALK_FORMAT=json
@@ -398,5 +426,3 @@ func TestWithEnv(t *testing.T) {
 **Last Updated**: 2025-11-02  
 **Compatibility**: gh CLI v2.0+  
 **Standards**: Follows XDG Base Directory Specification
-
-

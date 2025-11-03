@@ -7,6 +7,7 @@
 This document analyzes successful GitHub CLI extensions to extract patterns, best practices, and lessons for building gh-talk.
 
 **Extensions Studied:**
+
 1. **gh-dash** (dlvhdr/gh-dash) - 13.5k+ stars
 2. **gh-s** (gennaro-tedesco/gh-s) - 400+ stars
 3. **gh-poi** (seachicken/gh-poi) - 300+ stars  
@@ -15,13 +16,14 @@ This document analyzes successful GitHub CLI extensions to extract patterns, bes
 
 ## Extension #1: gh-dash
 
-**Repository:** https://github.com/dlvhdr/gh-dash  
+**Repository:** <https://github.com/dlvhdr/gh-dash>  
 **Stars:** ~13,500  
 **Purpose:** TUI dashboard for PRs and Issues
 
 ### What It Does
 
 **Features:**
+
 - Interactive TUI for browsing PRs/Issues
 - Real-time updates
 - Keyboard navigation
@@ -32,6 +34,7 @@ This document analyzes successful GitHub CLI extensions to extract patterns, bes
 ### Technical Analysis
 
 **Stack:**
+
 ```
 - Language: Go
 - TUI Framework: Bubble Tea (charm.sh)
@@ -41,6 +44,7 @@ This document analyzes successful GitHub CLI extensions to extract patterns, bes
 ```
 
 **Project Structure:**
+
 ```
 gh-dash/
 ├── main.go                    # Entry point
@@ -59,6 +63,7 @@ gh-dash/
 ```
 
 **Key Observations:**
+
 - ✅ **No cmd/ for single binary** - main.go in root
 - ✅ **Domain-based organization** - ui/, data/, config/
 - ✅ **Separation of concerns** - UI separate from data fetching
@@ -66,6 +71,7 @@ gh-dash/
 - ✅ **GraphQL in data layer** - Centralized queries
 
 **go-gh Usage:**
+
 ```go
 // Creates GraphQL client
 client, err := api.DefaultGraphQLClient()
@@ -75,6 +81,7 @@ err = client.Query("name", &query, variables)
 ```
 
 **Lessons for gh-talk:**
+
 - TUI is separate concern (Phase 3)
 - Data layer should be independent
 - GraphQL queries centralized in one place
@@ -83,34 +90,39 @@ err = client.Query("name", &query, variables)
 ### What We Can Learn
 
 ✅ **Structure:**
+
 - Keep data/API separate from UI
 - Domain folders (data/, ui/, config/) work well
 - main.go in root for single binary
 
 ✅ **go-gh:**
+
 - Use DefaultGraphQLClient() everywhere
 - Centralize query definitions
 - Handle errors consistently
 
 ✅ **TUI (Future):**
+
 - Bubble Tea is the right choice
 - Separate TUI from CLI commands
 - Can add later without refactoring
 
 ❌ **Don't Copy:**
+
 - No Cobra (we want it)
 - Heavy TUI focus (we want CLI first)
 - Complex configuration (we want simple MVP)
 
 ## Extension #2: gh-s
 
-**Repository:** https://github.com/gennaro-tedesco/gh-s  
+**Repository:** <https://github.com/gennaro-tedesco/gh-s>  
 **Stars:** ~400  
 **Purpose:** Fuzzy search for GitHub resources
 
 ### What It Does
 
 **Features:**
+
 - Interactive fuzzy search (fzf)
 - Search repos, issues, PRs, commits
 - Quick navigation
@@ -120,6 +132,7 @@ err = client.Query("name", &query, variables)
 ### Technical Analysis
 
 **Stack:**
+
 ```
 - Language: Go
 - UI: fzf (external tool)
@@ -128,6 +141,7 @@ err = client.Query("name", &query, variables)
 ```
 
 **Project Structure:**
+
 ```
 gh-s/
 ├── main.go                    # Entry point + all logic
@@ -140,6 +154,7 @@ gh-s/
 ```
 
 **Key Observations:**
+
 - ✅ **Very simple structure** - Minimal organization
 - ✅ **External tool integration** - Uses fzf for UI
 - ✅ **Single file entry** - main.go has most logic
@@ -147,6 +162,7 @@ gh-s/
 - ✅ **No Cobra** - Custom flag parsing
 
 **fzf Integration:**
+
 ```go
 // Pipe search results to fzf
 cmd := exec.Command("fzf", "--preview", previewCommand)
@@ -155,6 +171,7 @@ output, err := cmd.Output()
 ```
 
 **Lessons for gh-talk:**
+
 - Simple is good (don't over-engineer)
 - External tools can enhance UX (fzf for selection)
 - REST API viable for simple queries
@@ -163,29 +180,33 @@ output, err := cmd.Output()
 ### What We Can Learn
 
 ✅ **Simplicity:**
+
 - Don't need complex structure for small tools
 - main.go can contain logic if tool is focused
 - Minimal packages until needed
 
 ✅ **External Tools:**
+
 - fzf could enhance interactive selection
 - Shell out to proven tools
 - Don't reinvent everything
 
 ❌ **Don't Copy:**
+
 - Too simple for gh-talk (we have more features)
 - No testing structure (we want tests)
 - No Cobra (we want structured commands)
 
 ## Extension #3: gh-poi
 
-**Repository:** https://github.com/seachicken/gh-poi  
+**Repository:** <https://github.com/seachicken/gh-poi>  
 **Stars:** ~300  
 **Purpose:** Interactive PR/Issue opener with preview
 
 ### What It Does
 
 **Features:**
+
 - Interactive PR/Issue selection
 - Preview pane
 - Quick navigation
@@ -195,6 +216,7 @@ output, err := cmd.Output()
 ### Technical Analysis
 
 **Stack:**
+
 ```
 - Language: Go
 - TUI: Bubble Tea (like gh-dash)
@@ -203,6 +225,7 @@ output, err := cmd.Output()
 ```
 
 **Project Structure:**
+
 ```
 gh-poi/
 ├── main.go                    # Entry point
@@ -218,6 +241,7 @@ gh-poi/
 ```
 
 **Key Observations:**
+
 - ✅ **Clean separation** - UI, API, config
 - ✅ **Bubble Tea pattern** - model/update/view
 - ✅ **API wrapper** - Custom layer over go-gh
@@ -225,6 +249,7 @@ gh-poi/
 - ✅ **No Cobra** - Bubble Tea handles interaction
 
 **API Wrapper Pattern:**
+
 ```go
 // gh/client.go
 type Client struct {
@@ -245,6 +270,7 @@ func (c *Client) ListPRs(...) ([]PR, error) {
 ```
 
 **Lessons for gh-talk:**
+
 - API wrapper pattern is clean
 - Separate package for GitHub operations
 - Bubble Tea for TUI (Phase 3)
@@ -253,32 +279,37 @@ func (c *Client) ListPRs(...) ([]PR, error) {
 ### What We Can Learn
 
 ✅ **API Layer:**
+
 - Wrap go-gh client in custom client
 - Provide domain-specific methods
 - Keep GraphQL queries in API package
 
 ✅ **TUI Patterns:**
+
 - Bubble Tea for Phase 3
 - Model-Update-View architecture
 - Keyboard shortcuts important
 
 ✅ **Simplicity:**
+
 - Small, focused packages
 - Don't over-abstract
 
 ❌ **Don't Copy:**
+
 - TUI-only (we want CLI first)
 - No command structure (we need it)
 
 ## Extension #4: gh-copilot
 
-**Repository:** https://github.com/github/gh-copilot  
+**Repository:** <https://github.com/github/gh-copilot>  
 **Official GitHub Extension**  
 **Purpose:** AI assistance in terminal
 
 ### What It Does
 
 **Features:**
+
 - AI-powered command suggestions
 - Explain shell commands
 - Git command help
@@ -287,6 +318,7 @@ func (c *Client) ListPRs(...) ([]PR, error) {
 ### Technical Analysis
 
 **Stack:**
+
 ```
 - Language: Go
 - Framework: USES COBRA! ✅
@@ -295,6 +327,7 @@ func (c *Client) ListPRs(...) ([]PR, error) {
 ```
 
 **Project Structure:**
+
 ```
 gh-copilot/
 ├── main.go                    # Entry point
@@ -310,6 +343,7 @@ gh-copilot/
 ```
 
 **Key Observations:**
+
 - ✅ **USES COBRA** - GitHub's own extension uses it!
 - ✅ **Proper structure** - cmd/, internal/
 - ✅ **No pkg/** - Everything in internal/
@@ -318,6 +352,7 @@ gh-copilot/
 - ✅ **Official GitHub** - Validates our choices
 
 **Cobra Usage:**
+
 ```go
 // cmd/root.go
 var rootCmd = &cobra.Command{
@@ -334,6 +369,7 @@ var suggestCmd = &cobra.Command{
 ```
 
 **This Is HUGE:**
+
 - GitHub's own extensions use Cobra
 - Validates our choice completely
 - Shows proper structure
@@ -342,31 +378,35 @@ var suggestCmd = &cobra.Command{
 ### What We Can Learn
 
 ✅ **VALIDATION:**
+
 - **GitHub uses Cobra for extensions!**
 - Our choice is correct
 - Cobra + go-gh is proven
 - Structure matches what we planned
 
 ✅ **Structure:**
+
 - cmd/ for Cobra commands (not binary location)
 - internal/ for everything
 - main.go in root
 - Exactly what we have!
 
 ✅ **Patterns:**
+
 - RunE for error handling
 - Persistent flags for global
 - Subcommands for organization
 
 ## Extension #5: gh-branch
 
-**Repository:** https://github.com/mislav/gh-branch  
+**Repository:** <https://github.com/mislav/gh-branch>  
 **Author:** Mislav Marohnić (gh CLI core team member!)  
 **Purpose:** Enhanced branch operations
 
 ### What It Does
 
 **Features:**
+
 - Interactive branch selection
 - Fuzzy finding
 - Quick checkout
@@ -376,6 +416,7 @@ var suggestCmd = &cobra.Command{
 ### Technical Analysis
 
 **Stack:**
+
 ```
 - Language: Bash (!not Go)
 - UI: fzf
@@ -384,6 +425,7 @@ var suggestCmd = &cobra.Command{
 ```
 
 **Key Observations:**
+
 - ✅ **Not Go** - Can use any language
 - ✅ **Shell script** - 300 lines, very simple
 - ✅ **fzf for UX** - Great interactive experience
@@ -391,6 +433,7 @@ var suggestCmd = &cobra.Command{
 - ✅ **By gh maintainer** - Knows best practices
 
 **Pattern:**
+
 ```bash
 #!/usr/bin/env bash
 
@@ -405,6 +448,7 @@ git checkout "$selected"
 ```
 
 **Lessons for gh-talk:**
+
 - Don't need Go for everything
 - Shell out to `gh api` can work
 - fzf provides excellent UX
@@ -413,16 +457,19 @@ git checkout "$selected"
 ### What We Can Learn
 
 ✅ **Not All Extensions Need Go:**
+
 - Bash works for simple tools
 - Can shell out to gh api
 - Sometimes simpler is better
 
 ✅ **fzf is Powerful:**
+
 - Better than custom selection
 - Users likely have it
 - Great preview support
 
 ⚠️ **But for gh-talk:**
+
 - We need Go (complex logic)
 - GraphQL is complex for shell
 - Want cross-platform binaries
@@ -433,6 +480,7 @@ git checkout "$selected"
 ### Pattern 1: API Wrapper Layer
 
 **All Go extensions do this:**
+
 ```go
 // Wrap go-gh client
 package api
@@ -452,6 +500,7 @@ func (c *Client) GetIssue(num int) (*Issue, error) { ... }
 ```
 
 **Why:**
+
 - Cleaner API for your domain
 - Easier to test (mock your Client, not go-gh)
 - Centralized error handling
@@ -460,6 +509,7 @@ func (c *Client) GetIssue(num int) (*Issue, error) { ... }
 ### Pattern 2: Main.go is Minimal
 
 **Common Pattern:**
+
 ```go
 // main.go
 package main
@@ -472,6 +522,7 @@ func main() {
 ```
 
 **Keep Logic Out:**
+
 - main.go is ~5-10 lines
 - All logic in packages
 - Testable code
@@ -479,12 +530,14 @@ func main() {
 ### Pattern 3: Configuration is Optional
 
 **Most extensions:**
+
 - Work without config file
 - Config enhances experience
 - Sensible defaults
 - Store in `~/.config/gh-extname/`
 
 **Pattern:**
+
 ```go
 func LoadConfig() (*Config, error) {
     // Try to load
@@ -500,11 +553,13 @@ func LoadConfig() (*Config, error) {
 ### Pattern 4: Interactive is Key
 
 **Successful extensions emphasize UX:**
+
 - fzf integration (gh-s, gh-branch, gh-poi)
 - Bubble Tea TUI (gh-dash, gh-poi)
 - Prompter from go-gh (simpler tools)
 
 **Why It Matters:**
+
 - Users explore more
 - Reduces typing
 - Better discovery
@@ -513,6 +568,7 @@ func LoadConfig() (*Config, error) {
 ### Pattern 5: Shell Completion
 
 **Professional extensions provide:**
+
 ```go
 // Using Cobra
 rootCmd.AddCommand(completionCmd)
@@ -522,6 +578,7 @@ gh-extension completion bash > /path/to/completion
 ```
 
 **Impact:**
+
 - Better UX
 - Faster workflows
 - Professional feel
@@ -539,6 +596,7 @@ gh-extension completion bash > /path/to/completion
 | gh-branch | Bash | Simple script |
 
 **Key Finding:**
+
 - **GitHub's own gh-copilot uses Cobra!**
 - Validates our choice completely
 - Shows Cobra works great for extensions
@@ -547,17 +605,20 @@ gh-extension completion bash > /path/to/completion
 ### Cobra vs Custom
 
 **When Extensions Use Cobra:**
+
 - Multi-command structure
 - Need help generation
 - Want shell completion
 - Professional polish
 
 **When They Don't:**
+
 - Single-purpose tool
 - TUI-only (Bubble Tea handles interaction)
 - Very simple (bash script)
 
 **For gh-talk:**
+
 - ✅ Multi-command (list, reply, resolve, react, hide, show)
 - ✅ Need structure (not single-purpose)
 - ✅ Want professional result
@@ -568,6 +629,7 @@ gh-extension completion bash > /path/to/completion
 ### gh-dash Testing
 
 **Pattern:**
+
 ```
 tests/
 ├── unit/                      # Unit tests
@@ -577,6 +639,7 @@ tests/
 ```
 
 **Uses:**
+
 - Table-driven tests
 - Mocks for API calls
 - Snapshot testing for UI
@@ -584,6 +647,7 @@ tests/
 ### gh-copilot Testing
 
 **Pattern:**
+
 ```
 - Test files next to source (*_test.go)
 - Table-driven tests
@@ -592,6 +656,7 @@ tests/
 ```
 
 **Example:**
+
 ```go
 func TestSuggestCommand(t *testing.T) {
     tests := []struct {
@@ -615,6 +680,7 @@ func TestSuggestCommand(t *testing.T) {
 ### Common Testing Patterns
 
 **All Go extensions:**
+
 - ✅ *_test.go files alongside source
 - ✅ Table-driven tests
 - ✅ testdata/ for fixtures
@@ -636,6 +702,7 @@ func (c *Client) ListPRs() ([]PR, error) {
 ```
 
 **Strategy:**
+
 - Wrap errors with context
 - Use fmt.Errorf with %w
 - Return errors up
@@ -656,6 +723,7 @@ func runSuggest(cmd *cobra.Command, args []string) error {
 ```
 
 **Strategy:**
+
 - Return errors from RunE
 - Cobra handles printing
 - Clean error messages
@@ -668,6 +736,7 @@ func runSuggest(cmd *cobra.Command, args []string) error {
 **Location:** `~/.config/gh-dash/config.yml`
 
 **Structure:**
+
 ```yaml
 prSections:
   - title: My PRs
@@ -687,6 +756,7 @@ keys:
 ```
 
 **Pattern:**
+
 - YAML config (readable)
 - Sensible defaults
 - User can customize
@@ -703,6 +773,7 @@ preview_size: 50%
 ```
 
 **Pattern:**
+
 - Minimal configuration
 - Works without config
 - Simple key-value
@@ -710,6 +781,7 @@ preview_size: 50%
 ### Common Config Patterns
 
 **All extensions:**
+
 - ✅ Config optional (works without it)
 - ✅ Stored in `~/.config/ext-name/`
 - ✅ YAML format (readable)
@@ -721,11 +793,13 @@ preview_size: 50%
 ### Successful Patterns
 
 **gh-dash:**
+
 ```bash
 gh dash        # Single command, launches TUI
 ```
 
 **gh-s:**
+
 ```bash
 gh s repos     # Short name, noun subcommand
 gh s issues
@@ -733,12 +807,14 @@ gh s prs
 ```
 
 **gh-copilot:**
+
 ```bash
 gh copilot suggest    # Verb subcommand
 gh copilot explain
 ```
 
 **gh-poi:**
+
 ```bash
 gh poi pr      # Short name, type subcommand
 gh poi issue
@@ -747,15 +823,18 @@ gh poi issue
 ### Naming Philosophy
 
 **Short Names Work:**
+
 - `gh s` not `gh search`
 - `gh dash` not `gh dashboard`
 - Easy to type = more usage
 
 **Clear Verbs:**
+
 - `suggest`, `explain` (gh-copilot)
 - `list`, `reply`, `resolve` (what we're planning)
 
 **For gh-talk:**
+
 - `gh talk` is good (short but clear)
 - `list`, `reply`, `resolve` are clear verbs
 - Follow pattern of gh-copilot
@@ -790,6 +869,7 @@ err := client.Query("name", &query, variables)
 ```
 
 **Universal Pattern:**
+
 - Struct with graphql tags
 - map[string]interface{} for variables
 - graphql.String(), graphql.Int() for values
@@ -813,6 +893,7 @@ func fetchData() error {
 ```
 
 **Common:**
+
 - Check for api.GraphQLError
 - Provide context
 - Wrap errors
@@ -823,6 +904,7 @@ func fetchData() error {
 ### 1. Structure
 
 ✅ **Use:**
+
 ```
 gh-talk/
 ├── main.go (minimal entry point)
@@ -835,6 +917,7 @@ gh-talk/
 ```
 
 ✅ **Don't:**
+
 - ❌ cmd/gh-talk/ (single binary)
 - ❌ pkg/ (not a library)
 - ❌ Over-engineer early
@@ -842,11 +925,13 @@ gh-talk/
 ### 2. Framework
 
 ✅ **Use Cobra:**
+
 - gh-copilot proves it works
 - Multi-command structure fits
 - Professional result
 
 ✅ **Add Bubble Tea Later:**
+
 - Phase 3 for interactive TUI
 - Don't mix with Cobra commands
 - Separate concern
@@ -854,6 +939,7 @@ gh-talk/
 ### 3. go-gh
 
 ✅ **Wrap in Custom Client:**
+
 ```go
 type Client struct {
     graphql *api.GraphQLClient
@@ -863,6 +949,7 @@ func (c *Client) ListThreads(...) ([]Thread, error)
 ```
 
 ✅ **Centralize Queries:**
+
 - All GraphQL in api package
 - Domain methods
 - Type-safe
@@ -870,6 +957,7 @@ func (c *Client) ListThreads(...) ([]Thread, error)
 ### 4. Testing
 
 ✅ **Standard Go Testing:**
+
 - *_test.go alongside source
 - Table-driven tests
 - testdata/ for fixtures
@@ -878,6 +966,7 @@ func (c *Client) ListThreads(...) ([]Thread, error)
 ### 5. Configuration
 
 ✅ **Optional, Not Required:**
+
 - Works without config
 - YAML in ~/.config/gh-talk/
 - Phase 2 or 3 feature
@@ -885,6 +974,7 @@ func (c *Client) ListThreads(...) ([]Thread, error)
 ### 6. Interactive UX
 
 ✅ **Use fzf or Prompter:**
+
 - fzf: If available, great UX
 - go-gh prompter: Fallback
 - Don't build custom
@@ -892,6 +982,7 @@ func (c *Client) ListThreads(...) ([]Thread, error)
 ### 7. Keep It Simple
 
 ✅ **Start Small:**
+
 - Minimal structure
 - Add packages as needed
 - Don't over-abstract
@@ -900,25 +991,30 @@ func (c *Client) ListThreads(...) ([]Thread, error)
 ## Anti-Patterns to Avoid
 
 ❌ **Over-Engineering:**
+
 - Don't create packages before needed
 - Don't abstract prematurely
 - Simple > clever
 
 ❌ **Config-Dependent:**
+
 - Must work without config
 - Config enhances, doesn't enable
 
 ❌ **Ignoring Terminal:**
+
 - Must adapt to TTY vs non-TTY
 - Colors only in terminal
 - TSV for pipes
 
 ❌ **Complex Installation:**
+
 - Should install with `gh extension install`
 - No additional setup required
 - Works immediately
 
 ❌ **Poor Error Messages:**
+
 - Don't show raw API errors
 - Provide context and suggestions
 - Make errors actionable
@@ -928,6 +1024,7 @@ func (c *Client) ListThreads(...) ([]Thread, error)
 ### From Successful Extensions
 
 **DO:**
+
 1. ✅ Wrap go-gh in domain client
 2. ✅ Use Cobra for multi-command (validated by gh-copilot!)
 3. ✅ Keep main.go minimal
@@ -940,6 +1037,7 @@ func (c *Client) ListThreads(...) ([]Thread, error)
 10. ✅ Keep structure simple initially
 
 **DON'T:**
+
 1. ❌ Put code in pkg/ (it's not a library)
 2. ❌ Require configuration
 3. ❌ Build custom UI from scratch (use fzf/Bubble Tea)
@@ -963,6 +1061,7 @@ gh-talk/
 ```
 
 **Matches:**
+
 - ✅ gh-copilot structure (GitHub official!)
 - ✅ gh-dash pattern (domain organization)
 - ✅ gh-poi pattern (clean separation)
@@ -970,11 +1069,13 @@ gh-talk/
 ### Our Technology Choices
 
 **Cobra + go-gh:**
+
 - ✅ Used by gh-copilot (GitHub's own!)
 - ✅ Proven combination
 - ✅ Right for multi-command structure
 
 **Future Bubble Tea:**
+
 - ✅ Used by gh-dash, gh-poi
 - ✅ Right for TUI (Phase 3)
 - ✅ Separate from CLI commands
@@ -982,11 +1083,13 @@ gh-talk/
 ### Our Design Decisions
 
 **Thread ID System:**
+
 - ✅ Interactive selection (like all popular extensions)
 - ✅ Full IDs for scripting (flexible)
 - ✅ No short IDs (none of them use it either)
 
 **Output Format:**
+
 - ✅ Terminal-adaptive (all do this)
 - ✅ Table for TTY (standard)
 - ✅ JSON for scripts (gh pattern)
@@ -1063,6 +1166,7 @@ Based on successful extensions:
 ### From gh-copilot (Most Relevant)
 
 **Structure:**
+
 ```
 ✅ Use: cmd/ for Cobra command files
 ✅ Use: internal/api/ for GitHub client
@@ -1071,6 +1175,7 @@ Based on successful extensions:
 ```
 
 **Patterns:**
+
 ```
 ✅ Use: RunE for error returns
 ✅ Use: Persistent flags for --repo, etc.
@@ -1081,6 +1186,7 @@ Based on successful extensions:
 ### From gh-dash (Best Practices)
 
 **API Layer:**
+
 ```
 ✅ Wrap go-gh client
 ✅ Domain-specific methods
@@ -1089,6 +1195,7 @@ Based on successful extensions:
 ```
 
 **Organization:**
+
 ```
 ✅ Separate UI from data
 ✅ Keep packages focused
@@ -1098,6 +1205,7 @@ Based on successful extensions:
 ### From gh-s (Simplicity)
 
 **Philosophy:**
+
 ```
 ✅ Start simple
 ✅ Add structure as needed
@@ -1110,6 +1218,7 @@ Based on successful extensions:
 ### What We Learned
 
 **Validation:**
+
 - ✅ Our structure is correct (matches gh-copilot)
 - ✅ Cobra is right (GitHub uses it!)
 - ✅ go-gh wrapper pattern is universal
@@ -1117,6 +1226,7 @@ Based on successful extensions:
 - ✅ testdata/ for fixtures is common
 
 **New Insights:**
+
 - 💡 fzf could enhance interactive selection
 - 💡 Bubble Tea for Phase 3 TUI (proven)
 - 💡 Configuration should be optional
@@ -1124,6 +1234,7 @@ Based on successful extensions:
 - 💡 GitHub's own extensions use Cobra!
 
 **Confidence:**
+
 - ✅ Our choices validated by real extensions
 - ✅ Structure matches successful patterns
 - ✅ Technology stack proven
@@ -1132,12 +1243,14 @@ Based on successful extensions:
 ### Changes to Our Plan
 
 **None Required:**
+
 - Everything we planned is validated
 - Structure is correct
 - Choices are sound
 - Can proceed with confidence
 
 **Optional Enhancements:**
+
 - Consider fzf for interactive (if available)
 - Plan for Bubble Tea TUI (Phase 3)
 - Keep config simple and optional
@@ -1148,4 +1261,3 @@ Based on successful extensions:
 **Extensions Analyzed**: gh-dash, gh-s, gh-poi, gh-copilot, gh-branch  
 **Key Finding**: GitHub's gh-copilot uses Cobra - validates our choice!  
 **Status**: Ready to implement with confidence
-

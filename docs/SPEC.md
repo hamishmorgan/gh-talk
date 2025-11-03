@@ -191,6 +191,7 @@ gh talk react PRRC_kwDOQN97u86UHqK7 PRRC_kwDOQN97u86UHqOo 👍
 ```
 
 **Emoji Formats Supported:**
+
 - Unicode emoji: `👍`, `🎉`, `❤️`
 - GraphQL names: `THUMBS_UP`, `HOORAY`, `HEART`
 - Lowercase: `thumbs_up`, `hooray`, `heart`
@@ -241,6 +242,7 @@ gh talk resolve PRRT_kwDO...123 PRRT_kwDO...456 --yes
 ```
 
 **Interactive Mode:**
+
 ```bash
 # No arguments prompts for selection
 gh talk resolve
@@ -404,6 +406,7 @@ aliases:
 ### Environment Variables
 
 **GitHub CLI (automatically used via go-gh):**
+
 - `GH_TOKEN` - GitHub authentication token
 - `GH_HOST` - GitHub host (default: github.com)
 - `GH_REPO` - Repository context (OWNER/REPO)
@@ -411,6 +414,7 @@ aliases:
 - `GH_DEBUG` - Enable debug logging
 
 **gh-talk Specific:**
+
 - `GH_TALK_CONFIG` - Config file location (default: ~/.config/gh-talk/config.yml)
 - `GH_TALK_CACHE_DIR` - Cache directory (default: ~/.cache/gh-talk)
 - `GH_TALK_CACHE_TTL` - Cache TTL in minutes (default: 5)
@@ -418,6 +422,7 @@ aliases:
 - `GH_TALK_EDITOR` - Editor for message composition
 
 **Terminal:**
+
 - `NO_COLOR` - Disable colors
 - `CLICOLOR` - Color support (0 or 1)
 - `EDITOR` - Default text editor
@@ -438,6 +443,7 @@ All data fetched via GitHub GraphQL API v4.
 4. **Reactions** - `reactionGroups` (always includes all 8 types)
 
 **Real Data Structures:**
+
 - Thread IDs: `PRRT_kwDOQN97u85gQeTN` (25-30 chars)
 - Comment IDs: `PRRC_kwDOQN97u86UHqK7` or `IC_kwDOQN97u87PVA8l`
 - Issue IDs: `I_kwDOQN97u87VYpUq`
@@ -492,6 +498,7 @@ See [API.md](API.md) for GraphQL schema and [REAL-DATA.md](REAL-DATA.md) for act
 ### Test Types
 
 **Unit Tests:**
+
 - GraphQL query construction
 - Response parsing and error handling
 - Filter logic
@@ -500,6 +507,7 @@ See [API.md](API.md) for GraphQL schema and [REAL-DATA.md](REAL-DATA.md) for act
 - **Target:** 90%+ coverage for API package
 
 **Integration Tests:**
+
 - Full command execution with mocked API
 - Flag parsing and validation
 - Output formatting (table, JSON, TSV)
@@ -507,18 +515,21 @@ See [API.md](API.md) for GraphQL schema and [REAL-DATA.md](REAL-DATA.md) for act
 - **Target:** All commands tested
 
 **Contract Tests:**
+
 - GraphQL query structs match GitHub schema
 - Response parsing with real fixtures
 - Using testdata/ real API responses
 - **Target:** All queries/mutations validated
 
 **E2E Tests (Optional):**
+
 - Real API calls (expensive, rate-limited)
 - Manual testing on test PR #1 and Issue #2
 - Cross-platform compatibility (Linux, macOS, Windows)
 - **Target:** Smoke tests for main workflows
 
 **Test Fixtures:**
+
 - `testdata/pr_full_response.json` - Complete PR with threads
 - `testdata/issue_full_response.json` - Complete issue with comments
 - `testdata/pr_with_resolved_threads.json` - Mixed resolution states
@@ -679,6 +690,7 @@ gh-talk/
 ```
 
 **Key Architectural Decisions:**
+
 - **No cmd/** for binary location (main.go in root per gh extension convention)
 - **No pkg/** (code is not meant to be imported externally)
 - **internal/** for all implementation (enforces encapsulation)
@@ -689,14 +701,17 @@ See [STRUCTURE.md](STRUCTURE.md) for architecture rationale and [EXTENSION-PATTE
 ### Key Libraries
 
 **Core:**
+
 - `github.com/cli/go-gh/v2` v2.12.2 - GitHub CLI library (GraphQL/REST clients, auth, terminal)
 - `github.com/spf13/cobra` v1.8 - CLI framework (validated by gh-copilot usage)
 
 **Future (Phase 3):**
+
 - `github.com/charmbracelet/bubbletea` v0.25 - TUI framework (interactive mode)
 - `github.com/charmbracelet/lipgloss` v0.9 - Terminal styling
 
 **Testing:**
+
 - Standard library `testing` package
 - Real API fixtures in `testdata/`
 - Mock patterns for API client
@@ -714,23 +729,27 @@ See [STRUCTURE.md](STRUCTURE.md) for architecture rationale and [EXTENSION-PATTE
 ### Developer Documentation
 
 **Architecture & Design:**
+
 - `docs/SPEC.md` - This specification (complete feature set)
 - `docs/DESIGN.md` - Key design decisions and rationale
 - `docs/STRUCTURE.md` - Project structure and organization
 
 **APIs & Implementation:**
+
 - `docs/API.md` - GitHub API capabilities and reference
 - `docs/REAL-DATA.md` - Real API responses from live testing (1,885 lines!)
 - `docs/GO-GH.md` - go-gh library guide and patterns
 - `docs/COBRA.md` - Cobra implementation guide
 
 **Analysis & Validation:**
+
 - `docs/GH-CLI.md` - GitHub CLI analysis (what gh does/doesn't do)
 - `docs/CLI-FRAMEWORK.md` - Framework choice analysis
 - `docs/EXTENSION-PATTERNS.md` - Successful extension patterns
 - `docs/WORKFLOWS.md` - User workflows and personas
 
 **Quality & Testing:**
+
 - `docs/ENGINEERING.md` - Testing strategy, CI/CD, quality practices
 - `AGENTS.md` - AI agent development guidelines
 - `testdata/README.md` - Test fixture documentation
@@ -746,6 +765,7 @@ MIT License (following gh CLI extension conventions)
 ### Research Phase: ✅ Complete
 
 **Completed:**
+
 - ✅ Comprehensive API research and live testing
 - ✅ Real data structure documentation (PR #1, Issue #2)
 - ✅ Design decisions finalized
@@ -755,6 +775,7 @@ MIT License (following gh CLI extension conventions)
 - ✅ 11,882 lines of documentation
 
 **Ready for Implementation:**
+
 - ✅ All critical decisions made
 - ✅ Thread ID system designed (Full IDs + Interactive)
 - ✅ Command syntax finalized
@@ -765,6 +786,7 @@ MIT License (following gh CLI extension conventions)
 ### Development Phase: Next
 
 **Phase 1: MVP (Weeks 1-3)**
+
 - Add Cobra dependency
 - Implement core commands (list, reply, resolve, react)
 - Basic filtering and formatting
@@ -772,6 +794,7 @@ MIT License (following gh CLI extension conventions)
 - 80%+ code coverage
 
 **Phase 2: Enhancement (Weeks 4-6)**
+
 - Issue support (comments, reactions)
 - Hide/unhide commands
 - Advanced filtering
@@ -779,6 +802,7 @@ MIT License (following gh CLI extension conventions)
 - Shell completion
 
 **Phase 3: Polish (Weeks 7+)**
+
 - Interactive TUI mode (Bubble Tea)
 - Configuration file support
 - URL → Node ID conversion
@@ -793,4 +817,3 @@ See [ENGINEERING.md](ENGINEERING.md) for detailed implementation roadmap.
 **Status**: Specification Complete - Ready for Implementation  
 **Research:** Complete with live API testing  
 **Documentation:** 11,882 lines across 15 files
-

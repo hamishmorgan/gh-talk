@@ -6,9 +6,9 @@
 
 `go-gh` is the official Go library for authoring GitHub CLI extensions. It provides authenticated API clients, terminal utilities, and helpers that automatically integrate with `gh` CLI conventions.
 
-**Repository:** https://github.com/cli/go-gh  
-**Documentation:** https://pkg.go.dev/github.com/cli/go-gh/v2  
-**Examples:** https://github.com/cli/go-gh/blob/trunk/example_gh_test.go
+**Repository:** <https://github.com/cli/go-gh>  
+**Documentation:** <https://pkg.go.dev/github.com/cli/go-gh/v2>  
+**Examples:** <https://github.com/cli/go-gh/blob/trunk/example_gh_test.go>
 
 ## Why go-gh?
 
@@ -51,12 +51,14 @@
 ### 1. API Clients (`pkg/api`)
 
 **Two Client Types:**
+
 - `GraphQLClient` - For GraphQL API (recommended for gh-talk)
 - `RESTClient` - For REST API (simpler endpoints)
 
 #### GraphQL Client
 
 **Basic Usage:**
+
 ```go
 import "github.com/cli/go-gh/v2/pkg/api"
 
@@ -99,6 +101,7 @@ threads := query.Repository.PullRequest.ReviewThreads.Nodes
 ```
 
 **With Custom Options:**
+
 ```go
 opts := api.ClientOptions{
     EnableCache:    true,              // Enable response caching
@@ -115,6 +118,7 @@ client, err := api.NewGraphQLClient(opts)
 #### GraphQL Mutations
 
 **Example from go-gh:**
+
 ```go
 client, err := api.DefaultGraphQLClient()
 
@@ -153,6 +157,7 @@ fmt.Printf("Thread %s resolved: %v\n", thread.ID, thread.IsResolved)
 #### GraphQL Pagination
 
 **Pattern from go-gh examples:**
+
 ```go
 client, err := api.DefaultGraphQLClient()
 
@@ -208,6 +213,7 @@ fmt.Printf("Fetched %d threads across multiple pages\n", len(allThreads))
 #### REST Client
 
 **Basic Usage:**
+
 ```go
 client, err := api.DefaultRESTClient()
 if err != nil {
@@ -236,6 +242,7 @@ if err != nil {
 ### 2. Repository Context (`pkg/repository`)
 
 **Get Current Repository:**
+
 ```go
 import "github.com/cli/go-gh/v2/pkg/repository"
 
@@ -253,6 +260,7 @@ fmt.Printf("Name: %s\n", repo.Name)     // gh-talk
 ```
 
 **Parse Repository String:**
+
 ```go
 // Flexible formats:
 // - "OWNER/REPO"
@@ -270,6 +278,7 @@ repo, err := repository.Parse("https://github.com/cli/cli")
 ```
 
 **Parse with Default Host:**
+
 ```go
 // If string doesn't include host, use provided default
 repo, err := repository.ParseWithHost("owner/repo", "github.example.com")
@@ -277,6 +286,7 @@ repo, err := repository.ParseWithHost("owner/repo", "github.example.com")
 ```
 
 **Use in gh-talk:**
+
 ```go
 // Auto-detect current PR's repository
 repo, err := repository.Current()
@@ -294,6 +304,7 @@ variables := map[string]interface{}{
 ### 3. Terminal (`pkg/term`)
 
 **Initialize from Environment:**
+
 ```go
 import "github.com/cli/go-gh/v2/pkg/term"
 
@@ -321,6 +332,7 @@ stderr := terminal.ErrOut() // io.Writer
 ```
 
 **Use in gh-talk:**
+
 ```go
 terminal := term.FromEnv()
 
@@ -337,6 +349,7 @@ if terminal.IsTerminalOutput() {
 ### 4. Table Printer (`pkg/tableprinter`)
 
 **Basic Table:**
+
 ```go
 import "github.com/cli/go-gh/v2/pkg/tableprinter"
 
@@ -373,6 +386,7 @@ if err := t.Render(); err != nil {
 ```
 
 **With Formatting:**
+
 ```go
 // Color function
 green := func(s string) string {
@@ -396,12 +410,14 @@ t.AddField(thread.Body, tableprinter.WithTruncate(truncate))
 ```
 
 **Output Modes:**
+
 - **Terminal**: Pretty-printed columns, colors, auto-truncated to fit width
 - **Non-Terminal**: TSV format, no truncation, no colors (perfect for piping)
 
 ### 5. Prompter (`pkg/prompter`)
 
 **Interactive Selection:**
+
 ```go
 import "github.com/cli/go-gh/v2/pkg/prompter"
 
@@ -426,6 +442,7 @@ confirmed, err := p.Confirm("Resolve this thread?", true)
 ```
 
 **Use in gh-talk:**
+
 ```go
 // Interactive thread selection when ID not provided
 if threadID == "" {
@@ -454,6 +471,7 @@ if message == "" {
 ### 6. Exec (`gh.Exec`)
 
 **Shell Out to `gh` Commands:**
+
 ```go
 import gh "github.com/cli/go-gh/v2"
 
@@ -467,11 +485,13 @@ fmt.Println(stdout.String())
 ```
 
 **Use Cases:**
+
 - Leverage existing `gh` commands
 - Don't reimplement functionality
 - Combine with custom logic
 
 **Example for gh-talk:**
+
 ```go
 // Use gh to get current PR number
 stdout, _, err := gh.Exec("pr", "view", "--json", "number")
@@ -489,6 +509,7 @@ prNumber := result.Number
 ### GraphQL Errors
 
 **Error Type:**
+
 ```go
 type GraphQLError struct {
     Errors []GraphQLErrorItem
@@ -504,6 +525,7 @@ type GraphQLErrorItem struct {
 ```
 
 **Handling:**
+
 ```go
 var gqlErr *api.GraphQLError
 if errors.As(err, &gqlErr) {
@@ -521,6 +543,7 @@ if errors.As(err, &gqlErr) {
 ```
 
 **Match Specific Errors:**
+
 ```go
 // Check for specific error type on specific path
 if gqlErr.Match("NOT_FOUND", "resolveReviewThread") {
@@ -536,6 +559,7 @@ if gqlErr.Match("FORBIDDEN", "repository.pullRequest.") {
 ### HTTP Errors
 
 **Error Type:**
+
 ```go
 type HTTPError struct {
     Errors     []HTTPErrorItem
@@ -554,6 +578,7 @@ type HTTPErrorItem struct {
 ```
 
 **Common Status Codes:**
+
 ```go
 var httpErr *api.HTTPError
 if errors.As(err, &httpErr) {
@@ -579,6 +604,7 @@ if errors.As(err, &httpErr) {
 ### 1. Client Initialization
 
 **Recommended Pattern:**
+
 ```go
 package api
 
@@ -615,6 +641,7 @@ func NewClientWithOptions(opts api.ClientOptions) (*Client, error) {
 ### 2. Query Organization
 
 **Recommended Structure:**
+
 ```go
 package api
 
@@ -667,6 +694,7 @@ func (c *Client) ListThreads(owner, name string, number int) ([]ReviewThread, er
 ### 3. Repository Context Detection
 
 **Recommended Pattern:**
+
 ```go
 package commands
 
@@ -699,6 +727,7 @@ func GetRepository(repoFlag string) (owner, name string, err error) {
 ### 4. Terminal-Aware Output
 
 **Recommended Pattern:**
+
 ```go
 package format
 
@@ -751,6 +780,7 @@ func renderTable(threads []Thread, terminal term.Term) error {
 ### 5. Error Messages
 
 **User-Friendly Errors:**
+
 ```go
 func handleError(err error) error {
     var gqlErr *api.GraphQLError
@@ -782,6 +812,7 @@ func handleError(err error) error {
 ### Caching
 
 **Enable Response Caching:**
+
 ```go
 opts := api.ClientOptions{
     EnableCache: true,
@@ -796,17 +827,20 @@ client, err := api.NewGraphQLClient(opts)
 ```
 
 **Use Cases:**
+
 - List commands (threads don't change often)
 - User data (names, avatars)
 - Repository metadata
 
 **Don't Cache:**
+
 - Real-time data (isResolved status)
 - After mutations (data changed)
 
 ### Context Support
 
 **Using Context for Cancellation:**
+
 ```go
 import "context"
 
@@ -826,6 +860,7 @@ err := client.MutateWithContext(ctx, "MutationName", &mutation, variables)
 ### Logging
 
 **Debug Logging:**
+
 ```go
 opts := api.ClientOptions{
     Log:            os.Stderr,      // Where to log
@@ -846,6 +881,7 @@ client, err := api.NewGraphQLClient(opts)
 ```
 
 **Use for Development:**
+
 ```bash
 # Enable debug logging
 export GH_DEBUG=1
@@ -858,6 +894,7 @@ opts := api.ClientOptions{Log: os.Stderr, LogVerboseHTTP: true}
 ### Custom HTTP Transport
 
 **For Testing:**
+
 ```go
 // Mock transport for tests
 mockTransport := &mockRoundTripper{
@@ -901,6 +938,7 @@ client, err := api.NewGraphQLClient(opts)
 ### Less Common Packages
 
 **browser:** Open URLs in user's browser
+
 ```go
 import "github.com/cli/go-gh/v2/pkg/browser"
 
@@ -911,6 +949,7 @@ browser.Open(url)
 ```
 
 **config:** Access gh configuration
+
 ```go
 import "github.com/cli/go-gh/v2/pkg/config"
 
@@ -923,6 +962,7 @@ editor, _ := cfg.Get([]string{"editor"})
 ### Struct Tags for GraphQL
 
 **Pattern:**
+
 ```go
 type Query struct {
     Repository struct {
@@ -940,12 +980,14 @@ type Query struct {
 ```
 
 **Rules:**
+
 - Use `graphql` struct tags for field mapping
 - Parameters in parentheses with `$` prefix
 - Nested structs for nested queries
 - Array types for lists
 
 **Variable Types:**
+
 ```go
 variables := map[string]interface{}{
     "owner":  graphql.String("value"),      // String
@@ -957,6 +999,7 @@ variables := map[string]interface{}{
 ```
 
 **Inline Fragments:**
+
 ```go
 type UnionType struct {
     TypeName string `graphql:"__typename"`
@@ -1130,6 +1173,7 @@ func (c *Client) handleError(err error, threadID string) error {
 ### Mocking Clients
 
 **For Unit Tests:**
+
 ```go
 package api_test
 
@@ -1176,6 +1220,7 @@ func TestListThreads(t *testing.T) {
 ### Using Test Fixtures
 
 **Load Real Responses:**
+
 ```go
 func loadFixture(t *testing.T, path string) io.ReadCloser {
     data, err := os.ReadFile(path)
@@ -1234,6 +1279,7 @@ func TestParseThreads(t *testing.T) {
 ### Use in gh-talk
 
 **Respect All Conventions:**
+
 ```go
 // Auto-uses GH_TOKEN
 client, _ := api.DefaultGraphQLClient()
@@ -1285,6 +1331,7 @@ type ClientOptions struct {
 ### Typical Configurations
 
 **Development (with logging):**
+
 ```go
 opts := api.ClientOptions{
     Log:            os.Stderr,
@@ -1295,6 +1342,7 @@ opts := api.ClientOptions{
 ```
 
 **Production (with caching):**
+
 ```go
 opts := api.ClientOptions{
     EnableCache: true,
@@ -1304,6 +1352,7 @@ opts := api.ClientOptions{
 ```
 
 **Testing (with mocks):**
+
 ```go
 opts := api.ClientOptions{
     Transport: mockTransport,
@@ -1415,10 +1464,10 @@ func handleAPIError(err error) error {
 
 ## References
 
-- **go-gh Repository:** https://github.com/cli/go-gh
-- **API Documentation:** https://pkg.go.dev/github.com/cli/go-gh/v2
-- **Examples:** https://github.com/cli/go-gh/blob/trunk/example_gh_test.go
-- **shurcooL/graphql:** https://github.com/shurcooL/graphql (underlying GraphQL library)
+- **go-gh Repository:** <https://github.com/cli/go-gh>
+- **API Documentation:** <https://pkg.go.dev/github.com/cli/go-gh/v2>
+- **Examples:** <https://github.com/cli/go-gh/blob/trunk/example_gh_test.go>
+- **shurcooL/graphql:** <https://github.com/shurcooL/graphql> (underlying GraphQL library)
 
 ### Related Documentation
 
@@ -1432,5 +1481,3 @@ func handleAPIError(err error) error {
 **Last Updated**: 2025-11-02  
 **go-gh Version**: v2.12.2  
 **Context**: Implementation guide for gh-talk
-
-

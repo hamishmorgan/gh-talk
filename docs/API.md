@@ -30,7 +30,7 @@
 1. **Personal Access Tokens (PATs)** - Recommended for gh-talk
    - Scopes required: `repo`, `read:org`
    - Used via `gh` CLI's existing authentication
-   
+
 2. **GitHub Apps**
    - Fine-grained permissions
    - Independent of user account
@@ -62,6 +62,7 @@ X-RateLimit-Resource: graphql
 **Description**: A threaded list of comments for a given pull request.
 
 **Key Fields:**
+
 ```graphql
 type PullRequestReviewThread {
   id: ID!
@@ -83,6 +84,7 @@ type PullRequestReviewThread {
 ```
 
 **Important Notes:**
+
 - `id` is a Node ID (base64-encoded), not a database ID
 - `isResolved` indicates if the thread is marked as resolved
 - `isCollapsed` shows if the thread is visually collapsed
@@ -94,6 +96,7 @@ type PullRequestReviewThread {
 **Description**: A comment on a pull request review.
 
 **Key Fields:**
+
 ```graphql
 type PullRequestReviewComment implements Comment {
   id: ID!
@@ -118,6 +121,7 @@ type PullRequestReviewComment implements Comment {
 **Description**: An emoji reaction to a comment.
 
 **Available Reactions (ReactionContent enum):**
+
 - `THUMBS_UP` - 👍 (`:+1:`)
 - `THUMBS_DOWN` - 👎 (`:-1:`)
 - `LAUGH` - 😄 (`:laugh:`)
@@ -128,6 +132,7 @@ type PullRequestReviewComment implements Comment {
 - `EYES` - 👀 (`:eyes:`)
 
 **ReactionGroup:**
+
 ```graphql
 type ReactionGroup {
   content: ReactionContent!
@@ -142,6 +147,7 @@ type ReactionGroup {
 **Description**: A review on a pull request.
 
 **Review States:**
+
 - `PENDING` - Review is in draft
 - `COMMENTED` - General feedback without approval/rejection
 - `APPROVED` - Approved the changes
@@ -153,6 +159,7 @@ type ReactionGroup {
 ### List Review Threads
 
 **Query:**
+
 ```graphql
 query ListReviewThreads($owner: String!, $repo: String!, $pr: Int!) {
   repository(owner: $owner, name: $repo) {
@@ -190,6 +197,7 @@ query ListReviewThreads($owner: String!, $repo: String!, $pr: Int!) {
 ```
 
 **Filtering:**
+
 - By resolution status (requires client-side filtering)
 - By file path (client-side)
 - By author (client-side)
@@ -200,6 +208,7 @@ query ListReviewThreads($owner: String!, $repo: String!, $pr: Int!) {
 ### Get Thread Details
 
 **Query:**
+
 ```graphql
 query GetThread($threadId: ID!) {
   node(id: $threadId) {
@@ -252,6 +261,7 @@ query GetThread($threadId: ID!) {
 ### 1. Resolve Review Thread
 
 **Mutation:**
+
 ```graphql
 mutation ResolveThread($threadId: ID!) {
   resolveReviewThread(input: {threadId: $threadId}) {
@@ -267,6 +277,7 @@ mutation ResolveThread($threadId: ID!) {
 ```
 
 **Requirements:**
+
 - `threadId`: Node ID of the thread
 - Viewer must have `viewerCanResolve: true`
 
@@ -275,6 +286,7 @@ mutation ResolveThread($threadId: ID!) {
 ### 2. Unresolve Review Thread
 
 **Mutation:**
+
 ```graphql
 mutation UnresolveThread($threadId: ID!) {
   unresolveReviewThread(input: {threadId: $threadId}) {
@@ -287,6 +299,7 @@ mutation UnresolveThread($threadId: ID!) {
 ```
 
 **Requirements:**
+
 - `threadId`: Node ID of the thread
 - Viewer must have `viewerCanUnresolve: true`
 
@@ -295,6 +308,7 @@ mutation UnresolveThread($threadId: ID!) {
 ### 3. Reply to Review Thread
 
 **Mutation:**
+
 ```graphql
 mutation ReplyToThread($threadId: ID!, $body: String!) {
   addPullRequestReviewThreadReply(input: {
@@ -314,6 +328,7 @@ mutation ReplyToThread($threadId: ID!, $body: String!) {
 ```
 
 **Requirements:**
+
 - `pullRequestReviewThreadId`: Node ID of the thread
 - `body`: Comment text (markdown supported)
 - Viewer must have `viewerCanReply: true`
@@ -326,6 +341,7 @@ mutation ReplyToThread($threadId: ID!, $body: String!) {
 ### 4. Add Reaction
 
 **Mutation:**
+
 ```graphql
 mutation AddReaction($subjectId: ID!, $content: ReactionContent!) {
   addReaction(input: {
@@ -347,6 +363,7 @@ mutation AddReaction($subjectId: ID!, $content: ReactionContent!) {
 ```
 
 **Requirements:**
+
 - `subjectId`: Node ID of comment or issue
 - `content`: One of the 8 ReactionContent enum values
 - Viewer must have `viewerCanReact: true`
@@ -356,6 +373,7 @@ mutation AddReaction($subjectId: ID!, $content: ReactionContent!) {
 ### 5. Remove Reaction
 
 **Mutation:**
+
 ```graphql
 mutation RemoveReaction($subjectId: ID!, $content: ReactionContent!) {
   removeReaction(input: {
@@ -378,6 +396,7 @@ mutation RemoveReaction($subjectId: ID!, $content: ReactionContent!) {
 ### 6. Minimize Comment
 
 **Mutation:**
+
 ```graphql
 mutation MinimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
   minimizeComment(input: {
@@ -393,6 +412,7 @@ mutation MinimizeComment($subjectId: ID!, $classifier: ReportedContentClassifier
 ```
 
 **Classifiers:**
+
 - `SPAM`
 - `ABUSE`
 - `OFF_TOPIC`
@@ -401,6 +421,7 @@ mutation MinimizeComment($subjectId: ID!, $classifier: ReportedContentClassifier
 - `RESOLVED`
 
 **Requirements:**
+
 - `subjectId`: Node ID of the comment
 - Viewer must have `viewerCanMinimize: true` (usually repo write access)
 
@@ -409,6 +430,7 @@ mutation MinimizeComment($subjectId: ID!, $classifier: ReportedContentClassifier
 ### 7. Unminimize Comment
 
 **Mutation:**
+
 ```graphql
 mutation UnminimizeComment($subjectId: ID!) {
   unminimizeComment(input: {
@@ -426,6 +448,7 @@ mutation UnminimizeComment($subjectId: ID!) {
 ### 8. Dismiss Pull Request Review
 
 **Mutation:**
+
 ```graphql
 mutation DismissReview($reviewId: ID!, $message: String!) {
   dismissPullRequestReview(input: {
@@ -441,6 +464,7 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
 ```
 
 **Requirements:**
+
 - `pullRequestReviewId`: Node ID of the review
 - `message`: Reason for dismissal (required)
 - Viewer must have write access to repository
@@ -475,17 +499,20 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
 ### Permission Model
 
 **Thread Resolution:**
+
 - PR author can resolve any thread
 - Comment author can resolve their own threads
 - Repo admins can resolve any thread
 - Others cannot resolve (even with write access)
 
 **Comment Hiding:**
+
 - Requires repository write access
 - Cannot hide own comments
 - Minimized comments still appear (just collapsed)
 
 **Review Dismissal:**
+
 - Requires repository write access
 - Cannot dismiss own review
 - Dismissed reviews remain visible in timeline
@@ -493,16 +520,19 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
 ### Rate Limit Considerations
 
 **Query Costs:**
+
 - Simple thread list: ~50 points
 - Detailed thread with full conversation: ~100 points
 - 100 threads with details: ~1000 points (manageable)
 
 **Mutation Costs:**
+
 - Each operation: 1 point
 - Resolving 50 threads: 50 points
 - Adding 50 reactions: 50 points
 
 **Strategy:**
+
 - Cache thread data for 5 minutes
 - Batch read operations where possible
 - Avoid unnecessary refetches after mutations
@@ -511,11 +541,13 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
 ### Data Consistency
 
 **Eventually Consistent:**
+
 - Reactions may not appear immediately
 - Thread resolution status may lag slightly
 - Comments appear quickly but reactions/updates lag
 
 **No Transactional Mutations:**
+
 - Cannot reply + resolve atomically
 - Must handle partial failures
 - No rollback mechanism
@@ -525,6 +557,7 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
 ### Query Optimization
 
 1. **Request Only Needed Fields**
+
    ```graphql
    # Bad - over-fetching
    comments { nodes { ...AllFields } }
@@ -534,6 +567,7 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
    ```
 
 2. **Use Fragments for Reusability**
+
    ```graphql
    fragment ThreadSummary on PullRequestReviewThread {
      id
@@ -544,6 +578,7 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
    ```
 
 3. **Implement Pagination**
+
    ```graphql
    reviewThreads(first: 50, after: $cursor) {
      pageInfo {
@@ -557,6 +592,7 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
 ### Error Handling
 
 **Common Errors:**
+
 ```json
 {
   "errors": [{
@@ -567,6 +603,7 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
 ```
 
 **Error Types:**
+
 - `NOT_FOUND` - Invalid ID or deleted resource
 - `FORBIDDEN` - Permission denied
 - `UNPROCESSABLE` - Invalid input (e.g., empty body)
@@ -574,6 +611,7 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
 - `RATE_LIMIT` - Exceeded rate limit
 
 **Handling Strategy:**
+
 - Check `errors` array in response
 - Validate IDs before mutations
 - Retry with exponential backoff for rate limits
@@ -582,17 +620,20 @@ mutation DismissReview($reviewId: ID!, $message: String!) {
 ### Caching Strategy
 
 **What to Cache:**
+
 - Thread lists (5 minute TTL)
 - Comment contents (10 minute TTL)
 - Reaction counts (1 minute TTL)
 - User information (1 hour TTL)
 
 **What NOT to Cache:**
+
 - `isResolved` status (changes frequently)
 - `viewerCan*` permissions (context-dependent)
 - Reaction lists (users may change frequently)
 
 **Invalidation:**
+
 - Clear cache after mutations
 - Use ETags when available
 - Implement lazy refresh for background updates
@@ -727,4 +768,3 @@ func handleGraphQLErrors(errs []GraphQLError) error {
 **Last Updated**: 2025-11-02  
 **API Version**: GitHub GraphQL API v4  
 **Schema Introspection Date**: 2025-11-02
-

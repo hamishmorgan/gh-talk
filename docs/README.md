@@ -106,11 +106,13 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
 ## Quick Links
 
 ### Getting Started
+
 1. Read the [main README](../README.md) for installation
 2. Review [SPEC.md](SPEC.md) for the full feature set
 3. Check [STRUCTURE.md](STRUCTURE.md) to understand the codebase layout
 
 ### Contributing
+
 1. Understand the [project structure](STRUCTURE.md)
 2. Follow the implementation plan in [SPEC.md](SPEC.md)
 3. Review the [API reference](API.md) for GitHub API details
@@ -124,4 +126,3 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
 ---
 
 **Last Updated**: 2025-11-02
-

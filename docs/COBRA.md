@@ -6,14 +6,15 @@
 
 Cobra is a powerful CLI framework for Go that provides command structure, flag parsing, and help generation. While `gh` CLI uses a custom framework, Cobra is the pragmatic choice for gh-talk due to its maturity, ecosystem, and development speed.
 
-**Repository:** https://github.com/spf13/cobra  
-**Documentation:** https://cobra.dev  
+**Repository:** <https://github.com/spf13/cobra>  
+**Documentation:** <https://cobra.dev>  
 **Stars:** ~37k  
 **Used By:** kubectl, Docker, Hugo, GitHub Actions CLI
 
 ## Why Cobra for gh-talk
 
 **Benefits:**
+
 - ✅ Automatic help generation
 - ✅ Subcommand support built-in
 - ✅ Persistent (global) flags
@@ -30,6 +31,7 @@ Cobra is a powerful CLI framework for Go that provides command structure, flag p
 ### Commands
 
 **Command is the central structure:**
+
 ```go
 type Command struct {
     Use   string   // Command usage string
@@ -41,6 +43,7 @@ type Command struct {
 ```
 
 **Example for gh-talk:**
+
 ```go
 var replyCmd = &cobra.Command{
     Use:   "reply [thread-id] [message]",
@@ -65,18 +68,21 @@ func runReply(cmd *cobra.Command, args []string) error {
 **Two Types:**
 
 **Local Flags** (command-specific):
+
 ```go
 replyCmd.Flags().BoolP("editor", "e", false, "Open editor for message")
 replyCmd.Flags().Bool("resolve", false, "Resolve thread after replying")
 ```
 
 **Persistent Flags** (inherited by subcommands):
+
 ```go
 rootCmd.PersistentFlags().StringP("repo", "R", "", "Repository (OWNER/REPO)")
 rootCmd.PersistentFlags().Int("pr", 0, "PR number")
 ```
 
 **Getting Flag Values:**
+
 ```go
 func runReply(cmd *cobra.Command, args []string) error {
     // Get flags
@@ -96,6 +102,7 @@ func runReply(cmd *cobra.Command, args []string) error {
 ### Subcommands
 
 **Parent-Child Relationship:**
+
 ```go
 // Root command
 var rootCmd = &cobra.Command{
@@ -139,6 +146,7 @@ func init() {
 ### Root Command
 
 **File: `internal/commands/root.go`**
+
 ```go
 package commands
 
@@ -191,6 +199,7 @@ func init() {
 ### List Command
 
 **File: `internal/commands/list.go`**
+
 ```go
 package commands
 
@@ -293,6 +302,7 @@ func runListThreads(cmd *cobra.Command, args []string) error {
 ### Reply Command
 
 **File: `internal/commands/reply.go`**
+
 ```go
 package commands
 
@@ -413,6 +423,7 @@ func runReply(cmd *cobra.Command, args []string) error {
 ### Resolve Command
 
 **File: `internal/commands/resolve.go`**
+
 ```go
 package commands
 
@@ -508,6 +519,7 @@ func runResolve(cmd *cobra.Command, args []string) error {
 ### Args Validation
 
 **Built-in Validators:**
+
 ```go
 Args: cobra.NoArgs              // No arguments allowed
 Args: cobra.ExactArgs(1)        // Exactly 1 argument
@@ -517,6 +529,7 @@ Args: cobra.RangeArgs(0, 2)     // Between 0 and 2 arguments
 ```
 
 **Custom Validation:**
+
 ```go
 var replyCmd = &cobra.Command{
     Use:  "reply [thread-id] [message]",
@@ -541,6 +554,7 @@ var replyCmd = &cobra.Command{
 ### PreRun and PostRun Hooks
 
 **Execution Order:**
+
 ```
 PersistentPreRun  (parent)
 ↓
@@ -554,6 +568,7 @@ PersistentPostRun (parent)
 ```
 
 **Example:**
+
 ```go
 var rootCmd = &cobra.Command{
     Use: "gh-talk",
@@ -581,6 +596,7 @@ var replyCmd = &cobra.Command{
 ```
 
 **Use in gh-talk:**
+
 ```go
 var rootCmd = &cobra.Command{
     Use: "gh-talk",
@@ -598,12 +614,14 @@ var rootCmd = &cobra.Command{
 ### Flag Binding and Validation
 
 **Required Flags:**
+
 ```go
 cmd.Flags().String("format", "", "Output format")
 cmd.MarkFlagRequired("format")  // Error if not provided
 ```
 
 **Mutually Exclusive:**
+
 ```go
 cmd.Flags().Bool("resolved", false, "Show resolved")
 cmd.Flags().Bool("unresolved", false, "Show unresolved")
@@ -613,6 +631,7 @@ cmd.MarkFlagsMutuallyExclusive("resolved", "unresolved", "all")
 ```
 
 **Required Together:**
+
 ```go
 cmd.Flags().String("hide", "", "Hide reason")
 cmd.Flags().String("comment", "", "Comment ID")
@@ -621,6 +640,7 @@ cmd.MarkFlagsRequiredTogether("hide", "comment")
 ```
 
 **One Required:**
+
 ```go
 cmd.Flags().String("pr", "", "PR number")
 cmd.Flags().String("issue", "", "Issue number")
@@ -631,6 +651,7 @@ cmd.MarkFlagsOneRequired("pr", "issue")
 ### Help and Usage
 
 **Automatic Help:**
+
 ```bash
 gh talk --help
 gh talk list --help
@@ -638,6 +659,7 @@ gh talk list threads --help
 ```
 
 **Custom Help:**
+
 ```go
 cmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
     // Custom help rendering
@@ -650,6 +672,7 @@ cmd.SetUsageFunc(func(cmd *cobra.Command) error {
 ```
 
 **Example Template:**
+
 ```go
 cmd.SetHelpTemplate(`{{.Long}}
 
@@ -672,6 +695,7 @@ Examples:
 ### Pattern 1: Optional Interactive
 
 **Allow argument OR interactive selection:**
+
 ```go
 var reactCmd = &cobra.Command{
     Use:   "react <comment-id> <emoji>",
@@ -718,6 +742,7 @@ var reactCmd = &cobra.Command{
 ### Pattern 2: Context-Aware Defaults
 
 **Use persistent flags with fallbacks:**
+
 ```go
 func getRepository(cmd *cobra.Command) (owner, name string, err error) {
     // Try persistent flag
@@ -743,6 +768,7 @@ func getRepository(cmd *cobra.Command) (owner, name string, err error) {
 ### Pattern 3: Flag Precedence
 
 **Handle multiple ways to specify same thing:**
+
 ```go
 func getMessage(cmd *cobra.Command, args []string) (string, error) {
     // Priority:
@@ -772,6 +798,7 @@ func getMessage(cmd *cobra.Command, args []string) (string, error) {
 ### Pattern 4: Bulk Operations
 
 **Handle multiple arguments:**
+
 ```go
 var resolveCmd = &cobra.Command{
     Use:   "resolve [thread-id...]",
@@ -814,6 +841,7 @@ var resolveCmd = &cobra.Command{
 ### Pattern 5: Type-Safe Flags
 
 **Bind to variables:**
+
 ```go
 var (
     flagRepo       string
@@ -904,6 +932,7 @@ func TestListThreadsFlags(t *testing.T) {
 ### Generate Completion
 
 **Cobra provides automatic completion:**
+
 ```go
 // Add completion command to root
 rootCmd.AddCommand(completionCmd)
@@ -929,6 +958,7 @@ var completionCmd = &cobra.Command{
 ```
 
 **Installation:**
+
 ```bash
 # Bash
 gh talk completion bash > /usr/local/etc/bash_completion.d/gh-talk
@@ -943,6 +973,7 @@ gh talk completion fish > ~/.config/fish/completions/gh-talk.fish
 ### Dynamic Completion
 
 **Complete thread IDs:**
+
 ```go
 var replyCmd = &cobra.Command{
     Use:   "reply [thread-id] [message]",
@@ -967,6 +998,7 @@ var replyCmd = &cobra.Command{
 ### Cobra Error Patterns
 
 **Return Errors from RunE:**
+
 ```go
 RunE: func(cmd *cobra.Command, args []string) error {
     // Return errors, don't handle here
@@ -983,6 +1015,7 @@ RunE: func(cmd *cobra.Command, args []string) error {
 ```
 
 **Custom Error Handling:**
+
 ```go
 func Execute() error {
     err := rootCmd.Execute()
@@ -996,6 +1029,7 @@ func Execute() error {
 ```
 
 **Silence Default Error:**
+
 ```go
 rootCmd.SilenceErrors = true  // Don't print errors twice
 rootCmd.SilenceUsage = true   // Don't show usage on errors
@@ -1006,6 +1040,7 @@ rootCmd.SilenceUsage = true   // Don't show usage on errors
 ### Combining Cobra with go-gh
 
 **Perfect Together:**
+
 ```go
 package commands
 
@@ -1058,6 +1093,7 @@ var listThreadsCmd = &cobra.Command{
 ```
 
 **No Conflicts:**
+
 - Cobra handles command structure
 - go-gh handles GitHub integration
 - Each does what it's best at
@@ -1176,16 +1212,16 @@ go build
 
 ## Resources
 
-- **Cobra Repo:** https://github.com/spf13/cobra
-- **Cobra Website:** https://cobra.dev
-- **User Guide:** https://github.com/spf13/cobra/blob/main/site/content/user_guide.md
-- **Examples:** https://github.com/spf13/cobra/tree/main/site/content
+- **Cobra Repo:** <https://github.com/spf13/cobra>
+- **Cobra Website:** <https://cobra.dev>
+- **User Guide:** <https://github.com/spf13/cobra/blob/main/site/content/user_guide.md>
+- **Examples:** <https://github.com/spf13/cobra/tree/main/site/content>
 
 ### Example Projects Using Cobra
 
-- **kubectl:** https://github.com/kubernetes/kubectl
-- **docker:** https://github.com/docker/cli
-- **hugo:** https://github.com/gohugoio/hugo
+- **kubectl:** <https://github.com/kubernetes/kubectl>
+- **docker:** <https://github.com/docker/cli>
+- **hugo:** <https://github.com/gohugoio/hugo>
 - **gh actions:** GitHub's own CLI tool!
 
 ---
@@ -1194,5 +1230,3 @@ go build
 **Cobra Version**: v1.8+  
 **Context**: Implementation guide for gh-talk using Cobra  
 **Decision**: Finalized - using Cobra for CLI framework
-
-

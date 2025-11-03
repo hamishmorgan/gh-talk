@@ -51,40 +51,47 @@ gh-talk/
 ## Package Responsibilities
 
 ### `internal/api`
+
 - GraphQL client for GitHub API
 - Query construction and execution
 - Response parsing
 - Error handling and retries
 
 ### `internal/commands`
+
 - Cobra command definitions
 - Command-line flag handling
 - Command execution logic
 - Help text and examples
 
 ### `internal/filter`
+
 - Thread/comment filtering by status, author, date, file, etc.
 - Filter composition and logic
 - Predicate functions
 
 ### `internal/format`
+
 - Table output formatting
 - JSON serialization
 - Markdown generation
 - Terminal styling and colors
 
 ### `internal/config`
+
 - Configuration file management
 - Environment variable handling
 - Default values
 - Aliases
 
 ### `internal/cache`
+
 - API response caching
 - Cache invalidation
 - TTL management
 
 ### `internal/tui`
+
 - Interactive terminal UI (Bubble Tea)
 - Keyboard navigation
 - Real-time updates
@@ -93,24 +100,30 @@ gh-talk/
 ## Comparison to Alternatives
 
 ### vs. Flat Structure
+
 **Flat** (all files in root):
+
 - ✅ Simpler for very small projects
 - ❌ Becomes cluttered at scale
 - ❌ Harder to enforce boundaries
 
 **Current** (minimal packages):
+
 - ✅ Clear separation of concerns
 - ✅ Scalable to 10,000+ LOC
 - ✅ Easy to test individual packages
 
 ### vs. Standard Go Layout
+
 **Standard** (cmd/, pkg/, internal/):
+
 - ✅ Familiar to Go developers
 - ✅ Scales to very large projects
 - ❌ Overkill for CLI extensions
 - ❌ `pkg/` is misleading for non-library code
 
 **Current** (minimal packages):
+
 - ✅ Right-sized for the project
 - ✅ Follows gh extension conventions
 - ✅ Room to grow without reorganizing
@@ -140,4 +153,3 @@ The beauty of this structure is that it doesn't need major refactoring as the pr
 ---
 
 **Last Updated**: 2025-11-02
-

@@ -11,6 +11,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 ### 1. Developers (Primary Users)
 
 **Profile:**
+
 - Write code and submit PRs daily
 - Respond to review feedback
 - Review teammates' code
@@ -18,6 +19,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 - Context-switch frequently between tasks
 
 **Pain Points:**
+
 - Browser context-switching breaks flow
 - Finding unresolved threads is tedious
 - Quick acknowledgments require full page loads
@@ -25,6 +27,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 - Mobile reviews are difficult
 
 **Workflow Needs:**
+
 - Fast thread navigation
 - Quick reactions and replies
 - Bulk thread resolution
@@ -34,6 +37,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 ### 2. Code Reviewers
 
 **Profile:**
+
 - Review 10-50 PRs per week
 - Provide detailed feedback
 - Follow up on addressed comments
@@ -41,6 +45,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 - Track review progress
 
 **Pain Points:**
+
 - Tracking which comments were addressed
 - Knowing when threads are truly resolved
 - Following up on ignored feedback
@@ -48,6 +53,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 - Filtering noise from signal
 
 **Workflow Needs:**
+
 - See only unresolved threads
 - Filter by file or topic
 - Quick approval workflow
@@ -57,6 +63,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 ### 3. AI Agents & Bots
 
 **Profile:**
+
 - Automated code review (linting, security, coverage)
 - Dependency updates (Dependabot, Renovate)
 - CI/CD feedback
@@ -64,6 +71,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 - Code generation assistance
 
 **Pain Points:**
+
 - Web UI requires browser automation
 - Rate limits on API calls
 - Complex GraphQL queries
@@ -71,6 +79,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 - Difficult to script conversations
 
 **Workflow Needs:**
+
 - Scriptable thread creation
 - Programmatic resolution
 - Bulk operations
@@ -80,6 +89,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 ### 4. Maintainers & Project Leads
 
 **Profile:**
+
 - Oversee multiple repositories
 - Ensure reviews are completed
 - Enforce code quality
@@ -87,6 +97,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 - Track project health
 
 **Pain Points:**
+
 - Visibility into review status
 - Identifying blocked PRs
 - Managing contributor feedback
@@ -94,6 +105,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 - Maintaining code standards
 
 **Workflow Needs:**
+
 - Overview of pending reviews
 - Unresolved thread reporting
 - Bulk thread management
@@ -105,6 +117,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 ### Workflow 1: PR Author Addresses Review Feedback
 
 **Typical Flow:**
+
 ```
 1. PR submitted → Review requested
 2. Reviewer leaves 15 comments across 5 files
@@ -119,6 +132,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 ```
 
 **Current Experience (Web UI):**
+
 ```
 ✗ Load PR in browser
 ✗ Click "Files changed" tab
@@ -136,6 +150,7 @@ This document describes the real-world workflows, conversation patterns, and usa
 ```
 
 **With gh-talk:**
+
 ```bash
 # List unresolved threads
 gh talk list threads --unresolved
@@ -160,6 +175,7 @@ gh talk list threads --unresolved --json id | \
 **Scenario:** Reviewer leaves helpful suggestions, author wants to acknowledge without lengthy replies.
 
 **Current Experience (Web UI):**
+
 ```
 ✗ Load PR in browser
 ✗ Find comment
@@ -169,6 +185,7 @@ gh talk list threads --unresolved --json id | \
 ```
 
 **With gh-talk:**
+
 ```bash
 # React to multiple comments quickly
 gh talk list threads --author reviewer1 --json comments | \
@@ -185,6 +202,7 @@ gh talk react PRRC_abc456 🎉
 ### Workflow 3: Reviewer Verifies Fixes
 
 **Typical Flow:**
+
 ```
 1. Author marks threads as resolved
 2. Reviewer needs to verify fixes
@@ -194,6 +212,7 @@ gh talk react PRRC_abc456 🎉
 ```
 
 **Current Experience (Web UI):**
+
 ```
 ✗ Load PR
 ✗ Click "Conversation" tab
@@ -204,6 +223,7 @@ gh talk react PRRC_abc456 🎉
 ```
 
 **With gh-talk:**
+
 ```bash
 # See recently resolved threads
 gh talk list threads --resolved --since yesterday
@@ -222,6 +242,7 @@ gh pr review --approve -b "All feedback addressed!"
 **Scenario:** Reviewer has 20 PRs to review, needs to prioritize.
 
 **Current Experience (Web UI):**
+
 ```
 ✗ Open each PR in browser
 ✗ Manually check for unresolved threads
@@ -230,6 +251,7 @@ gh pr review --approve -b "All feedback addressed!"
 ```
 
 **With gh-talk:**
+
 ```bash
 # Check all your PRs for unresolved threads
 gh pr list --assignee @me --json number | \
@@ -254,6 +276,7 @@ gh talk status --assignee @me
 **Scenario:** PR has bot comments, outdated threads, and spam that clutters the view.
 
 **Current Experience (Web UI):**
+
 ```
 ✗ Manually minimize each comment
 ✗ No bulk operations
@@ -262,6 +285,7 @@ gh talk status --assignee @me
 ```
 
 **With gh-talk:**
+
 ```bash
 # Hide all bot comments from a specific bot
 gh talk list comments --author dependabot --json id | \
@@ -286,6 +310,7 @@ gh talk list threads --resolved --json comments | \
 **Use Case:** CI bot runs linters and posts review comments.
 
 **Implementation:**
+
 ```bash
 #!/bin/bash
 # CI script for automated review
@@ -321,6 +346,7 @@ fi
 ```
 
 **With gh-talk Enhancements:**
+
 ```bash
 # Check if automated comments were addressed
 gh talk list threads --author ci-bot --unresolved --json count
@@ -340,12 +366,14 @@ gh talk list threads --author ci-bot --json id,path,line | \
 **Use Case:** Dependabot creates PRs, team reviews and merges.
 
 **Current Challenge:**
+
 - Dependabot PRs pile up
 - Need to verify compatibility
 - Want to batch merge safe updates
 - Manual review is time-consuming
 
 **With gh-talk:**
+
 ```bash
 #!/bin/bash
 # Auto-merge safe dependency updates
@@ -376,11 +404,13 @@ gh pr list --author app/dependabot --json number,title | \
 **Use Case:** AI assistant (like GitHub Copilot or Claude) responds to code review questions.
 
 **Scenario:**
+
 ```
 Reviewer: "Can you explain why you used this algorithm here?"
 ```
 
 **AI Agent Workflow:**
+
 ```bash
 #!/bin/bash
 # AI agent responds to questions
@@ -408,6 +438,7 @@ gh talk list threads --unresolved --json id,comments | \
 **Use Case:** CI fixes issues automatically, bot resolves threads.
 
 **Implementation:**
+
 ```bash
 #!/bin/bash
 # Auto-resolve threads after automated fixes
@@ -436,6 +467,7 @@ gh talk list threads --unresolved --json id,body | \
 **Scenario:** Two developers pair on a feature, submit PR, address reviews together.
 
 **Workflow:**
+
 ```bash
 # Developer A lists unresolved threads
 gh talk list threads --unresolved --format table
@@ -459,6 +491,7 @@ gh talk resolve PRRT_789
 **Scenario:** Team distributed across timezones, reviews happen async.
 
 **Workflow:**
+
 ```bash
 # Morning routine (reviewer in EU):
 # Check PRs assigned for review
@@ -487,6 +520,7 @@ gh pr comment "All feedback addressed, PTAL @reviewer"
 **Scenario:** Senior dev reviews junior dev's PR, provides learning opportunities.
 
 **Workflow:**
+
 ```bash
 # Senior dev adds educational comments
 gh api graphql -f query='...'  # Creates review thread
@@ -507,6 +541,7 @@ gh talk resolve PRRT_edu123 --message "Got it, thanks for explaining!"
 **Scenario:** Maintainer reviews external contributor PR.
 
 **Workflow:**
+
 ```bash
 # Maintainer receives PR from external contributor
 # Reviews and leaves feedback
@@ -536,6 +571,7 @@ gh pr comment 789 "Thanks for your contribution! 🎉"
 **Scenario:** AI agent (like Cursor, GitHub Copilot Workspace) creates PR with full context.
 
 **Implementation:**
+
 ```bash
 #!/bin/bash
 # AI agent creates PR with relevant context
@@ -583,6 +619,7 @@ done
 **Scenario:** AI agent monitors PRs and suggests improvements.
 
 **Implementation:**
+
 ```bash
 #!/bin/bash
 # AI agent suggests improvements on new PRs
@@ -625,6 +662,7 @@ gh pr list --state open --json number,createdAt | \
 **Scenario:** AI agent learns from team's review patterns to provide better suggestions.
 
 **Implementation:**
+
 ```bash
 #!/bin/bash
 # AI agent analyzes review history
@@ -664,6 +702,7 @@ These are just suggestions - feel free to ignore if not applicable!
 **Scenario:** AI agent provides context-aware help during code review.
 
 **Implementation:**
+
 ```bash
 #!/bin/bash
 # AI provides context when developer is stuck
@@ -698,6 +737,7 @@ Let me know if you'd like more details!
 **Practice:** Respond to all comments within 24 hours.
 
 **With gh-talk:**
+
 ```bash
 # Daily routine - check pending feedback
 alias check-reviews='gh talk list threads --unresolved --format table'
@@ -715,6 +755,7 @@ gh talk list threads --unresolved --since 24h && \
 **Practice:** Use reactions to convey meaning, not just "seen".
 
 **Conventions:**
+
 ```bash
 👍  # "I agree" / "Will do"
 ❤️  # "Thanks for the help" / "Great suggestion"
@@ -725,6 +766,7 @@ gh talk list threads --unresolved --since 24h && \
 ```
 
 **Quick Commands:**
+
 ```bash
 alias agree='gh talk react $1 👍'
 alias thanks='gh talk react $1 ❤️'
@@ -736,6 +778,7 @@ alias looking='gh talk react $1 👀'
 **Practice:** Only resolve threads when truly addressed, with explanation.
 
 **With gh-talk:**
+
 ```bash
 # Bad: Bulk resolve without checking
 # gh talk list threads --json id | xargs -I {} gh talk resolve {}
@@ -753,6 +796,7 @@ gh talk show PRRT_123 --with-diff && \
 **Practice:** Hide outdated/resolved threads to keep conversation focused.
 
 **With gh-talk:**
+
 ```bash
 # After resolving, hide to reduce clutter
 gh talk list threads --resolved --json comments | \
@@ -770,6 +814,7 @@ gh talk list comments --author bot-account --json id | \
 **Practice:** Process similar feedback in batches.
 
 **With gh-talk:**
+
 ```bash
 # Address all formatting comments at once
 npm run format
@@ -797,6 +842,7 @@ Author: *resolves thread*
 ```
 
 **With gh-talk:**
+
 ```bash
 gh talk react PRRC_complex123 👍
 # ... make changes ...
@@ -813,6 +859,7 @@ Author: *resolves thread*
 ```
 
 **With gh-talk:**
+
 ```bash
 gh talk reply PRRT_question456 "Good question! Here's why..."
 # Author responds
@@ -829,6 +876,7 @@ Reviewer: *resolves thread*
 ```
 
 **With gh-talk:**
+
 ```bash
 gh talk reply PRRT_suggestion "I tried that but ran into issue Y"
 # Reviewer reads
@@ -848,6 +896,7 @@ Author: *resolves thread*
 ```
 
 **With gh-talk:**
+
 ```bash
 gh talk reply PRRT_debate "What if we use approach C which combines both?"
 # Reviewers react
@@ -862,6 +911,7 @@ gh talk resolve PRRT_debate
 ### Developer Productivity Metrics
 
 **Trackable with gh-talk:**
+
 ```bash
 # Time to first response
 gh talk list threads --author @me --json createdAt,comments | \
@@ -888,6 +938,7 @@ gh pr list --json number | \
 ### Team Health Metrics
 
 **Insights from gh-talk data:**
+
 ```bash
 # Review response time by team member
 gh talk list threads --json author,comments | \
@@ -913,6 +964,7 @@ gh talk list threads --json id,comments | \
 ### Git Hooks Integration
 
 **Pre-push hook:**
+
 ```bash
 #!/bin/bash
 # .git/hooks/pre-push
@@ -938,6 +990,7 @@ fi
 ### CI/CD Integration
 
 **GitHub Actions workflow:**
+
 ```yaml
 name: Auto-resolve CI threads
 on:
@@ -970,6 +1023,7 @@ jobs:
 ### Editor Integration
 
 **VS Code task:**
+
 ```json
 {
   "version": "2.0.0",
@@ -1011,6 +1065,7 @@ jobs:
 ### Summary of Usage Patterns
 
 **Humans Use gh-talk For:**
+
 1. ✅ Quick thread navigation and filtering
 2. ✅ Rapid acknowledgments via reactions
 3. ✅ Bulk operations on similar feedback
@@ -1019,6 +1074,7 @@ jobs:
 6. ✅ Reducing context switches
 
 **Bots Use gh-talk For:**
+
 1. ✅ Automated review posting
 2. ✅ Thread resolution based on fixes
 3. ✅ CI/CD integration
@@ -1027,6 +1083,7 @@ jobs:
 6. ✅ Metrics and reporting
 
 **AI Agents Use gh-talk For:**
+
 1. ✅ Context-aware assistance
 2. ✅ Automated PR creation with explanations
 3. ✅ Learning from review patterns
@@ -1037,6 +1094,7 @@ jobs:
 ### Key Differentiators
 
 **What Makes gh-talk Valuable:**
+
 - **Speed**: 60-90% time savings on common tasks
 - **Automation**: Scriptable for bots and workflows
 - **Bulk Operations**: Process many threads at once
@@ -1047,6 +1105,7 @@ jobs:
 ### Success Criteria
 
 **gh-talk succeeds when:**
+
 - Developers spend 80% less time in browser for reviews
 - Review response times decrease by 50%
 - Thread resolution rates increase
@@ -1059,4 +1118,3 @@ jobs:
 **Last Updated**: 2025-11-02  
 **Context**: Real-world usage patterns and workflows for gh-talk  
 **Sources**: Developer workflows, bot patterns, AI agent needs, best practices
-

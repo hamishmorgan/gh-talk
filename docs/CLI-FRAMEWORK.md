@@ -13,24 +13,28 @@
 Looking at the `gh` CLI source code and dependencies:
 
 **Evidence from go-gh library:**
+
 - Uses standard `flag` package patterns
 - No Cobra dependency in `go-gh`
 - Custom command handling
 
 **Checking gh CLI itself:**
-- Repository: https://github.com/cli/cli
+
+- Repository: <https://github.com/cli/cli>
 - Written in Go
 - **Answer: `gh` does NOT use Cobra**
 
 ### gh's Custom Approach
 
 **From examining gh CLI:**
+
 - Custom command router
 - Own flag parsing
 - Tailored for GitHub-specific workflows
 - Optimized for their exact needs
 
 **Why gh doesn't use Cobra:**
+
 - Full control over UX
 - No unnecessary dependencies
 - Custom help formatting
@@ -40,11 +44,12 @@ Looking at the `gh` CLI source code and dependencies:
 
 ### Option 1: Cobra (Recommended in SPEC)
 
-**Repository:** https://github.com/spf13/cobra  
+**Repository:** <https://github.com/spf13/cobra>  
 **Stars:** ~37k  
 **Maturity:** Very mature, widely used
 
 **Pros:**
+
 - ✅ Industry standard (used by kubectl, Hugo, Docker, GitHub Actions)
 - ✅ Excellent documentation
 - ✅ Automatic help generation
@@ -56,11 +61,13 @@ Looking at the `gh` CLI source code and dependencies:
 - ✅ Huge ecosystem and examples
 
 **Cons:**
+
 - ⚠️ Dependency weight (~10 packages)
 - ⚠️ More features than needed
 - ⚠️ Not what gh uses (less familiar pattern)
 
 **Example:**
+
 ```go
 var rootCmd = &cobra.Command{
     Use:   "gh-talk",
@@ -84,11 +91,12 @@ func init() {
 
 ### Option 2: urfave/cli
 
-**Repository:** https://github.com/urfave/cli  
+**Repository:** <https://github.com/urfave/cli>  
 **Stars:** ~22k  
 **Maturity:** Mature
 
 **Pros:**
+
 - ✅ Simpler than Cobra
 - ✅ Good documentation
 - ✅ Subcommand support
@@ -96,11 +104,13 @@ func init() {
 - ✅ Used by popular tools (geth, ipfs)
 
 **Cons:**
+
 - ⚠️ Different patterns than kubectl/Docker
 - ⚠️ Less feature-rich than Cobra
 - ⚠️ Still not what gh uses
 
 **Example:**
+
 ```go
 app := &cli.App{
     Name:  "gh-talk",
@@ -129,6 +139,7 @@ app := &cli.App{
 **What gh Uses!**
 
 **Pros:**
+
 - ✅ No dependencies
 - ✅ Lightweight
 - ✅ Same as gh CLI
@@ -136,6 +147,7 @@ app := &cli.App{
 - ✅ Simple and direct
 
 **Cons:**
+
 - ❌ No subcommand support (must build yourself)
 - ❌ No automatic help generation
 - ❌ More boilerplate code
@@ -143,6 +155,7 @@ app := &cli.App{
 - ❌ No persistent flags
 
 **Example:**
+
 ```go
 // Must handle subcommands manually
 if len(os.Args) < 2 {
@@ -177,22 +190,25 @@ default:
 
 ### Option 4: kong
 
-**Repository:** https://github.com/alecthomas/kong  
+**Repository:** <https://github.com/alecthomas/kong>  
 **Stars:** ~2k  
 **Maturity:** Newer, gaining traction
 
 **Pros:**
+
 - ✅ Struct-based (very Go-idiomatic)
 - ✅ Minimal boilerplate
 - ✅ Type-safe
 - ✅ Good for complex CLIs
 
 **Cons:**
+
 - ⚠️ Less common
 - ⚠️ Smaller ecosystem
 - ⚠️ Struct tags can be verbose
 
 **Example:**
+
 ```go
 var CLI struct {
     List struct {
@@ -216,12 +232,14 @@ kong.Parse(&CLI)
 **Build Our Own:**
 
 **Pros:**
+
 - ✅ Exactly what we need
 - ✅ No dependencies
 - ✅ Matches gh patterns
 - ✅ Full control
 
 **Cons:**
+
 - ❌ More work upfront
 - ❌ Must implement help, validation, etc.
 - ❌ Reinventing the wheel
@@ -285,6 +303,7 @@ func main() {
 ```
 
 **Characteristics:**
+
 - Custom command registry
 - Manual subcommand routing
 - Standard `flag` package for parsing
@@ -292,6 +311,7 @@ func main() {
 - Tight control over UX
 
 **Why They Do This:**
+
 - Specific needs (API integration, JSON output, etc.)
 - Want exact UX they envision
 - Willing to invest in custom system
@@ -302,6 +322,7 @@ func main() {
 ### Analysis
 
 **Our Situation:**
+
 - ❌ Don't have gh CLI's team size
 - ❌ Don't need custom system complexity
 - ✅ Want fast development
@@ -311,6 +332,7 @@ func main() {
 - ✅ Need flag parsing
 
 **Not Trying to Match gh Exactly:**
+
 - gh-talk is an extension, not core gh
 - Users expect extension to work well, not be identical
 - Speed of development matters
@@ -349,6 +371,7 @@ func main() {
    - No conflicts
 
 **Trade-offs Accepted:**
+
 - Adds dependency (but stable, popular)
 - Slightly different help format than gh
 - Worth it for development speed
@@ -358,11 +381,13 @@ func main() {
 **If We Want to Match gh Exactly:**
 
 **Pros:**
+
 - ✅ Zero dependencies
 - ✅ Same approach as gh
 - ✅ Full control
 
 **Cons:**
+
 - ❌ 3-5x more code to write
 - ❌ Must implement:
   - Subcommand routing
@@ -374,6 +399,7 @@ func main() {
 - ❌ More bugs initially
 
 **When to Choose:**
+
 - You have 2-3 weeks for infrastructure
 - You want exact gh patterns
 - You hate dependencies
@@ -384,11 +410,13 @@ func main() {
 ### Implementation Plan
 
 **Add Dependency:**
+
 ```bash
 go get github.com/spf13/cobra@latest
 ```
 
 **Structure:**
+
 ```go
 // main.go
 package main
@@ -489,6 +517,7 @@ func runListThreads(cmd *cobra.Command, args []string) error {
 ```
 
 **Result:**
+
 - Clean command structure
 - Automatic help text
 - Flag parsing handled
@@ -572,11 +601,13 @@ func runListThreads(cmd *cobra.Command, args []string) error {
 ### What We Give Up
 
 **By Not Matching gh:**
+
 - ⚠️ Help format slightly different
 - ⚠️ Flag parsing slightly different
 - ⚠️ Internal structure different
 
 **But Users Get:**
+
 - ✅ Familiar command patterns
 - ✅ Good help text
 - ✅ Working features faster
@@ -622,6 +653,7 @@ gh-talk
 ### Flag Handling
 
 **Global Flags (Persistent):**
+
 ```go
 rootCmd.PersistentFlags().StringP("repo", "R", "", "Repository (OWNER/REPO)")
 rootCmd.PersistentFlags().Int("pr", 0, "PR number")
@@ -629,6 +661,7 @@ rootCmd.PersistentFlags().Int("issue", 0, "Issue number")
 ```
 
 **Command-Specific Flags:**
+
 ```go
 listThreadsCmd.Flags().Bool("unresolved", true, "Show only unresolved")
 replyCmd.Flags().Bool("resolve", false, "Resolve after replying")
@@ -638,6 +671,7 @@ replyCmd.Flags().BoolP("editor", "e", false, "Open editor")
 ### Benefits We Get Free
 
 **From Cobra:**
+
 1. `gh talk --help` → Beautiful help
 2. `gh talk list --help` → Command help
 3. `gh talk list threads --help` → Subcommand help
@@ -649,6 +683,7 @@ replyCmd.Flags().BoolP("editor", "e", false, "Open editor")
 ## Updated SPEC.md Reference
 
 **Current SPEC lists:**
+
 ```
 Key Libraries:
 - github.com/cli/go-gh - GitHub CLI library
@@ -658,6 +693,7 @@ Key Libraries:
 **Validation:** ✅ Correct choice despite gh not using it
 
 **Reasoning:**
+
 - gh extensions don't have to match gh's internal framework
 - Cobra is the pragmatic choice
 - Faster development, better result
@@ -682,6 +718,7 @@ Key Libraries:
 **Decision:** Go with Cobra for gh-talk
 
 **Reasons:**
+
 1. **Speed** - Ship features faster
 2. **Quality** - Professional result
 3. **Support** - Large community
@@ -689,6 +726,7 @@ Key Libraries:
 5. **Pragmatic** - Right tool for the job
 
 **Not Worried About:**
+
 - Matching gh's internal framework (we're an extension)
 - Dependency weight (Cobra is stable and popular)
 - Different help format (users adapt easily)
@@ -709,5 +747,3 @@ Key Libraries:
 **Decision**: Use Cobra  
 **Rationale**: Pragmatic choice for extension development despite gh using custom framework  
 **Status**: Ready to proceed
-
-
