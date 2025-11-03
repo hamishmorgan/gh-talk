@@ -10,12 +10,14 @@ alwaysApply: false
 **When to Use**: When abandoning PR work or changing direction (invoke with `/pr-close`)
 
 **Prerequisites**:
+
 - Open PR to close
 - Clear reason for closing
 
 ## When to Close (Not Merge)
 
 **Close when:**
+
 - Taking different approach (will create new PR)
 - Work is superseded by another PR
 - Requirements changed
@@ -23,6 +25,7 @@ alwaysApply: false
 - Stale/outdated (no longer relevant)
 
 **Don't close if:**
+
 - Just needs more work → keep open, continue with `/pr-iterate`
 - CI failing → fix it, don't abandon
 - Review feedback → address it, don't close
@@ -152,6 +155,7 @@ gh pr close <PR>
 ## Etiquette
 
 **DO ✅:**
+
 - Always explain why closing
 - Thank reviewers for feedback
 - Indicate what's next (if anything)
@@ -159,6 +163,7 @@ gh pr close <PR>
 - Close cleanly (comment first, then close)
 
 **DON'T ❌:**
+
 - Close without comment (rude and confusing)
 - Close just because it's hard (persist or ask for help)
 - Leave orphan branches (clean up)
@@ -166,6 +171,7 @@ gh pr close <PR>
 ## Clean Up Checklist
 
 After closing PR:
+
 - [ ] Closing comment added with clear reason
 - [ ] PR closed
 - [ ] Local branch deleted
@@ -190,6 +196,7 @@ git push origin --delete <branch>
 ## Agent Signature
 
 **ALL closing comments MUST include:**
+
 ```
 🤖 Cursor
 ```
@@ -197,6 +204,7 @@ git push origin --delete <branch>
 ---
 
 **Related**:
+
 - `pr-create.mdc` - Creating new PR with different approach
 - `pr-merge.mdc` - Normal completion path (merge, not close)
 

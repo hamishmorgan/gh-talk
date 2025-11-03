@@ -10,6 +10,7 @@ alwaysApply: false
 **When to Use**: When responding to or managing issue conversations (invoke with `/issue-respond`)
 
 **Prerequisites**:
+
 - Issue number
 - `gh` CLI and `gh-talk` installed
 
@@ -31,6 +32,7 @@ gh issue list --assignee @me
 ### 2. Understand Context
 
 **Check:**
+
 - Original issue description
 - All comments and discussion
 - Related PRs or issues
@@ -41,6 +43,7 @@ gh issue list --assignee @me
 **Types of responses:**
 
 **Answer a question:**
+
 ```bash
 gh issue comment <NUMBER> --body "The reason this happens is...
 
@@ -52,6 +55,7 @@ Does this help?
 ```
 
 **Provide update:**
+
 ```bash
 gh issue comment <NUMBER> --body "## Progress Update
 
@@ -65,6 +69,7 @@ ETA: [timeframe]
 ```
 
 **Request more information:**
+
 ```bash
 gh issue comment <NUMBER> --body "To help debug this, could you provide:
 
@@ -78,6 +83,7 @@ Thanks!
 ```
 
 **Close as completed:**
+
 ```bash
 gh issue close <NUMBER> --reason completed --comment "Fixed in PR #<PR>
 
@@ -87,6 +93,7 @@ This is now available in v0.2.0.
 ```
 
 **Close as won't fix:**
+
 ```bash
 gh issue close <NUMBER> --reason "not planned" --comment "After discussion, we've decided not to implement this because [reason].
 
@@ -100,6 +107,7 @@ Thanks for the suggestion!
 ## Using gh-talk for Issues
 
 **Add reactions:**
+
 ```bash
 # React to issue body
 gh talk react I_xxx 👍
@@ -115,17 +123,20 @@ gh talk react IC_xxx ❤️
 ### DO ✅
 
 **Be helpful:**
+
 - Provide clear explanations
 - Link to relevant docs
 - Offer alternatives
 - Thank for contributions
 
 **Be timely:**
+
 - Respond within 24-48 hours
 - Set expectations for resolution time
 - Update if delays occur
 
 **Be specific:**
+
 - Quote relevant parts when responding
 - Reference line numbers or files
 - Provide examples
@@ -201,6 +212,7 @@ Discussion continuing there.
 ## Agent Signature
 
 **ALL issue comments MUST end with:**
+
 ```
 🤖 Cursor
 ```
@@ -226,6 +238,7 @@ gh talk react IC_xxx ❤️
 ---
 
 **Related**:
+
 - `issue-create.mdc` - Creating issues
 - `pr-create.mdc` - Creating PRs to address issues
 

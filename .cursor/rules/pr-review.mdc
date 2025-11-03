@@ -10,6 +10,7 @@ alwaysApply: false
 **When to Use**: When reviewing someone else's PR (invoke with `/pr-review`)
 
 **Prerequisites**:
+
 - PR number or URL
 - `gh` CLI and `gh-talk` installed
 - Understanding of project's code standards (AGENTS.md)
@@ -30,11 +31,13 @@ gh pr diff <PR>
 ### 2. Understand the Changes
 
 **Read PR description:**
+
 ```bash
 gh pr view <PR>
 ```
 
 **Check what changed:**
+
 ```bash
 gh pr diff <PR>
 
@@ -43,6 +46,7 @@ gh pr diff <PR> -- path/to/file.go
 ```
 
 **Check commits:**
+
 ```bash
 gh pr view <PR> --json commits
 ```
@@ -52,18 +56,21 @@ gh pr view <PR> --json commits
 **What to check:**
 
 **Correctness:**
+
 - Logic is sound
 - Edge cases handled
 - Error handling present
 - No obvious bugs
 
 **Tests:**
+
 - New code has tests (100% coverage)
 - Tests are meaningful (not just coverage)
 - Edge cases tested
 - Error paths tested
 
 **Code Quality:**
+
 - Follows AGENTS.md standards
 - Clear variable names
 - No code smells
@@ -71,17 +78,20 @@ gh pr view <PR> --json commits
 - No unnecessary complexity
 
 **Performance:**
+
 - No obvious performance issues
 - Efficient algorithms
 - Proper resource management
 
 **Security:**
+
 - No hardcoded secrets
 - Input validation present
 - No SQL injection risks
 - Secure API usage
 
 **Documentation:**
+
 - README updated if needed
 - AGENTS.md updated if new patterns
 - Code comments where necessary
@@ -102,6 +112,7 @@ gh talk list threads --pr <PR>
 **Types of feedback:**
 
 **Request Changes** - Issues that must be fixed:
+
 ```
 ❌ This will cause a bug when X happens
 
@@ -112,6 +123,7 @@ Please add validation before using this value.
 ```
 
 **Suggestions** - Nice to haves:
+
 ```
 💡 Consider using a map here instead of array
 
@@ -120,6 +132,7 @@ Not blocking, but worth considering.
 ```
 
 **Nitpicks** - Minor style/preference:
+
 ```
 nit: Variable name could be more descriptive
 
@@ -127,6 +140,7 @@ nit: Variable name could be more descriptive
 ```
 
 **Praise** - Acknowledge good work:
+
 ```
 ✨ Nice refactoring here!
 
@@ -145,6 +159,7 @@ gh pr checks <PR>
 ### 6. Make Decision
 
 **Approve** - When:
+
 - Code is correct and complete
 - Tests are comprehensive
 - No major issues
@@ -160,6 +175,7 @@ Minor suggestions but not blocking.
 ```
 
 **Request Changes** - When:
+
 - Bugs or correctness issues
 - Missing tests
 - Security concerns
@@ -175,6 +191,7 @@ See inline comments for details.
 ```
 
 **Comment** - When:
+
 - Need clarification
 - Have questions
 - Suggestions but not blocking
@@ -207,6 +224,7 @@ gh pr review <PR> --approve -b "All feedback addressed. Thanks!
 ## Review Checklist
 
 **Before approving:**
+
 - [ ] Code is correct
 - [ ] Tests comprehensive (100% for new code)
 - [ ] No security issues
@@ -219,12 +237,14 @@ gh pr review <PR> --approve -b "All feedback addressed. Thanks!
 ## Using gh-talk for Reviews
 
 **Check threads:**
+
 ```bash
 gh talk list threads --pr <PR>
 gh talk show PRRT_xxx
 ```
 
 **Comment on threads:**
+
 ```bash
 gh talk reply PRRT_xxx "Good point! I'd also suggest...
 
@@ -232,12 +252,14 @@ gh talk reply PRRT_xxx "Good point! I'd also suggest...
 ```
 
 **React to responses:**
+
 ```bash
 gh talk react PRRC_xxx 👍  # Agree with fix
 gh talk react PRRC_xxx ❤️  # Thanks for explaining
 ```
 
 **Track progress:**
+
 ```bash
 gh talk status --pr <PR>
 ```
@@ -247,17 +269,20 @@ gh talk status --pr <PR>
 ### DO ✅
 
 **Be constructive:**
+
 - Explain why something is an issue
 - Suggest alternatives
 - Link to relevant docs/standards
 - Acknowledge good work
 
 **Be specific:**
+
 - Point to exact lines
 - Give examples of better approach
 - Explain impact of issue
 
 **Be respectful:**
+
 - Remember author is learning/improving
 - Praise good work
 - Frame feedback as suggestions when possible
@@ -305,6 +330,7 @@ gh pr review <PR> --request-changes -b "See comments
 ## Agent Signature
 
 **ALL review comments MUST end with:**
+
 ```
 🤖 Cursor
 ```
@@ -312,6 +338,7 @@ gh pr review <PR> --request-changes -b "See comments
 ---
 
 **Related**:
+
 - `pr-create.mdc` - For creating PRs
 - `pr-iterate.mdc` - For addressing review feedback
 - `AGENTS.md` - Code standards to check against

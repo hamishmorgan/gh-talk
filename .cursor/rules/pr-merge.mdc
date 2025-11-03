@@ -12,6 +12,7 @@ alwaysApply: false
 **Previous Step**: Iterations complete via `/pr-iterate`
 
 **Prerequisites**:
+
 - All review feedback addressed
 - All CI checks passing (verified)
 - Copilot review satisfied
@@ -78,6 +79,7 @@ Awaiting your approval to merge.
 ```
 
 **CRITICAL Rules:**
+
 - **ALWAYS hide old status updates BEFORE posting new one** (prevents clutter)
 - Title: "Status Update" only (not "Final" or "Ready")
 - NEVER claim ready if CI failing/pending
@@ -155,6 +157,7 @@ git branch -d <branch>
 ---
 
 **Related**:
+
 - `pr-create.mdc` - Creating PRs
 - `pr-iterate.mdc` - Handling feedback
 - `AGENTS.md` - Code standards

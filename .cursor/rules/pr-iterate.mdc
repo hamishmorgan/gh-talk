@@ -12,6 +12,7 @@ alwaysApply: false
 **Previous Step**: PR created via `/pr-create`
 
 **Prerequisites**:
+
 - Open PR on feature branch
 - Copilot review requested
 - CI running or completed
@@ -143,6 +144,7 @@ gh pr comment <PR> --body "## Status Update
 **CRITICAL**: ALWAYS hide old updates before posting new one
 
 **Emoji Guide:**
+
 - 👀 Before fixing (acknowledging)
 - 👍 After fixing (confirmation)
 - ❤️ For helpful suggestions
@@ -164,6 +166,7 @@ git push --force-with-lease
 ```
 
 **Update PR description when:**
+
 - Scope expanded (more files changed)
 - Approach changed significantly
 - New issues closed
@@ -249,6 +252,7 @@ gh pr comment <PR> --body "@github-copilot please re-review"
 ---
 
 **Related**:
+
 - `pr-create.mdc` - Creating the PR
 - `pr-merge.mdc` - Final review and merge
 - `AGENTS.md` - Code standards

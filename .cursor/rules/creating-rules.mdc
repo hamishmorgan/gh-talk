@@ -11,6 +11,7 @@ globs: [".cursor/rules/**/*.mdc", "AGENTS.md"]
 **When to Use**: When creating new cursor rules, editing existing rules, or updating AGENTS.md with workflow content.
 
 **Prerequisites**:
+
 - Understanding of cursor rules frontmatter format (YAML)
 - Markdown knowledge
 - Familiarity with project's AGENTS.md structure
@@ -18,14 +19,16 @@ globs: [".cursor/rules/**/*.mdc", "AGENTS.md"]
 
 ## When to Create a Rule
 
-### Create a Cursor Rule (.mdc) When:
+### Create a Cursor Rule (.mdc) When
+
 - ✅ **Procedural workflow** - Step-by-step process to follow
 - ✅ **Repeated process** - Same steps used multiple times
 - ✅ **Enforcement needed** - Must follow specific sequence
 - ✅ **Context-specific** - Only relevant to certain files/tasks
 - ✅ **Reference from other workflows** - Linked from main workflows
 
-### Add to AGENTS.md Instead When:
+### Add to AGENTS.md Instead When
+
 - ❌ **Reference material** - Standards, patterns, architecture
 - ❌ **Always relevant** - Core project context
 - ❌ **Taxonomy** - Categories, types, definitions
@@ -36,6 +39,7 @@ globs: [".cursor/rules/**/*.mdc", "AGENTS.md"]
 ### Frontmatter (YAML)
 
 **Required fields:**
+
 ```yaml
 ---
 description: "Brief one-line purpose (shows in Cursor UI)"
@@ -43,6 +47,7 @@ description: "Brief one-line purpose (shows in Cursor UI)"
 ```
 
 **Optional fields:**
+
 ```yaml
 ---
 description: "Brief one-line purpose"
@@ -54,6 +59,7 @@ globs: ["pattern/**"]   # Load when editing matching files
 ### Content (Markdown)
 
 **Structure:**
+
 ```markdown
 # Rule Title
 
@@ -89,6 +95,7 @@ What NOT to do and why.
 ## Quick Reference
 
 Condensed cheat sheet.
+
 ```
 
 ## Loading Strategies
@@ -115,11 +122,13 @@ alwaysApply: true
 ### Strategy 2: Context-Based (`globs`)
 
 **Use for:**
+
 - File-type specific workflows
 - Component-specific patterns
 - Auto-load when editing relevant files
 
 **Example:**
+
 ```yaml
 ---
 description: "Testing workflow - loads when editing tests"
@@ -128,6 +137,7 @@ globs: ["**/tests/**", "**/*_test.go", "**/*.bats"]
 ```
 
 **Glob patterns:**
+
 - `**/*.go` - All Go files
 - `tests/**` - Everything in tests directory
 - `.github/workflows/**` - GitHub Actions files
@@ -138,11 +148,13 @@ globs: ["**/tests/**", "**/*_test.go", "**/*.bats"]
 ### Strategy 3: On-Demand (`alwaysApply: false`)
 
 **Use for:**
+
 - Workflows requested by agent
 - Referenced from other workflows
 - Infrequently needed procedures
 
 **Example:**
+
 ```yaml
 ---
 description: "Pull request workflow"
@@ -157,12 +169,14 @@ alwaysApply: false
 ### DO ✅
 
 **1. Clear, Actionable Steps**
+
 ```markdown
 ### 1. Create Feature Branch
 
 ```bash
 git checkout -b cursor_feature_name
 ```
+
 ```
 
 **2. Use Enforcing Language**
@@ -177,6 +191,7 @@ Example:
 ```
 
 **4. Include Quick Reference**
+
 ```markdown
 ## Quick Reference
 
@@ -184,6 +199,7 @@ Example:
 # Common command
 command --flag value
 ```
+
 ```
 
 **5. Explain Rationale**
@@ -192,6 +208,7 @@ command --flag value
 ```
 
 **6. Link to Related Content**
+
 ```markdown
 See: AGENTS.md for detailed patterns
 Related: `.cursor/rules/testing-workflow.mdc`
@@ -200,23 +217,28 @@ Related: `.cursor/rules/testing-workflow.mdc`
 ### DON'T ❌
 
 **1. Duplicate AGENTS.md Content**
+
 - Reference it, don't repeat it
 - AGENTS.md is for context, rules are for process
 
 **2. Make Everything `alwaysApply: true`**
+
 - Bloats context unnecessarily
 - Only for critical enforcement
 
 **3. Write Novel-Length Rules**
+
 - Keep concise and scannable
 - Focus on actionable steps
 - Detailed rationale goes in AGENTS.md
 
 **4. Mix Workflows and Reference**
+
 - Workflows: How to do something
 - Reference: What/why something is
 
 **5. Use Vague Language**
+
 ```markdown
 ❌ "Maybe run tests"
 ✅ "Run tests: make test"
@@ -227,18 +249,21 @@ Related: `.cursor/rules/testing-workflow.mdc`
 ### Step 1: Determine Type
 
 **Is this a workflow or reference material?**
+
 - Workflow → New .mdc file
 - Reference → Add to AGENTS.md
 
 ### Step 2: Choose Name
 
 **Naming convention:**
+
 ```
 <topic>-workflow.mdc     # For workflows
 <component>.mdc          # For component reference
 ```
 
 **Examples:**
+
 - `deployment-workflow.mdc`
 - `debugging-workflow.mdc`
 - `api-integration.mdc`
@@ -270,6 +295,7 @@ alwaysApply: false
 ### Step 4: Structure Content
 
 **Template:**
+
 ```markdown
 # Title
 
@@ -304,6 +330,7 @@ Condensed version.
 ### Step 5: Validate
 
 **Check:**
+
 - [ ] Frontmatter valid YAML
 - [ ] Description is clear and brief
 - [ ] Loading strategy appropriate
@@ -312,6 +339,7 @@ Condensed version.
 - [ ] Linked from other rules if needed
 
 **Test:**
+
 ```bash
 # Lint markdown
 markdownlint .cursor/rules/your-rule.mdc
@@ -323,6 +351,7 @@ markdownlint .cursor/rules/your-rule.mdc
 ### Step 6: Update README
 
 **Add to `.cursor/rules/README.md`:**
+
 - File name and purpose
 - Loading strategy and rationale
 - When it's used
@@ -393,6 +422,7 @@ alwaysApply: false
 ### From ~/.dotfiles/.cursor/rules
 
 **Patterns observed:**
+
 1. ✅ Frontmatter always has `description`
 2. ✅ Most are `alwaysApply: false` (on-demand)
 3. ✅ Globs used for file-specific workflows
@@ -403,11 +433,13 @@ alwaysApply: false
 8. ✅ Links to related workflows
 
 **Frontmatter patterns:**
+
 - `description`: Clear, concise (10-15 words)
 - `alwaysApply`: Usually false
 - `globs`: Specific patterns for auto-loading
 
 **Content patterns:**
+
 - Headers (##) for major sections
 - Numbered lists for steps
 - Code blocks with bash/language tags
@@ -481,6 +513,7 @@ step3
 ---
 
 **Related**: Link to other workflows or AGENTS.md sections
+
 ```
 
 ## Checklist for New Rule

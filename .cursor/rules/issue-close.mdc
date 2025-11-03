@@ -10,12 +10,14 @@ alwaysApply: false
 **When to Use**: When resolving, declining, or cleaning up issues (invoke with `/issue-close`)
 
 **Prerequisites**:
+
 - Issue number
 - Clear reason for closing
 
 ## Close Reasons
 
 **GitHub supports:**
+
 - `completed` - Work done, issue resolved
 - `not planned` - Won't implement/fix
 - (No reason needed for duplicates, use comment)
@@ -171,6 +173,7 @@ gh talk react IC_xxx ❤️      # Thanks for discussion
 ## Etiquette
 
 **DO ✅:**
+
 - Always explain why closing
 - Thank for contributions
 - Provide alternatives if rejecting
@@ -179,6 +182,7 @@ gh talk react IC_xxx ❤️      # Thanks for discussion
 - Use appropriate close reason
 
 **DON'T ❌:**
+
 - Close without comment (confusing)
 - Be dismissive ("This is dumb")
 - Close valid bugs as "not planned"
@@ -187,12 +191,14 @@ gh talk react IC_xxx ❤️      # Thanks for discussion
 ## Close Reason Guidelines
 
 **Use `completed` when:**
+
 - Bug is fixed
 - Feature is implemented
 - Task is done
 - PR merged addressing issue
 
 **Use `not planned` when:**
+
 - Won't implement feature
 - Won't fix (works as designed)
 - Duplicate (point to original)
@@ -225,6 +231,7 @@ gh issue close <N> --reason "not planned"
 ## Agent Signature
 
 **ALL closing comments MUST include:**
+
 ```
 🤖 Cursor
 ```
@@ -243,6 +250,7 @@ gh issue comment <NUMBER> --body "Reopening - [reason]
 ---
 
 **Related**:
+
 - `issue-create.mdc` - Creating issues
 - `issue-respond.mdc` - Ongoing discussions
 - `pr-create.mdc` - Creating PR to fix issue
