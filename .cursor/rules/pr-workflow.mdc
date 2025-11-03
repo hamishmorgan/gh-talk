@@ -184,18 +184,34 @@ Closes #<issue-number> (if applicable)
 
 **Required**: All PR descriptions MUST include agent signature at the end
 
-### 7. Monitor CI
+### 7. Monitor CI and Fix Failures
 
+**Check CI status (returns exit code 0 only if ALL pass):**
 ```bash
-# Check status
-gh pr checks
-
-# Watch run
-gh run watch
-
-# If failed, view logs
-gh run view --log-failed
+gh pr checks <PR>
+# Exit code 0 = all pass
+# Exit code 1 = failures or pending
 ```
+
+**If ANY checks fail or are pending:**
+```bash
+# View failed logs
+gh run view --log-failed
+
+# Fix issues
+# Commit and push fix
+# Wait for re-run
+
+# NEVER claim "ready to merge" until this shows ALL pass:
+gh pr checks <PR>
+```
+
+**Watch run in real-time:**
+```bash
+gh run watch  # Watch latest run
+```
+
+**CRITICAL**: Do NOT proceed to "Post Status Updates" or "Request Merge" until `gh pr checks` returns exit code 0 (all checks pass).
 
 ### 8. Address Feedback
 
@@ -296,8 +312,16 @@ git push --force-with-lease  # Safe force push
 
 ### 10. Self-Review Before Requesting Merge
 
-**Checklist:**
-- [ ] All CI checks passing
+**FIRST: Verify CI Actually Passes**
+```bash
+# This MUST return exit code 0 (all checks pass)
+gh pr checks <PR>
+
+# If exit code 1: NOT ready - go back to step 7
+```
+
+**Checklist (only proceed if CI passes):**
+- [ ] **All CI checks passing** (verified with `gh pr checks` exit code 0)
 - [ ] All review comments addressed
 - [ ] All review threads resolved
 - [ ] All resolved comments hidden
@@ -326,15 +350,17 @@ gh pr comment <PR> --body "## Status Update
 Progress summary here...
 
 ✓ Items completed
-⏳ Items in progress
+⏳ Items in progress (e.g., CI running)
 ❌ Items blocked
 
 🤖 Cursor"
 ```
 
-**Rules:**
+**CRITICAL Rules:**
 - Title: "Status Update" (not "Final" or "Ready to Merge")
 - Hide previous status updates as outdated
+- **NEVER claim "ready to merge" while CI is failing or pending**
+- Check `gh pr checks` exit code before claiming readiness
 - Don't claim finality (there may be more to do)
 - Always include agent signature
 
@@ -342,21 +368,30 @@ Progress summary here...
 
 **DO NOT merge yourself** - wait for user to approve and merge.
 
-**When all work is complete:**
-```
-## Status Update
+**ONLY when `gh pr checks` returns exit code 0:**
+```bash
+# Verify ALL checks pass
+gh pr checks <PR>
+# Exit code must be 0
 
-✓ All checks passing
+# Then post:
+gh pr comment <PR> --body "## Status Update
+
+✓ All checks passing (verified: gh pr checks returned 0)
 ✓ All feedback addressed  
 ✓ Tests added
 ✓ Documentation updated
 
 Awaiting your approval to merge.
 
-🤖 Cursor
+🤖 Cursor"
 ```
 
-**Required**: All PR comments MUST include agent signature
+**CRITICAL**:
+- NEVER say "ready to merge" if CI is failing or pending
+- ALWAYS verify `gh pr checks` exit code 0 before claiming readiness
+- If checks fail, go back to step 7 (fix and monitor)
+- User approval required even if all checks pass
 
 ## Using gh-talk for PR Reviews
 
