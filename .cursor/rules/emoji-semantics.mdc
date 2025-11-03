@@ -1,6 +1,7 @@
 ---
 description: "Emoji reaction semantics and usage guide for PR and issue comments"
 alwaysApply: false
+globs: [".cursor/rules/pr-*.mdc", ".cursor/rules/issue-*.mdc"]
 ---
 
 # Emoji Reaction Semantics
