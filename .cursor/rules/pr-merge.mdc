@@ -55,17 +55,15 @@ gh pr view <PR> --json reviewDecision --jq '.reviewDecision'
 
 ## Post Status Update
 
-**Hide previous status updates:**
+**CRITICAL: ALWAYS hide old status updates FIRST:**
 
 ```bash
+# Step 1: Hide ALL previous status updates (REQUIRED)
 gh pr view <PR> --comments --json comments | \
   jq -r '.comments[] | select(.body | contains("Status Update")) | .id' | \
   xargs -I {} gh talk hide {} --reason outdated
-```
 
-**Post new status:**
-
-```bash
+# Step 2: Then post new status
 gh pr comment <PR> --body "## Status Update
 
 ✓ All checks passing (verified: gh pr checks returned 0)
@@ -79,11 +77,11 @@ Awaiting your approval to merge.
 🤖 Cursor"
 ```
 
-**Rules:**
-- Title: "Status Update" only
+**CRITICAL Rules:**
+- **ALWAYS hide old status updates BEFORE posting new one** (prevents clutter)
+- Title: "Status Update" only (not "Final" or "Ready")
 - NEVER claim ready if CI failing/pending
 - Verify exit code 0 before posting
-- Hide old status updates
 - Include agent signature
 
 ## Request Merge
@@ -135,12 +133,12 @@ git push origin --delete <branch-name>
 gh pr checks <PR>  # Must be exit code 0
 gh talk status
 
-# Hide old updates
+# FIRST: Hide ALL old status updates (CRITICAL STEP)
 gh pr view <PR> --comments --json comments | \
   jq -r '.comments[] | select(.body | contains("Status Update")) | .id' | \
   xargs -I {} gh talk hide {} --reason outdated
 
-# Request merge
+# THEN: Post status update
 gh pr comment <PR> --body "...
 🤖 Cursor"
 
