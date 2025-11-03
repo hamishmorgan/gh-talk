@@ -268,7 +268,7 @@ Closes #<FEAT>
 ```markdown
 ## Closes
 
-Closes #<NUMBER>  
+Closes #<NUMBER>
 ```
 
 **Or in commits:**

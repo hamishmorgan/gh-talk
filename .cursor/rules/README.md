@@ -64,6 +64,11 @@ This directory contains workflow files for AI agents working on gh-talk in Curso
 - **Load strategy**: Context-based (`globs: [".cursor/rules/**/*.mdc", "AGENTS.md"]`)
 - **Purpose**: Meta-workflow for creating new .mdc files
 
+**`emoji-semantics.mdc`** - Emoji reaction meanings and usage
+- **Slash command**: `/emoji-semantics`
+- **Load strategy**: Context-based (`globs: [".cursor/rules/pr-*.mdc", ".cursor/rules/issue-*.mdc"]`)
+- **Purpose**: Standardized emoji semantics (👍 = agree, ❤️ = thanks, etc.)
+
 ## Frontmatter Patterns
 
 Each `.mdc` file uses YAML frontmatter to control loading:
@@ -167,13 +172,15 @@ See `creating-rules.mdc` for detailed guide.
 | `issue-implement.mdc` | `/issue-implement` | On-demand | Implement & PR |
 | `issue-close.mdc` | `/issue-close` | On-demand | Close issues |
 | `creating-rules.mdc` | `/creating-rules` | Globs | Meta-workflow |
+| `emoji-semantics.mdc` | `/emoji-semantics` | Globs | Emoji meanings |
 
-**Total**: 10 workflow files
+**Total**: 11 workflow files
 
 **Organized by prefix:**
 - `pr-*` (5 files) - Pull request workflows (full lifecycle)
 - `issue-*` (4 files) - Issue workflows (full lifecycle)
 - `creating-*` (1 file) - Meta workflow
+- `emoji-*` (1 file) - Reference guide
 
 ## Design Principles
 
