@@ -89,9 +89,10 @@ func runShow(cmd *cobra.Command, args []string) error {
 
 	for i, comment := range thread.Comments {
 		fmt.Printf("─────────────────────────────────────────────────────\n")
+		fmt.Printf("[%d] %s\n", i+1, comment.ID)
 		fmt.Printf("@%s", comment.Author.Login)
 		if comment.ReplyTo != nil {
-			fmt.Printf(" (in reply)")
+			fmt.Printf(" (in reply to comment %s)", comment.ReplyTo.ID)
 		}
 		fmt.Printf("\n\n")
 		fmt.Println(comment.Body)
@@ -115,6 +116,7 @@ func runShow(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("─────────────────────────────────────────────────────\n")
+	fmt.Printf("\nTip: Use comment IDs above for reactions (gh talk react <id> <emoji>)\n")
 
 	return nil
 }

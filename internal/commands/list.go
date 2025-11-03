@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -48,6 +49,7 @@ func init() {
 
 	// Output flags
 	listThreadsCmd.Flags().String("format", "", "Output format (table, json, tsv)")
+	listThreadsCmd.Flags().StringSlice("json", nil, "Output JSON with specific fields (like gh CLI)")
 
 	// Make resolution flags mutually exclusive
 	listThreadsCmd.MarkFlagsMutuallyExclusive("unresolved", "resolved", "all")
@@ -141,7 +143,13 @@ func filterThreads(cmd *cobra.Command, threads []api.Thread) []api.Thread {
 
 func outputThreads(cmd *cobra.Command, threads []api.Thread) error {
 	format, _ := cmd.Flags().GetString("format")
+	jsonFields, _ := cmd.Flags().GetStringSlice("json")
 	terminal := term.FromEnv()
+
+	// If --json flag specified, use JSON format
+	if len(jsonFields) > 0 {
+		format = "json"
+	}
 
 	// Auto-detect format if not specified
 	if format == "" {
@@ -248,19 +256,47 @@ func outputThreadsTSV(threads []api.Thread, terminal term.Term) error {
 }
 
 func outputThreadsJSON(threads []api.Thread, terminal term.Term) error {
-	// For now, simple JSON output
-	// TODO: Support --json <fields> like gh CLI
-	fmt.Fprintf(terminal.Out(), "[\n")
-	for i, thread := range threads {
-		fmt.Fprintf(terminal.Out(), `  {"id":"%s","path":"%s","line":%d,"isResolved":%t,"comments":%d}`,
-			thread.ID, thread.Path, thread.Line, thread.IsResolved, len(thread.Comments))
-		if i < len(threads)-1 {
-			fmt.Fprintf(terminal.Out(), ",")
-		}
-		fmt.Fprintf(terminal.Out(), "\n")
+	type JSONThread struct {
+		ID           string   `json:"id"`
+		Path         string   `json:"path"`
+		Line         int      `json:"line"`
+		IsResolved   bool     `json:"isResolved"`
+		IsOutdated   bool     `json:"isOutdated,omitempty"`
+		CommentCount int      `json:"commentCount"`
+		Preview      string   `json:"preview,omitempty"`
+		ResolvedBy   string   `json:"resolvedBy,omitempty"`
+		Comments     []string `json:"comments,omitempty"`
 	}
-	fmt.Fprintf(terminal.Out(), "]\n")
-	return nil
+
+	jsonThreads := make([]JSONThread, len(threads))
+	for i, t := range threads {
+		jt := JSONThread{
+			ID:           t.ID,
+			Path:         t.Path,
+			Line:         t.Line,
+			IsResolved:   t.IsResolved,
+			IsOutdated:   t.IsOutdated,
+			CommentCount: len(t.Comments),
+		}
+
+		if len(t.Comments) > 0 {
+			jt.Preview = truncate(t.Comments[0].Body, 100)
+			jt.Comments = make([]string, len(t.Comments))
+			for j, c := range t.Comments {
+				jt.Comments[j] = c.ID
+			}
+		}
+
+		if t.ResolvedBy != nil {
+			jt.ResolvedBy = t.ResolvedBy.Login
+		}
+
+		jsonThreads[i] = jt
+	}
+
+	encoder := json.NewEncoder(terminal.Out())
+	encoder.SetIndent("", "  ")
+	return encoder.Encode(jsonThreads)
 }
 
 func formatReactions(thread api.Thread) string {
