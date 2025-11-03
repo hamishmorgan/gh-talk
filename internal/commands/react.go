@@ -10,13 +10,13 @@ import (
 )
 
 var reactCmd = &cobra.Command{
-	Use:   "react <comment-id> <emoji>",
-	Short: "Add emoji reaction to a comment",
-	Long: `Add an emoji reaction to a comment.
+	Use:   "react <comment-id...> <emoji>",
+	Short: "Add emoji reaction to comments",
+	Long: `Add an emoji reaction to one or more comments.
 
 Arguments:
-  comment-id  Comment ID (PRRC_... or IC_...)
-  emoji       Emoji or name (👍, THUMBS_UP, +1, etc.)
+  comment-id...  One or more comment IDs (PRRC_... or IC_...)
+  emoji          Emoji or name (👍, THUMBS_UP, +1, etc.)
 
 Supported reactions:
   👍 THUMBS_UP     😄 LAUGH      ❤️ HEART
@@ -24,18 +24,18 @@ Supported reactions:
   😕 CONFUSED      👀 EYES
 
 Examples:
-  # Add thumbs up
+  # Add thumbs up to single comment
   gh talk react PRRC_kwDOQN97u86UHqK7 👍
+
+  # Add to multiple comments (bulk operation)
+  gh talk react PRRC_aaa PRRC_bbb PRRC_ccc 👍
 
   # Add rocket (by name)
   gh talk react PRRC_kwDOQN97u86UHqK7 ROCKET
 
-  # Add heart (slack-style)
-  gh talk react PRRC_kwDOQN97u86UHqK7 :heart:
-
   # Remove reaction
   gh talk react PRRC_kwDOQN97u86UHqK7 👍 --remove`,
-	Args: cobra.ExactArgs(2),
+	Args: cobra.MinimumNArgs(2),
 	RunE: runReact,
 }
 
@@ -46,12 +46,15 @@ func init() {
 func runReact(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 
-	commentID := args[0]
-	emojiInput := args[1]
+	// Last argument is the emoji, rest are comment IDs
+	commentIDs := args[:len(args)-1]
+	emojiInput := args[len(args)-1]
 
-	// Validate comment ID
-	if !strings.HasPrefix(commentID, "PRRC_") && !strings.HasPrefix(commentID, "IC_") {
-		return fmt.Errorf("invalid comment ID: %s\n\nExpected format: PRRC_... or IC_...", commentID)
+	// Validate all comment IDs
+	for _, commentID := range commentIDs {
+		if !strings.HasPrefix(commentID, "PRRC_") && !strings.HasPrefix(commentID, "IC_") {
+			return fmt.Errorf("invalid comment ID: %s\n\nExpected format: PRRC_... or IC_...", commentID)
+		}
 	}
 
 	// Parse emoji to GraphQL enum
@@ -66,22 +69,28 @@ func runReact(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Add or remove reaction
 	remove, _ := cmd.Flags().GetBool("remove")
-	if remove {
-		err = client.RemoveReaction(ctx, commentID, content)
-		if err != nil {
-			return err
+	emoji := contentToEmoji(content)
+
+	// Process each comment
+	for _, commentID := range commentIDs {
+		if remove {
+			err = client.RemoveReaction(ctx, commentID, content)
+			if err != nil {
+				return fmt.Errorf("failed to remove reaction from %s: %w", commentID, err)
+			}
+			fmt.Printf("✓ Removed %s reaction from %s\n", emoji, commentID)
+		} else {
+			err = client.AddReaction(ctx, commentID, content)
+			if err != nil {
+				return fmt.Errorf("failed to add reaction to %s: %w", commentID, err)
+			}
+			fmt.Printf("✓ Added %s reaction to %s\n", emoji, commentID)
 		}
-		emoji := contentToEmoji(content)
-		fmt.Printf("✓ Removed %s reaction from %s\n", emoji, commentID)
-	} else {
-		err = client.AddReaction(ctx, commentID, content)
-		if err != nil {
-			return err
-		}
-		emoji := contentToEmoji(content)
-		fmt.Printf("✓ Added %s reaction to %s\n", emoji, commentID)
+	}
+
+	if len(commentIDs) > 1 {
+		fmt.Printf("\n✓ Processed %d comments\n", len(commentIDs))
 	}
 
 	return nil

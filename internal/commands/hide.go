@@ -10,23 +10,23 @@ import (
 )
 
 var hideCmd = &cobra.Command{
-	Use:   "hide <comment-id>",
-	Short: "Minimize/hide a comment",
-	Long: `Minimize (hide) a comment with a reason.
+	Use:   "hide <comment-id...>",
+	Short: "Minimize/hide comments",
+	Long: `Minimize (hide) one or more comments with a reason.
 
 Arguments:
-  comment-id  Comment ID (PRRC_... or IC_...)
+  comment-id...  One or more comment IDs (PRRC_... or IC_...)
 
 Examples:
-  # Hide as spam
+  # Hide single comment as spam
   gh talk hide IC_kwDOQN97u87PVA8l --reason spam
 
-  # Hide as off-topic
-  gh talk hide PRRC_kwDOQN97u86UHqK7 --reason off-topic
+  # Hide multiple comments (bulk operation)
+  gh talk hide PRRC_aaa PRRC_bbb PRRC_ccc --reason resolved
 
-  # Hide as outdated
-  gh talk hide IC_kwDOQN97u87PVA8l --reason outdated`,
-	Args: cobra.ExactArgs(1),
+  # Hide as off-topic
+  gh talk hide PRRC_kwDOQN97u86UHqK7 --reason off-topic`,
+	Args: cobra.MinimumNArgs(1),
 	RunE: runHide,
 }
 
@@ -52,11 +52,13 @@ func init() {
 func runHide(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 
-	commentID := args[0]
+	commentIDs := args
 
-	// Validate comment ID
-	if !strings.HasPrefix(commentID, "PRRC_") && !strings.HasPrefix(commentID, "IC_") {
-		return fmt.Errorf("invalid comment ID: %s\n\nExpected format: PRRC_... or IC_...", commentID)
+	// Validate all comment IDs
+	for _, commentID := range commentIDs {
+		if !strings.HasPrefix(commentID, "PRRC_") && !strings.HasPrefix(commentID, "IC_") {
+			return fmt.Errorf("invalid comment ID: %s\n\nExpected format: PRRC_... or IC_...", commentID)
+		}
 	}
 
 	// Parse reason
@@ -72,13 +74,19 @@ func runHide(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Hide comment
-	err = client.MinimizeComment(ctx, commentID, classifier)
-	if err != nil {
-		return err
+	// Hide each comment
+	for _, commentID := range commentIDs {
+		err = client.MinimizeComment(ctx, commentID, classifier)
+		if err != nil {
+			return fmt.Errorf("failed to hide %s: %w", commentID, err)
+		}
+		fmt.Printf("✓ Hidden comment %s (reason: %s)\n", commentID, strings.ToLower(classifier))
 	}
 
-	fmt.Printf("✓ Hidden comment %s (reason: %s)\n", commentID, strings.ToLower(classifier))
+	if len(commentIDs) > 1 {
+		fmt.Printf("\n✓ Hidden %d comments\n", len(commentIDs))
+	}
+
 	return nil
 }
 
