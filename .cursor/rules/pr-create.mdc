@@ -129,14 +129,18 @@ Closes #<issue-number> (if applicable)
 
 ### 7. Request Copilot Review
 
-**Immediately:**
+**Immediately after creating PR:**
 
+**Via GitHub UI (recommended):**
+- Go to PR page
+- Click "Reviewers" → Add "copilot"
+
+**Programmatic attempt (may not trigger review):**
 ```bash
-# Request Copilot review via comment (only method that works)
 gh pr comment <PR> --body "@github-copilot please review"
 ```
 
-**Note**: Copilot is not a regular reviewer, must use @mention in comment
+**Note**: Programmatic methods unreliable. Manually add Copilot as reviewer in GitHub UI to ensure review is requested.
 
 ## Quick Reference
 

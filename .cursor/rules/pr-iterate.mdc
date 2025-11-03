@@ -100,12 +100,21 @@ Fixed by doing Y.
 git push
 
 # IMMEDIATELY REQUEST RE-REVIEW (REQUIRED)
-gh pr comment <PR> --body "@github-copilot please re-review"
+# TODO: Find programmatic method - currently must use GitHub UI
+# Go to PR and click "Request re-review" button next to Copilot's review
 ```
 
 **CRITICAL**: ALWAYS request Copilot re-review immediately after pushing changes
 
-**Note**: Must use comment @mention (Copilot not a regular reviewer)
+**Current limitation**: No known programmatic method to request re-review from Copilot.
+Must manually click "Request re-review" in GitHub UI after pushing.
+
+**Investigated methods that DON'T work:**
+- ❌ `gh pr edit --add-reviewer copilot` (not a collaborator)
+- ❌ `gh pr comment "@github-copilot please re-review"` (doesn't trigger)
+- ❌ `gh api .../requested_reviewers` (API 422 error)
+
+**If you find a programmatic method, please update this workflow and create PR.**
 
 ### 5. Respond AFTER Fixing
 
