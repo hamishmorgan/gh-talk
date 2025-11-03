@@ -171,7 +171,7 @@ Brief description of changes.
 ## Changes
 
 - What changed
-- Why it changed
+- Why it changed  
 - How to test
 
 ## Closes
@@ -183,6 +183,23 @@ Closes #<issue-number> (if applicable)
 ```
 
 **Required**: All PR descriptions MUST include agent signature at the end
+
+### 6.5. Request Copilot Review
+
+**Immediately after creating PR:**
+
+```bash
+# Request Copilot review
+gh pr edit <PR> --add-reviewer copilot
+
+# Or if that doesn't work, trigger via comment
+gh pr comment <PR> --body "@copilot please review"
+```
+
+**IMPORTANT**: Always request Copilot review when:
+- PR is first created
+- Significant changes are pushed
+- After addressing review feedback
 
 ### 7. Monitor CI and Fix Failures
 
@@ -251,6 +268,11 @@ gh pr view --json reviewDecision --jq '.reviewDecision'
 5. **Commit**: Descriptive message with AI attribution and signature
 
 6. **Push immediately**: Don't accumulate multiple fixes
+
+7. **Request re-review**: After pushing fixes, request Copilot to review again
+   ```bash
+   gh pr comment <PR> --body "@copilot please re-review"
+   ```
 
 **Emoji response guide:**
 - 👀 Before fixing (acknowledging)
@@ -325,6 +347,7 @@ gh pr checks <PR>
 - [ ] All review comments addressed
 - [ ] All review threads resolved
 - [ ] All resolved comments hidden
+- [ ] Copilot review satisfied (no unresolved feedback)
 - [ ] Tests added/updated with **100% coverage for new code**
 - [ ] Code formatted (`make fmt`)
 - [ ] Documentation updated
