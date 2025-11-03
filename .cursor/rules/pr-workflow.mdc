@@ -193,6 +193,7 @@ git push --force-with-lease  # Safe force push
 - [ ] Code formatted (`make fmt`)
 - [ ] Documentation updated
 - [ ] No linter warnings
+- [ ] Coverage maintained at >60%
 - [ ] AGENTS.md updated (if new patterns)
 - [ ] Branch is up to date with main
 
@@ -301,13 +302,13 @@ git push --force-with-lease
 
 ## Anti-Patterns (DON'T)
 
-❌ **Direct commits to main** - Branch protection prevents this
-❌ **Large PRs** - Keep changes focused (<300 lines if possible)
-❌ **Pushing without testing** - Run `make ci` first
-❌ **Accumulating changes** - Commit and push incrementally
-❌ **Force push** - Use `--force-with-lease` (safer)
-❌ **Merging yourself** - Wait for user approval
-❌ **Missing inline comments** - Check with `gh talk list threads`
+❌ **Direct commits to main** - Branch protection prevents this  
+❌ **Large PRs** - Keep changes focused to <300 lines; larger PRs require justification in description  
+❌ **Pushing without testing** - Run `make ci` first  
+❌ **Accumulating changes** - Commit and push incrementally  
+❌ **Force push** - Use `--force-with-lease` (safer)  
+❌ **Merging yourself** - Wait for user approval  
+❌ **Missing inline comments** - Check with `gh talk list threads`  
 ❌ **Ignoring CI failures** - Fix before requesting review
 
 ## Quick Reference
