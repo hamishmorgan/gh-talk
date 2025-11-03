@@ -1,2 +1,12 @@
+# Binaries
 /gh-talk
 /gh-talk.exe
+
+# Test artifacts
+coverage.out
+coverage.html
+
+# IDE/Editor directories
+.claude/
+.cursor/rules/personal/.keep
+.cursor/commands/personal/.keep

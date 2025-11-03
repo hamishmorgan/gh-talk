@@ -1,0 +1,329 @@
+---
+description: "Emoji reaction semantics and usage guide for PR and issue comments"
+alwaysApply: false
+globs: [".cursor/rules/pr-*.mdc", ".cursor/rules/issue-*.mdc"]
+---
+
+# Emoji Reaction Semantics
+
+**Purpose**: Standardized meanings and usage guide for GitHub's 8 supported emoji reactions.
+
+**When to Use**: When adding reactions to comments, issues, or PRs via `gh talk react`
+
+**Context**: GitHub supports exactly 8 emoji reactions. Use them consistently with clear semantics.
+
+## The 8 Reactions and Their Meanings
+
+### 👍 THUMBS_UP - Agreement / Approval
+
+**Semantic Meaning:** "I agree" | "Approved" | "Will do" | "Good idea"
+
+**Use When:**
+- Agreeing with a suggestion
+- Confirming you'll implement feedback
+- Approving a comment
+- Acknowledging good point
+- After fixing an issue ("Thanks, fixed!")
+
+**Examples:**
+```bash
+# Reviewer suggests improvement
+gh talk react PRRC_xxx 👍  # "I agree with this suggestion"
+
+# After implementing feedback
+gh talk react PRRC_xxx 👍  # "Done, thanks for the feedback"
+```
+
+**From user feedback:** Most commonly used reaction for acknowledging feedback
+
+### ❤️ HEART - Appreciation / Thanks
+
+**Semantic Meaning:** "Thank you" | "Appreciate this" | "Helpful" | "Love this"
+
+**Use When:**
+- Thanking for helpful review
+- Appreciating detailed explanation
+- Grateful for suggestion
+- Acknowledging effort
+
+**Examples:**
+```bash
+# Reviewer gave detailed explanation
+gh talk react PRRC_xxx ❤️  # "Thanks for explaining!"
+
+# Helpful suggestion
+gh talk react PRRC_xxx ❤️  # "This is really helpful"
+```
+
+**From user feedback:** Used for showing appreciation to reviewers
+
+### 🎉 HOORAY - Celebration / Excitement
+
+**Semantic Meaning:** "Excellent!" | "Great work!" | "This is awesome!" | "Big improvement"
+
+**Use When:**
+- Code is significantly better
+- Great refactoring
+- Clever solution
+- Major improvement
+- Problem solved elegantly
+
+**Examples:**
+```bash
+# Reviewer praises refactoring
+gh talk react PRRC_xxx 🎉  # "Yes! Much better now"
+
+# Author fixed complex bug
+gh talk react PRRC_xxx 🎉  # "Excellent fix!"
+```
+
+**From user feedback:** Used for major wins and great feedback
+
+### 🚀 ROCKET - Ready / Ship It / Merge
+
+**Semantic Meaning:** "Ready to ship" | "Let's merge" | "Good to go" | "LGTM"
+
+**Use When:**
+- Code is ready to merge
+- All feedback addressed
+- Approving PR
+- Encouraging merge
+
+**Examples:**
+```bash
+# All feedback addressed
+gh talk react PRRC_xxx 🚀  # "Ship it!"
+
+# On final approval comment
+gh talk react PRRC_xxx 🚀  # "Ready to merge"
+```
+
+**Usage:** Reserve for truly ready-to-ship situations
+
+### 👀 EYES - Watching / Reviewing / Acknowledged
+
+**Semantic Meaning:** "I see this" | "Looking into it" | "Reviewing" | "Tracking"
+
+**Use When:**
+- Acknowledging you've seen comment (before responding)
+- Indicating you're investigating
+- Watching an issue/discussion
+- "I'm on it"
+
+**Examples:**
+```bash
+# Received review feedback, before fixing
+gh talk react PRRC_xxx 👀  # "Seen, will address"
+
+# Complex issue reported
+gh talk react I_xxx 👀  # "Looking into this"
+```
+
+**From user feedback:** Critical for "before fixing" acknowledgment
+
+**Best Practice:** Use 👀 BEFORE starting work, 👍 AFTER completing
+
+### 😄 LAUGH - Humor / Lighthearted
+
+**Semantic Meaning:** "Funny!" | "Good catch!" | "Amused" | "Lighthearted agreement"
+
+**Use When:**
+- Comment is humorous
+- Funny mistake caught
+- Lighthearted discussion
+- Self-deprecating humor
+
+**Examples:**
+```bash
+# Reviewer: "Found the bug - you spelled 'teh' instead of 'the' 😄"
+gh talk react PRRC_xxx 😄  # "Haha, thanks!"
+
+# Humorous code comment
+gh talk react PRRC_xxx 😄  # "This made me smile"
+```
+
+**Usage:** Keep professional, use sparingly
+
+### 😕 CONFUSED - Unclear / Need Clarification
+
+**Semantic Meaning:** "I don't understand" | "Unclear" | "Need explanation" | "Disagree?"
+
+**Use When:**
+- Feedback is unclear
+- Don't understand suggestion
+- Need more context
+- Uncertain about approach
+
+**Examples:**
+```bash
+# Vague feedback received
+gh talk react PRRC_xxx 😕  # "Not sure what you mean"
+
+# Then follow up:
+gh talk reply PRRC_xxx "Could you clarify what you mean by X?
+
+🤖 Cursor"
+```
+
+**Usage:** Signal need for clarification, then ask in reply
+
+### 👎 THUMBS_DOWN - Disagree / Don't Approve
+
+**Semantic Meaning:** "I disagree" | "This isn't right" | "Please reconsider"
+
+**Use When:**
+- Disagreeing with approach
+- Code has issues
+- Suggestion won't work
+
+**Examples:**
+```bash
+# Bad suggestion that would break things
+gh talk react PRRC_xxx 👎  # "This would cause problems"
+
+# Then explain:
+gh talk reply PRRC_xxx "This approach would break X because...
+
+🤖 Cursor"
+```
+
+**Usage:** Use sparingly, always explain in a reply
+
+**Etiquette:** Don't use thumbs down without constructive comment
+
+## Usage Guidelines
+
+### When to React vs Reply
+
+**React only:**
+- Simple acknowledgment (👀, 👍)
+- No explanation needed
+- Quick response
+
+**React + Reply:**
+- When you need to explain (😕, 👎)
+- When thanking with context (❤️)
+- When celebrating with praise (🎉)
+
+**Reply only:**
+- Complex response
+- Need detailed explanation
+- Asking questions
+
+### Reaction Timing
+
+**Before addressing feedback:**
+```bash
+# 1. React immediately
+gh talk react PRRC_xxx 👀  # "Seen"
+
+# 2. Later, after fixing
+gh talk reply PRRC_xxx "Fixed!
+
+🤖 Cursor" --resolve --react 👍
+```
+
+**After receiving praise:**
+```bash
+# React to acknowledge
+gh talk react PRRC_xxx ❤️  # "Thanks!"
+```
+
+### Multiple Reactions
+
+**You can add multiple:**
+```bash
+gh talk react PRRC_xxx 👀  # Seen
+# ... work on it ...
+gh talk react PRRC_xxx 👍  # Done
+# or
+gh talk react PRRC_xxx 🎉  # If it's a great improvement
+```
+
+## Workflow-Specific Usage
+
+### In PR Iteration (`/pr-iterate`)
+
+**Standard pattern:**
+
+```bash
+# Step 1: Acknowledge
+gh talk reply PRRT_xxx "👀 Looking into this
+
+🤖 Cursor"
+
+# Step 2: Fix
+
+# Step 3: Confirm
+gh talk reply PRRT_xxx "Fixed!
+
+🤖 Cursor" --resolve --react 👍
+```
+
+### In PR Review (`/pr-review`)
+
+**Approval:**
+```bash
+gh talk react PRRC_xxx 👍  # Agree with change
+gh talk react PRRC_xxx 🚀  # Ready to merge
+```
+
+**Feedback:**
+```bash
+gh talk react PRRC_xxx 😕  # Need clarification
+gh talk react PRRC_xxx ❤️  # Thanks for explanation
+```
+
+### In Issue Implementation (`/issue-implement`)
+
+**On issue:**
+```bash
+gh talk react I_xxx 👀     # Taking this issue
+gh talk react I_xxx 🚀     # Implemented, PR created
+```
+
+**On issue comments:**
+```bash
+gh talk react IC_xxx 👍    # Agree with suggestion
+gh talk react IC_xxx ❤️    # Thanks for input
+```
+
+## Quick Reference
+
+| Emoji | Meaning | When to Use | Combine With Reply? |
+|-------|---------|-------------|---------------------|
+| 👍 | Agree/Will do | Acknowledging, confirming | Optional |
+| ❤️ | Thanks | Appreciation, helpful feedback | Optional |
+| 🎉 | Excellent | Great work, big wins | Often |
+| 🚀 | Ship it | Ready to merge, approved | Optional |
+| 👀 | Watching | Before fixing, investigating | Often |
+| 😄 | Funny | Humor, lighthearted | Optional |
+| 😕 | Unclear | Need clarification | Always |
+| 👎 | Disagree | Issues with suggestion | Always |
+
+## Anti-Patterns
+
+❌ **Using 👎 without explanation** - Always explain disagreement
+❌ **Over-reacting** - Don't react to every comment
+❌ **Wrong semantics** - Don't use 🎉 for minor fixes
+❌ **No acknowledgment** - Use 👀 before fixing
+❌ **Forgetting 👍 after** - Confirm completion
+
+## Best Practices
+
+✅ **👀 before, 👍 after** - Standard feedback loop
+✅ **❤️ for good reviews** - Show appreciation
+✅ **🎉 for major wins** - Celebrate good work
+✅ **😕 signals confusion** - Then ask for clarification
+✅ **Explain 👎** - Always add reply with reasoning
+
+---
+
+**Related**:
+- `pr-iterate.mdc` - Uses emoji in feedback responses
+- `pr-review.mdc` - Uses emoji when reviewing
+- `issue-implement.mdc` - Uses emoji on issues
+
+**Last Updated**: 2025-11-03
+
+🤖 *Generated by Cursor*
