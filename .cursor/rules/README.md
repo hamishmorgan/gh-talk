@@ -1,198 +1,64 @@
 # Cursor Rules Directory
 
-This directory contains workflow files for AI agents working on gh-talk in Cursor IDE.
+This directory contains auto-applying rules for AI agents working on gh-talk.
 
-## Files
+## Structure
 
-### PR Workflows (Slash Commands: `/pr-*`)
+**`.cursor/commands/`** - Slash-invokable workflows
+- See `.cursor/README.md` for full command list
+- Files: pr-create.md, pr-iterate.md, issue-implement.md, etc.
+- Invoke with: `/pr-create`, `/issue-implement`, etc.
 
-**`pr-create.mdc`** - Create and submit pull requests
-- **Slash command**: `/pr-create`
-- **Load strategy**: On-demand
-- **Purpose**: Branch creation → PR submission → Request review
-- **Next**: → `/pr-iterate`
+**`.cursor/rules/`** - Auto-applying rules (this directory)
+- Rules that load automatically based on frontmatter
+- Uses YAML frontmatter (alwaysApply, globs)
+- Files: creating-rules.mdc
 
-**`pr-iterate.mdc`** - Handle feedback and iterations
-- **Slash command**: `/pr-iterate`
-- **Load strategy**: On-demand
-- **Purpose**: Monitor CI → Address feedback → Push fixes → Re-review
-- **Previous**: `/pr-create` | **Next**: → `/pr-merge`
+## Files in This Directory
 
-**`pr-merge.mdc`** - Final review and merge
-- **Slash command**: `/pr-merge`
-- **Load strategy**: On-demand
-- **Purpose**: Verify CI → Final checks → Request merge → Cleanup
-- **Previous**: `/pr-iterate`
+**`creating-rules.mdc`** - Guide for creating cursor commands and rules
+- **Load strategy**: Context-based (`globs: [".cursor/**/*.md", ".cursor/**/*.mdc", "AGENTS.md"]`)
+- **Purpose**: Meta-guide for creating new workflows
+- **When it loads**: When editing cursor commands, rules, or AGENTS.md
 
-**`pr-review.mdc`** - Review others' pull requests
-- **Slash command**: `/pr-review`
-- **Load strategy**: On-demand
-- **Purpose**: Check out PR → Review code → Leave feedback → Approve/request changes
+## Frontmatter Format
 
-**`pr-close.mdc`** - Close PR without merging
-- **Slash command**: `/pr-close`
-- **Load strategy**: On-demand
-- **Purpose**: Abandon PR with explanation → Clean up branches
+Rules in this directory use YAML frontmatter:
 
-### Issue Workflows (Slash Commands: `/issue-*`)
-
-**`issue-create.mdc`** - Create well-structured issues
-- **Slash command**: `/issue-create`
-- **Load strategy**: On-demand
-- **Purpose**: Bug reports, feature requests, tasks with proper templates
-
-**`issue-respond.mdc`** - Respond to issue discussions
-- **Slash command**: `/issue-respond`
-- **Load strategy**: On-demand
-- **Purpose**: Answer questions, provide updates
-
-**`issue-implement.mdc`** - Implement feature from issue
-- **Slash command**: `/issue-implement`
-- **Load strategy**: On-demand
-- **Purpose**: Take issue → Implement → Create PR → Link together
-- **Next**: → `/pr-iterate`, `/pr-merge`
-
-**`issue-close.mdc`** - Close issues with proper reason
-- **Slash command**: `/issue-close`
-- **Load strategy**: On-demand
-- **Purpose**: Close as completed, not planned, duplicate, etc. with comments
-
-### Meta Workflow
-
-**`creating-rules.mdc`** - Guide for creating cursor rules
-- **Slash command**: `/creating-rules`
-- **Load strategy**: Context-based (`globs: [".cursor/rules/**/*.mdc", "AGENTS.md"]`)
-- **Purpose**: Meta-workflow for creating new .mdc files
-
-**`emoji-semantics.mdc`** - Emoji reaction meanings and usage
-- **Slash command**: `/emoji-semantics`
-- **Load strategy**: Context-based (`globs: [".cursor/rules/pr-*.mdc", ".cursor/rules/issue-*.mdc"]`)
-- **Purpose**: Standardized emoji semantics (👍 = agree, ❤️ = thanks, etc.)
-
-## Frontmatter Patterns
-
-Each `.mdc` file uses YAML frontmatter to control loading:
-
-### Always Loaded
 ```yaml
 ---
 description: "Brief purpose"
-alwaysApply: true
+alwaysApply: true    # or false
+globs: ["pattern"]   # optional
 ---
 ```
 
-**Current**: None (kept minimal to reduce context size)
+## Relationship to Commands
 
-### Context-Based (Globs)
-```yaml
----
-description: "Brief purpose"
-globs: ["pattern/**/*.ext"]
----
-```
+**Commands** (`.cursor/commands/*.md`):
+- No frontmatter
+- Invoked via slash commands
+- User triggers explicitly
 
-**Current**: `creating-rules.mdc` (loads when editing rules)
+**Rules** (`.cursor/rules/*.mdc`):
+- Has frontmatter
+- Auto-loaded by Cursor
+- Based on alwaysApply or globs
 
-### On-Demand
-```yaml
----
-description: "Brief purpose"
-alwaysApply: false
----
-```
+## Adding New Workflows
 
-**Current**: All PR and issue workflows (invoked via slash commands)
+**For slash commands**: Create in `.cursor/commands/`
+- File: `command-name.md`
+- Format: `# command-name` as first line
+- No frontmatter needed
 
-## Content Structure
+**For auto-applying rules**: Create in `.cursor/rules/`
+- File: `rule-name.mdc`
+- Must have frontmatter
+- Set alwaysApply or globs
 
-**Workflows in this directory:**
-- Procedural, step-by-step instructions
-- Action-oriented with clear sequences
-- Use enforcing language (MUST/NEVER/ALWAYS)
-- Include examples and anti-patterns
-- Quick reference section
-
-**Reference material (in AGENTS.md):**
-- Standards, patterns, architecture
-- Context and rationale
-- Detailed explanations
-- Taxonomy and categorization
-
-## Relationship to AGENTS.md
-
-**AGENTS.md contains:**
-- Project context and structure
-- Code standards and conventions
-- Dependencies and requirements
-- File organization
-- Testing strategy
-- Component documentation
-
-**Workflows reference AGENTS.md for:**
-- Detailed standards
-- Technical specifications  
-- Pattern libraries
-- Architecture decisions
-
-**Don't duplicate**: Reference AGENTS.md instead of repeating content.
-
-## Agent Attribution
-
-**All rules must document agent signature requirements:**
-- 🤖 Cursor (in replies/comments)
-- 🤖 *Generated by Cursor* (in PR descriptions)
-- 🤖 Generated by Cursor (in commit messages)
-
-See `pr-workflow.mdc` for complete attribution requirements.
-
-## Adding New Rules
-
-**Process:**
-1. Determine if workflow (.mdc) or reference (AGENTS.md)
-2. Choose name: `<topic>-workflow.mdc` or `<component>.mdc`
-3. Write frontmatter with appropriate loading strategy
-4. Structure content with clear sections
-5. Validate with markdownlint
-6. Update this README
-7. Link from other rules if referenced
-
-See `creating-rules.mdc` for detailed guide.
-
-## Current Rules Summary
-
-| File | Slash Command | Strategy | Purpose |
-|------|---------------|----------|---------|
-| `pr-create.mdc` | `/pr-create` | On-demand | Create PRs |
-| `pr-iterate.mdc` | `/pr-iterate` | On-demand | Handle feedback |
-| `pr-merge.mdc` | `/pr-merge` | On-demand | Merge PRs |
-| `pr-close.mdc` | `/pr-close` | On-demand | Close/abandon PRs |
-| `pr-review.mdc` | `/pr-review` | On-demand | Review PRs |
-| `issue-create.mdc` | `/issue-create` | On-demand | Create issues |
-| `issue-respond.mdc` | `/issue-respond` | On-demand | Respond to issues |
-| `issue-implement.mdc` | `/issue-implement` | On-demand | Implement & PR |
-| `issue-close.mdc` | `/issue-close` | On-demand | Close issues |
-| `creating-rules.mdc` | `/creating-rules` | Globs | Meta-workflow |
-| `emoji-semantics.mdc` | `/emoji-semantics` | Globs | Emoji meanings |
-
-**Total**: 11 workflow files
-
-**Organized by prefix:**
-- `pr-*` (5 files) - Pull request workflows (full lifecycle)
-- `issue-*` (4 files) - Issue workflows (full lifecycle)
-- `creating-*` (1 file) - Meta workflow
-- `emoji-*` (1 file) - Reference guide
-
-## Design Principles
-
-1. **Focused**: Each rule covers one workflow or topic
-2. **Concise**: Keep rules scannable and actionable
-3. **Contextual**: Load only what's needed when it's needed
-4. **Hierarchical**: Reference AGENTS.md for details
-5. **Maintainable**: Clear organization, no duplication
+See `creating-rules.mdc` for complete guide.
 
 ---
 
-**Last Updated**: 2025-11-03  
-**Rules Count**: 2  
-**Loading**: 1 always, 1 context-based
-
+**Last Updated**: 2025-11-03
