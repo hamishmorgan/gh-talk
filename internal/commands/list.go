@@ -160,7 +160,7 @@ func outputThreads(cmd *cobra.Command, threads []api.Thread) error {
 	case "json":
 		return outputThreadsJSON(threads, terminal)
 	default:
-		return fmt.Errorf("unknown format: %s", format)
+		return fmt.Errorf("unknown format: %s\n\nValid formats: table, json, tsv", format)
 	}
 }
 
