@@ -11,7 +11,7 @@ alwaysApply: true
 
 **Prerequisites**:
 - Git repository cloned locally
-- `gh` CLI installed and authenticated  
+- `gh` CLI installed and authenticated
 - `make` targets available (build, test, lint, ci, fmt)
 - `gh-talk` extension installed for review management
 - Branch protection enabled on main branch
