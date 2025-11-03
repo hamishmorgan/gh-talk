@@ -441,26 +441,7 @@ chmod +x .git/hooks/pre-commit
 
 **Tool:** markdownlint-cli
 
-**Configuration: `.markdownlint.json`**
-
-```json
-{
-  "default": true,
-  "MD003": { "style": "atx" },
-  "MD013": false,
-  "MD024": { "siblings_only": true },
-  "MD029": false,
-  "MD033": {
-    "allowed_elements": ["details", "summary", "br", "img", "id", "message", "emoji"]
-  },
-  "MD034": false,
-  "MD036": false,
-  "MD040": false,
-  "MD041": false,
-  "no-hard-tabs": true,
-  "whitespace": true
-}
-```
+**Configuration:** See `.markdownlint.json` in repository root
 
 **Rules Disabled:**
 
@@ -470,6 +451,11 @@ chmod +x .git/hooks/pre-commit
 - `MD036`: Emphasis as heading (intentional documentation style)
 - `MD040`: Code block language (not all code blocks need language tags)
 - `MD041`: First line heading (not required)
+
+**Allowed HTML Elements:**
+
+- Standard: `details`, `summary`, `br`, `img`
+- Non-standard: `id`, `message`, `emoji` (used for angle-bracket syntax in command examples like `reply <id> <message>` or `react <id> <emoji>`)
 
 **Commands:**
 
@@ -902,37 +888,21 @@ issues:
 
 ### Markdown Linting
 
-**File: `.markdownlint.json`**
-
-```json
-{
-  "default": true,
-  "MD003": { "style": "atx" },
-  "MD013": false,
-  "MD024": { "siblings_only": true },
-  "MD029": false,
-  "MD033": {
-    "allowed_elements": ["details", "summary", "br", "img", "id", "message", "emoji"]
-  },
-  "MD034": false,
-  "MD036": false,
-  "MD040": false,
-  "MD041": false,
-  "no-hard-tabs": true,
-  "whitespace": true
-}
-```
+**Configuration:** See `.markdownlint.json` in repository root for the complete configuration.
 
 **Files to Lint:**
 
-```
 - README.md
 - AGENTS.md
-- docs/*.md
+- docs/\*.md
 - testdata/README.md
-- .cursor/commands/*.md
-- .cursor/rules/*.mdc
-```
+- .cursor/commands/\*.md
+- .cursor/rules/\*.mdc
+
+**Configuration highlights:**
+
+- Disabled rules: MD013, MD029, MD034, MD036, MD040, MD041
+- Allowed HTML elements include `id`, `message`, `emoji` for angle-bracket syntax in docs
 
 ### EditorConfig
 
@@ -967,6 +937,8 @@ indent_style = tab
 ## Makefile
 
 **File: `Makefile`**
+
+> **Note:** Makefiles require TAB characters for indentation, not spaces. The examples below show single spaces for readability in markdown, but you must use TAB characters when creating actual Makefile rules. See the actual `Makefile` in the repository for the correct format.
 
 ```makefile
 .PHONY: help
