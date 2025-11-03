@@ -60,5 +60,7 @@ See `.cursor/rules/README.md` for details.
 
 ---
 
+**Official Documentation**: [Cursor Custom Slash Commands](https://cursor.com/changelog/1-6)
+
 **Last Updated**: 2025-11-03
 

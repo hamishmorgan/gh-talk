@@ -536,10 +536,13 @@ step3
 ---
 
 **Related**:
-- `.cursor/rules/README.md` - Directory index and current rules
-- `.cursor/rules/pr-workflow.mdc` - Example of a complete workflow
+- `.cursor/commands/` - Slash command workflows (see official docs)
+- `.cursor/rules/README.md` - Directory index
 - `AGENTS.md` - Reference material (what NOT to put in rules)
 - `~/.dotfiles/.cursor/rules/README.md` - Patterns from other projects
+
+**Official Documentation**:
+- [Cursor Slash Commands](https://cursor.com/changelog/1-6) - Custom slash commands feature
 
 **Last Updated**: 2025-11-03
 
