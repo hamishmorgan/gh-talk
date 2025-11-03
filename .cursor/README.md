@@ -46,8 +46,9 @@ Type `/` in Cursor chat to see all available commands.
 - `/issue-implement` - Issue → Implementation → PR
 - `/issue-close` - Close issues properly
 
-(No reference commands - emoji-semantics, create-rule, and create-command
-are rules that auto-load when editing related files)
+**Meta:**
+- `/create-rule` - Guide for creating workflow rules
+- `/create-command` - Guide for creating command wrappers
 
 ## Available Rules
 
