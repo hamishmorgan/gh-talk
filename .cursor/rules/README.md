@@ -46,6 +46,12 @@ This directory contains workflow files for AI agents working on gh-talk in Curso
 - **Load strategy**: On-demand
 - **Purpose**: Answer questions, provide updates
 
+**`issue-implement.mdc`** - Implement feature from issue
+- **Slash command**: `/issue-implement`
+- **Load strategy**: On-demand
+- **Purpose**: Take issue → Implement → Create PR → Link together
+- **Next**: → `/pr-iterate`, `/pr-merge`
+
 **`issue-close.mdc`** - Close issues with proper reason
 - **Slash command**: `/issue-close`
 - **Load strategy**: On-demand
@@ -158,14 +164,15 @@ See `creating-rules.mdc` for detailed guide.
 | `pr-review.mdc` | `/pr-review` | On-demand | Review PRs |
 | `issue-create.mdc` | `/issue-create` | On-demand | Create issues |
 | `issue-respond.mdc` | `/issue-respond` | On-demand | Respond to issues |
+| `issue-implement.mdc` | `/issue-implement` | On-demand | Implement & PR |
 | `issue-close.mdc` | `/issue-close` | On-demand | Close issues |
 | `creating-rules.mdc` | `/creating-rules` | Globs | Meta-workflow |
 
-**Total**: 9 workflow files
+**Total**: 10 workflow files
 
 **Organized by prefix:**
 - `pr-*` (5 files) - Pull request workflows (full lifecycle)
-- `issue-*` (3 files) - Issue workflows (full lifecycle)
+- `issue-*` (4 files) - Issue workflows (full lifecycle)
 - `creating-*` (1 file) - Meta workflow
 
 ## Design Principles
