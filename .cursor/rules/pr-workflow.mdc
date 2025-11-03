@@ -1,0 +1,279 @@
+---
+description: "Pull request workflow for gh-talk development"
+alwaysApply: true
+---
+
+# Pull Request Workflow
+
+**Branch Protection Enabled**: All changes via PRs, no direct commits to main.
+
+## Branch Creation
+
+**Naming Convention:**
+```
+feat/<feature-name>    # New features
+fix/<bug-name>         # Bug fixes
+docs/<topic>           # Documentation only
+refactor/<component>   # Code refactoring
+test/<scope>           # Test additions
+chore/<task>           # Maintenance
+```
+
+**Examples:**
+- `feat/bulk-operations`
+- `fix/build-error-graphql-type`
+- `docs/add-recipes-guide`
+
+## Workflow Steps
+
+### 1. Create Feature Branch
+
+```bash
+git checkout main
+git pull origin main
+git checkout -b feat/your-feature
+```
+
+### 2. Make Changes
+
+- Implement feature/fix
+- Write tests (maintain >60% coverage)
+- Update documentation if needed
+- Follow AGENTS.md guidelines
+
+### 3. Commit Frequently
+
+**Format**: `<type>: <description>`
+
+**Types**: feat, fix, docs, style, refactor, test, chore
+
+**AI Attribution** (REQUIRED):
+```bash
+git commit --author="Cursor <cursor@noreply.local>" -m "feat: add feature"
+```
+
+**Examples:**
+```bash
+git commit --author="Cursor <cursor@noreply.local>" -m "feat: add JSON output to list command"
+git commit --author="Cursor <cursor@noreply.local>" -m "fix: handle empty thread list gracefully"
+git commit --author="Cursor <cursor@noreply.local>" -m "test: add unit tests for emoji parsing"
+git commit --author="Cursor <cursor@noreply.local>" -m "docs: update README with new examples"
+```
+
+### 4. Run Local Checks BEFORE Pushing
+
+```bash
+make ci  # Runs lint + test + format check
+```
+
+**Required**:
+- All tests pass
+- No linter errors
+- Code formatted (gofmt)
+
+**DO NOT push failing code to PR** - fix locally first.
+
+### 5. Push to Branch
+
+```bash
+git push origin <branch-name>
+
+# If branch doesn't exist yet, set upstream:
+git push -u origin <branch-name>
+```
+
+### 6. Create Pull Request
+
+```bash
+gh pr create \
+  --title "feat: descriptive title" \
+  --body "Description of changes
+
+Closes #<issue-number> (if applicable)
+
+Changes:
+- What changed
+- Why it changed
+- How to test"
+```
+
+### 7. Monitor CI
+
+```bash
+# Check status
+gh pr checks
+
+# Watch run
+gh run watch
+
+# If failed, view logs
+gh run view --log-failed
+```
+
+### 8. Address Feedback
+
+**Check ALL comment types:**
+
+```bash
+# 1. General PR comments
+gh pr view --comments
+
+# 2. Inline review comments (CRITICAL - don't miss these!)
+gh talk list threads  # Use our own tool!
+
+# 3. Review status
+gh pr view --json reviewDecision --jq '.reviewDecision'
+```
+
+**For each comment:**
+- Fix the issue
+- Commit with descriptive message
+- Push immediately (incremental)
+- Don't accumulate fixes
+
+### 9. Keep PR Updated
+
+**Before each push, check if behind:**
+
+```bash
+gh pr view --json mergeStateStatus --jq '.mergeStateStatus'
+
+# If "BEHIND", rebase:
+git fetch origin main
+git rebase origin/main
+# Fix conflicts if any
+git push --force-with-lease  # Safe force push
+```
+
+### 10. Self-Review Before Requesting Merge
+
+**Checklist:**
+- [ ] All CI checks passing
+- [ ] All review comments addressed
+- [ ] Tests added/updated
+- [ ] Documentation updated
+- [ ] No linter warnings
+- [ ] Coverage maintained (>60% if possible)
+- [ ] AGENTS.md updated (if new patterns)
+- [ ] Branch is up to date with main
+
+### 11. Request Merge (User Approval Required)
+
+**DO NOT merge yourself** - wait for user to approve and merge.
+
+**Report readiness:**
+```
+✓ All checks passing
+✓ All feedback addressed  
+✓ Tests added
+✓ Documentation updated
+✓ Ready for merge
+
+Awaiting your approval to merge.
+```
+
+## Using gh-talk for PR Reviews
+
+**Now that gh-talk exists, USE IT:**
+
+```bash
+# List all review threads
+gh talk list threads
+
+# Reply and resolve
+gh talk reply PRRT_xxx "Fixed!" --resolve --react 👍
+
+# Check status
+gh talk status
+
+# Show thread details
+gh talk show PRRT_xxx
+```
+
+**Much better than:**
+```bash
+# Old way
+gh api repos/.../pulls/<PR>/comments
+# Complex GraphQL queries
+# Manual comment threading
+```
+
+## Common Patterns
+
+### Quick PR Creation
+
+```bash
+# From feature branch
+make ci                    # Verify locally first
+git push -u origin <branch>
+gh pr create --fill        # Use commit messages
+```
+
+### Incremental Fixes
+
+```bash
+# After review feedback
+# Fix issue 1
+git add <files>
+git commit --author="Cursor <cursor@noreply.local>" -m "fix: address review comment about X"
+git push
+
+# Fix issue 2  
+git add <files>
+git commit --author="Cursor <cursor@noreply.local>" -m "fix: handle edge case Y"
+git push
+
+# Don't wait - push after each fix for incremental review
+```
+
+### Rebase and Update
+
+```bash
+# Keep PR fresh
+git fetch origin main
+git rebase origin/main
+# Resolve conflicts
+make ci  # Verify still works
+git push --force-with-lease
+```
+
+## Anti-Patterns (DON'T)
+
+❌ **Direct commits to main** - Branch protection prevents this  
+❌ **Large PRs** - Keep changes focused (<300 lines if possible)  
+❌ **Pushing without testing** - Run `make ci` first  
+❌ **Accumulating changes** - Commit and push incrementally  
+❌ **Force push** - Use `--force-with-lease` (safer)  
+❌ **Merging yourself** - Wait for user approval  
+❌ **Missing inline comments** - Check with `gh talk list threads`  
+❌ **Ignoring CI failures** - Fix before requesting review  
+
+## Quick Reference
+
+```bash
+# Create PR
+git checkout -b feat/name
+# ... make changes ...
+make ci
+git push -u origin feat/name
+gh pr create
+
+# Address feedback
+gh talk list threads     # See all comments
+# ... fix issues ...
+make ci
+git push
+
+# Keep updated
+git fetch && git rebase origin/main
+git push --force-with-lease
+
+# Check readiness
+gh pr checks
+gh talk status
+make ci
+```
+
+---
+
+**Remember**: Quality over speed. Test locally, commit incrementally, never push failing code.
