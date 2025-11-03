@@ -53,7 +53,7 @@ func runReact(cmd *cobra.Command, args []string) error {
 	// Validate all comment IDs
 	for _, commentID := range commentIDs {
 		if !strings.HasPrefix(commentID, "PRRC_") && !strings.HasPrefix(commentID, "IC_") {
-			return fmt.Errorf("invalid comment ID: %s\n\nExpected format: PRRC_... or IC_...", commentID)
+			return fmt.Errorf("invalid comment ID %s - expected format: PRRC_ or IC_", commentID)
 		}
 	}
 

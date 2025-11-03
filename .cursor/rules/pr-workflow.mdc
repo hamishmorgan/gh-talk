@@ -378,7 +378,7 @@ gh pr checks <PR>
 gh pr comment <PR> --body "## Status Update
 
 ✓ All checks passing (verified: gh pr checks returned 0)
-✓ All feedback addressed  
+✓ All feedback addressed
 ✓ Tests added
 ✓ Documentation updated
 

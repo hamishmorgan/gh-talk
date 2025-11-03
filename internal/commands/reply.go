@@ -234,15 +234,7 @@ func selectThreadInteractive(ctx context.Context, owner, name string, pr int) (s
 }
 
 func openEditor() (string, error) {
-	editor := os.Getenv("GH_TALK_EDITOR")
-	if editor == "" {
-		editor = os.Getenv("EDITOR")
-	}
-	if editor == "" {
-		editor = "vim"
-	}
-
 	// TODO: Implement actual editor integration
 	// For now, return error
-	return "", fmt.Errorf("editor integration not yet implemented\n\nUse --message flag or provide message as argument")
+	return "", fmt.Errorf("editor integration not yet implemented - use --message flag or provide message as argument")
 }
