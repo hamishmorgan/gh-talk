@@ -11,18 +11,24 @@ alwaysApply: true
 
 **Naming Convention:**
 ```
-feat/<feature-name>    # New features
-fix/<bug-name>         # Bug fixes
-docs/<topic>           # Documentation only
-refactor/<component>   # Code refactoring
-test/<scope>           # Test additions
-chore/<task>           # Maintenance
+<agent>_<descriptive_name>
+
+Where:
+  <agent> = cursor | copilot | claude
+  <descriptive_name> = lowercase_with_underscores
 ```
 
 **Examples:**
-- `feat/bulk-operations`
-- `fix/build-error-graphql-type`
-- `docs/add-recipes-guide`
+- `cursor_add_bulk_operations`
+- `cursor_fix_graphql_type_error`
+- `cursor_update_readme_examples`
+- `claude_improve_error_messages`
+
+**Rules:**
+- NO type prefixes (feat/, fix/, etc.)
+- NO slashes (can cause git directory issues)
+- Use underscores for word separation
+- Keep descriptive and clear
 
 ## Workflow Steps
 
@@ -31,45 +37,57 @@ chore/<task>           # Maintenance
 ```bash
 git checkout main
 git pull origin main
-git checkout -b feat/your-feature
+git checkout -b cursor_your_feature_name
 ```
 
 ### 2. Make Changes
 
 - Implement feature/fix
-- Write tests (maintain >60% coverage)
+- **Write tests for ALL new code (100% coverage of new code)**
 - Update documentation if needed
 - Follow AGENTS.md guidelines
+- **Critically review your own changes**:
+  - Read through every line you changed
+  - Question design decisions
+  - Look for edge cases
+  - Consider error scenarios
+  - Check for code smells
 
 ### 3. Commit Frequently
 
-**Format**: `<type>: <description>`
-
-**Types**: feat, fix, docs, style, refactor, test, chore
+**Format**: `<clear description of what changed>`
 
 **AI Attribution** (REQUIRED):
 ```bash
-git commit --author="Cursor <cursor@noreply.local>" -m "feat: add feature"
+git commit --author="Cursor <cursor@noreply.local>" -m "descriptive message"
 ```
 
 **Examples:**
 ```bash
-git commit --author="Cursor <cursor@noreply.local>" -m "feat: add JSON output to list command"
-git commit --author="Cursor <cursor@noreply.local>" -m "fix: handle empty thread list gracefully"
-git commit --author="Cursor <cursor@noreply.local>" -m "test: add unit tests for emoji parsing"
-git commit --author="Cursor <cursor@noreply.local>" -m "docs: update README with new examples"
+git commit --author="Cursor <cursor@noreply.local>" -m "Add JSON output to list command"
+git commit --author="Cursor <cursor@noreply.local>" -m "Handle empty thread list gracefully"
+git commit --author="Cursor <cursor@noreply.local>" -m "Add unit tests for emoji parsing (100% coverage)"
+git commit --author="Cursor <cursor@noreply.local>" -m "Update README with new examples"
 ```
+
+**Rules:**
+- NO type prefixes (feat:, fix:, etc.) - just describe what you did
+- Descriptive and clear
+- First letter capitalized
+- AI attribution required
 
 ### 4. Run Local Checks BEFORE Pushing
 
 ```bash
-make ci  # Runs lint + test + format check
+make fmt   # Format code (gofmt, goimports)
+make ci    # Runs lint + test + format check
 ```
 
 **Required**:
 - All tests pass
 - No linter errors
-- Code formatted (gofmt)
+- Code formatted (gofmt + goimports)
+- **100% coverage for new code** (not existing code)
 
 **DO NOT push failing code to PR** - fix locally first.
 
@@ -125,11 +143,30 @@ gh talk list threads  # Use our own tool!
 gh pr view --json reviewDecision --jq '.reviewDecision'
 ```
 
-**For each comment:**
-- Fix the issue
-- Commit with descriptive message
-- Push immediately (incremental)
-- Don't accumulate fixes
+**For EACH comment (in order):**
+
+1. **Respond BEFORE fixing**: `gh talk reply PRRT_xxx "👀 Looking into this"`
+2. **Make the fix**: Implement the change
+3. **Test the fix**: Ensure it works and has 100% test coverage
+4. **Respond AFTER fixing**: `gh talk reply PRRT_xxx "Fixed in this commit" --resolve --react 👍`
+5. **Commit**: Descriptive message with AI attribution
+6. **Push immediately**: Don't accumulate multiple fixes
+
+**Emoji response guide:**
+- 👀 Before fixing (acknowledging)
+- 👍 After fixing (confirmation)
+- ❤️ For helpful suggestions
+- 🎉 For great feedback
+- 😕 If unclear (ask for clarification)
+
+**After all comments in thread addressed:**
+```bash
+# Resolve the thread
+gh talk resolve PRRT_xxx
+
+# Hide original comments to clean up
+gh talk hide PRRC_xxx --reason resolved
+```
 
 ### 9. Keep PR Updated
 
@@ -150,10 +187,12 @@ git push --force-with-lease  # Safe force push
 **Checklist:**
 - [ ] All CI checks passing
 - [ ] All review comments addressed
-- [ ] Tests added/updated
+- [ ] All review threads resolved
+- [ ] All resolved comments hidden
+- [ ] Tests added/updated with **100% coverage for new code**
+- [ ] Code formatted (`make fmt`)
 - [ ] Documentation updated
 - [ ] No linter warnings
-- [ ] Coverage maintained (>60% if possible)
 - [ ] AGENTS.md updated (if new patterns)
 - [ ] Branch is up to date with main
 
@@ -164,7 +203,7 @@ git push --force-with-lease  # Safe force push
 **Report readiness:**
 ```
 ✓ All checks passing
-✓ All feedback addressed  
+✓ All feedback addressed
 ✓ Tests added
 ✓ Documentation updated
 ✓ Ready for merge
@@ -180,7 +219,10 @@ Awaiting your approval to merge.
 # List all review threads
 gh talk list threads
 
-# Reply and resolve
+# Reply before fixing
+gh talk reply PRRT_xxx "👀 Looking into this"
+
+# After fixing, reply and resolve
 gh talk reply PRRT_xxx "Fixed!" --resolve --react 👍
 
 # Check status
@@ -188,14 +230,26 @@ gh talk status
 
 # Show thread details
 gh talk show PRRT_xxx
+
+# Hide resolved comments
+gh talk hide PRRC_xxx --reason resolved
 ```
 
-**Much better than:**
+**If gh-talk has issues:**
+- Create GitHub issue documenting the problem
+- Use fallback: `gh api` or web UI temporarily
+- Continue with PR workflow
+- Fix gh-talk issue separately
+
+**Rebuilding gh-talk during development:**
 ```bash
-# Old way
-gh api repos/.../pulls/<PR>/comments
-# Complex GraphQL queries
-# Manual comment threading
+# After making changes to gh-talk code
+make build
+gh extension remove gh-talk
+gh extension install .
+
+# Or use make target
+make install  # Does both automatically
 ```
 
 ## Common Patterns
@@ -203,9 +257,10 @@ gh api repos/.../pulls/<PR>/comments
 ### Quick PR Creation
 
 ```bash
-# From feature branch
-make ci                    # Verify locally first
-git push -u origin <branch>
+# From feature branch (cursor_feature_name)
+make fmt                   # Format first
+make ci                    # Verify locally
+git push -u origin cursor_feature_name
 gh pr create --fill        # Use commit messages
 ```
 
@@ -213,17 +268,24 @@ gh pr create --fill        # Use commit messages
 
 ```bash
 # After review feedback
-# Fix issue 1
+# For each comment:
+
+# 1. Respond before fixing
+gh talk reply PRRT_xxx "👀 Working on this now"
+
+# 2. Fix issue 1
 git add <files>
-git commit --author="Cursor <cursor@noreply.local>" -m "fix: address review comment about X"
+git commit --author="Cursor <cursor@noreply.local>" -m "Address review comment about X"
+make fmt  # Format before push
 git push
 
-# Fix issue 2  
-git add <files>
-git commit --author="Cursor <cursor@noreply.local>" -m "fix: handle edge case Y"
-git push
+# 3. Respond after fixing
+gh talk reply PRRT_xxx "Fixed in latest commit" --resolve --react 👍
 
-# Don't wait - push after each fix for incremental review
+# 4. Hide resolved comment
+gh talk hide PRRC_xxx --reason resolved
+
+# Repeat for each comment - push after each fix for incremental review
 ```
 
 ### Rebase and Update
@@ -239,30 +301,35 @@ git push --force-with-lease
 
 ## Anti-Patterns (DON'T)
 
-❌ **Direct commits to main** - Branch protection prevents this  
-❌ **Large PRs** - Keep changes focused (<300 lines if possible)  
-❌ **Pushing without testing** - Run `make ci` first  
-❌ **Accumulating changes** - Commit and push incrementally  
-❌ **Force push** - Use `--force-with-lease` (safer)  
-❌ **Merging yourself** - Wait for user approval  
-❌ **Missing inline comments** - Check with `gh talk list threads`  
-❌ **Ignoring CI failures** - Fix before requesting review  
+❌ **Direct commits to main** - Branch protection prevents this
+❌ **Large PRs** - Keep changes focused (<300 lines if possible)
+❌ **Pushing without testing** - Run `make ci` first
+❌ **Accumulating changes** - Commit and push incrementally
+❌ **Force push** - Use `--force-with-lease` (safer)
+❌ **Merging yourself** - Wait for user approval
+❌ **Missing inline comments** - Check with `gh talk list threads`
+❌ **Ignoring CI failures** - Fix before requesting review
 
 ## Quick Reference
 
 ```bash
 # Create PR
-git checkout -b feat/name
+git checkout -b cursor_feature_name
 # ... make changes ...
+make fmt
 make ci
-git push -u origin feat/name
+git push -u origin cursor_feature_name
 gh pr create
 
 # Address feedback
-gh talk list threads     # See all comments
-# ... fix issues ...
-make ci
+gh talk list threads                          # See all comments
+gh talk reply PRRT_xxx "👀 Looking"           # Respond before
+# ... fix issue ...
+make fmt && make ci                           # Format and test
+git commit --author="Cursor <cursor@noreply.local>" -m "Fix issue"
 git push
+gh talk reply PRRT_xxx "Fixed!" --resolve --react 👍  # Respond after
+gh talk hide PRRC_xxx --reason resolved       # Clean up
 
 # Keep updated
 git fetch && git rebase origin/main
