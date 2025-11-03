@@ -31,6 +31,13 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
   - Error responses and edge cases
   - Design implications from real data
 
+- **[GO-GH.md](GO-GH.md)** - go-gh library guide and patterns
+  - GraphQL and REST client usage
+  - Repository context detection
+  - Terminal and table formatting
+  - Error handling patterns
+  - Best practices and common patterns
+
 - **[GH-CLI.md](GH-CLI.md)** - GitHub CLI (`gh`) analysis
   - Core `gh` capabilities and commands
   - PR and issue comment features
@@ -50,6 +57,51 @@ Welcome to the gh-talk documentation. This directory contains all technical and 
   - Package responsibilities
   - Design decision explanations
   - Evolution path
+
+- **[DESIGN.md](DESIGN.md)** - Key design decisions and rationale
+  - Thread ID system (Full IDs + Interactive + URLs)
+  - Command syntax and patterns
+  - Flag conventions
+  - Error message patterns
+  - Output formats and filtering
+
+- **[CLI-FRAMEWORK.md](CLI-FRAMEWORK.md)** - CLI framework analysis and decision
+  - What gh uses (custom, not Cobra)
+  - Framework alternatives (Cobra, urfave/cli, stdlib, kong)
+  - Comparison and trade-offs
+  - Recommendation: Cobra (despite gh not using it)
+  - Implementation strategy
+
+- **[COBRA.md](COBRA.md)** - Cobra framework guide for gh-talk
+  - Core concepts (commands, flags, subcommands)
+  - gh-talk command structure with Cobra
+  - Common patterns for our use case
+  - Integration with go-gh library
+  - Testing strategies
+  - Complete implementation examples
+
+- **[EXTENSION-PATTERNS.md](EXTENSION-PATTERNS.md)** - Analysis of successful gh extensions
+  - Study of 5 popular extensions (gh-dash, gh-s, gh-poi, gh-copilot, gh-branch)
+  - Project structures and patterns
+  - Framework choices (gh-copilot uses Cobra!)
+  - Common testing approaches
+  - Best practices and anti-patterns
+  - Validation of our design choices
+
+- **[ENGINEERING.md](ENGINEERING.md)** - Engineering practices and CI/CD
+  - Testing strategy (unit, integration, contract, E2E)
+  - CI/CD workflows (test, lint, build, security)
+  - Linting configuration (Go, Markdown, YAML)
+  - Code coverage and quality gates
+  - Makefile for common tasks
+  - Pre-release checklist
+
+- **[ENVIRONMENT.md](ENVIRONMENT.md)** - Environment variables reference
+  - GitHub CLI variables (GH_TOKEN, GH_HOST, GH_REPO, etc.)
+  - Terminal variables (NO_COLOR, CLICOLOR, etc.)
+  - gh-talk specific variables
+  - Priority and precedence rules
+  - Usage examples and testing
 
 ## Quick Links
 

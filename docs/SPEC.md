@@ -65,7 +65,11 @@ gh talk list reviews              # List all reviews
 - `--author <username>` - Filter by comment author
 - `--since <date>` - Only show comments since date
 - `--file <path>` - Only show comments on specific file
-- `--format <type>` - Output format: table (default), json, markdown
+- `--format <type>` - Output format: table (default), json, tsv
+- `--json <fields>` - JSON output with specific fields (like gh CLI)
+- `--pr <number>` - PR number (or infer from current branch)
+- `--issue <number>` - Issue number
+- `-R, --repo OWNER/REPO` - Repository (or infer from git)
 
 **Examples:**
 
@@ -86,50 +90,59 @@ gh talk list threads --file src/main.go --unresolved
 **Output format:**
 
 ```
-Thread ID    File                  Line  Author     Status      Reactions  Preview
------------  -------------------  ----  ---------  ----------  ---------  --------
-PRRT_abc123  src/api.go            42   reviewer1  unresolved  👍 x2      Consider using...
-PRRT_def456  src/db.go             89   reviewer2  unresolved  🎉        Great refactor!
+ID                         File:Line          Status        Reactions  Preview
+-------------------------  -----------------  ------------  ---------  ---------------------
+PRRT_kwDOQN97u85gQeTN     src/api.go:42      ○ OPEN        👍 2       Consider using...
+PRRT_kwDOQN97u85gQecu     src/db.go:89       ✓ RESOLVED    🎉 1       Great refactor!
 ```
+
+**Note:** Real thread IDs are 25-30 characters (base64-encoded Node IDs).
+See [REAL-DATA.md](REAL-DATA.md) for actual ID formats from GitHub API.
 
 ### 2. Reply Commands
 
-#### `gh talk reply <thread-id> <message>`
+#### `gh talk reply [<thread-id>] [<message>]`
 
 Reply to a review thread.
 
-**Arguments:**
+**Arguments (both optional for interactive mode):**
 
-- `<thread-id>` - Thread ID (from list command)
-- `<message>` - Reply message (use quotes for multi-word)
+- `<thread-id>` - Thread ID (PRRT_...), URL, or omit for interactive selection
+- `<message>` - Reply message (use quotes for multi-word), or use --editor
 
 **Flags:**
 
 - `--resolve` - Resolve thread after replying
-- `--react <emoji>` - Add reaction after replying
-- `--editor` - Open editor for message composition
+- `-e, --editor` - Open editor for message composition
+- `-m, --message <text>` - Message text (alternative to positional argument)
 
 **Examples:**
 
 ```bash
-# Simple reply
-gh talk reply PRRT_abc123 "Fixed in commit abc123"
+# Interactive mode (prompts for thread and message)
+gh talk reply
+
+# With full Node ID (real format from GitHub)
+gh talk reply PRRT_kwDOQN97u85gQeTN "Fixed in commit abc123"
 
 # Reply and resolve
-gh talk reply PRRT_abc123 "Addressed by refactoring the function" --resolve
-
-# Reply, react, and resolve
-gh talk reply PRRT_abc123 "Good catch, fixed!" --react 👍 --resolve
+gh talk reply PRRT_kwDOQN97u85gQeTN "Addressed by refactoring" --resolve
 
 # Compose in editor
-gh talk reply PRRT_abc123 --editor
+gh talk reply PRRT_kwDOQN97u85gQeTN --editor
+
+# URL support (Phase 2)
+gh talk reply https://github.com/owner/repo/pull/123#discussion_r456 "Fixed"
 ```
 
-**Special handling:**
+**Thread ID Formats Supported:**
 
-- Escape special characters automatically
-- Support multi-line messages via editor
-- Validate thread exists before posting
+1. **Full Node ID** - `PRRT_kwDOQN97u85gQeTN` (for scripting)
+2. **Interactive** - Empty argument prompts selection
+3. **URL** - `https://github.com/.../pull/123#discussion_r456` (Phase 2)
+
+**Note:** Short numeric IDs (1, 2, 3) are NOT supported due to caching complexity.
+See [DESIGN.md](DESIGN.md) for thread ID system rationale.
 
 ### 3. Reaction Commands
 
@@ -173,9 +186,18 @@ gh talk react PRRC_xyz789 👍 --remove
 **Bulk reactions:**
 
 ```bash
-# React to multiple comments
-gh talk react PRRC_abc123,PRRC_def456 👍
+# React to multiple comments (space-separated)
+gh talk react PRRC_kwDOQN97u86UHqK7 PRRC_kwDOQN97u86UHqOo 👍
 ```
+
+**Emoji Formats Supported:**
+- Unicode emoji: `👍`, `🎉`, `❤️`
+- GraphQL names: `THUMBS_UP`, `HOORAY`, `HEART`
+- Lowercase: `thumbs_up`, `hooray`, `heart`
+- Slack-style: `:thumbs_up:`, `:tada:`
+- Shorthand: `+1`, `-1`
+
+See [DESIGN.md](DESIGN.md#emoji-handling) for complete mapping.
 
 ### 4. Resolution Commands
 
@@ -208,11 +230,24 @@ gh talk resolve PRRT_abc123 --unresolve
 **Bulk resolution:**
 
 ```bash
-# Resolve multiple threads
-gh talk resolve PRRT_abc123,PRRT_def456,PRRT_ghi789
+# Resolve multiple threads (space-separated)
+gh talk resolve PRRT_kwDO...123 PRRT_kwDO...456 PRRT_kwDO...789
 
-# Resolve all resolved threads matching filter
-gh talk list threads --file src/api.go | gh talk resolve --batch
+# With confirmation (default for multiple)
+? Resolve 3 threads? (y/N)
+
+# Skip confirmation
+gh talk resolve PRRT_kwDO...123 PRRT_kwDO...456 --yes
+```
+
+**Interactive Mode:**
+```bash
+# No arguments prompts for selection
+gh talk resolve
+? Select threads to resolve:
+  [x] test_file.go:7  - Consider using a constant...
+  [ ] test_file.go:14 - This loop could be optimized...
+  [x] test_file.go:18 - Consider extracting this...
 ```
 
 ### 5. Hide Commands
@@ -368,22 +403,47 @@ aliases:
 
 ### Environment Variables
 
-- `GH_TALK_FORMAT` - Default output format
-- `GH_TALK_REACTIONS` - Enable/disable reaction display
+**GitHub CLI (automatically used via go-gh):**
+- `GH_TOKEN` - GitHub authentication token
+- `GH_HOST` - GitHub host (default: github.com)
+- `GH_REPO` - Repository context (OWNER/REPO)
+- `GH_FORCE_TTY` - Force terminal mode
+- `GH_DEBUG` - Enable debug logging
+
+**gh-talk Specific:**
+- `GH_TALK_CONFIG` - Config file location (default: ~/.config/gh-talk/config.yml)
+- `GH_TALK_CACHE_DIR` - Cache directory (default: ~/.cache/gh-talk)
+- `GH_TALK_CACHE_TTL` - Cache TTL in minutes (default: 5)
+- `GH_TALK_FORMAT` - Default output format (table, json, tsv)
 - `GH_TALK_EDITOR` - Editor for message composition
+
+**Terminal:**
+- `NO_COLOR` - Disable colors
+- `CLICOLOR` - Color support (0 or 1)
+- `EDITOR` - Default text editor
+
+See [ENVIRONMENT.md](ENVIRONMENT.md) for complete reference.
 
 ## Data Sources
 
 ### GraphQL API Queries
 
-All data fetched via GitHub GraphQL API using the existing workflow patterns from `.cursor/rules/graphql-comments-workflow.mdc`.
+All data fetched via GitHub GraphQL API v4.
 
 **Core queries:**
 
-1. **Review threads** - `pullRequest.reviewThreads`
+1. **Review threads** - `pullRequest.reviewThreads` (PR only)
 2. **Comments** - Thread comments with reactions
-3. **Reviews** - PR reviews with state
-4. **Reactions** - Emoji reactions on comments
+3. **Issue comments** - `issue.comments` (separate from review threads)
+4. **Reactions** - `reactionGroups` (always includes all 8 types)
+
+**Real Data Structures:**
+- Thread IDs: `PRRT_kwDOQN97u85gQeTN` (25-30 chars)
+- Comment IDs: `PRRC_kwDOQN97u86UHqK7` or `IC_kwDOQN97u87PVA8l`
+- Issue IDs: `I_kwDOQN97u87VYpUq`
+- Review IDs: `PRR_kwDOQN97u87LMeCy`
+
+See [API.md](API.md) for GraphQL schema and [REAL-DATA.md](REAL-DATA.md) for actual response structures from live testing.
 
 ### Caching Strategy
 
@@ -429,24 +489,43 @@ All data fetched via GitHub GraphQL API using the existing workflow patterns fro
 
 ## Testing Strategy
 
-### Unit Tests
+### Test Types
 
+**Unit Tests:**
 - GraphQL query construction
 - Response parsing and error handling
 - Filter logic
-- Emoji handling and escaping
+- Emoji handling and mapping
+- ID validation and parsing
+- **Target:** 90%+ coverage for API package
 
-### Integration Tests
+**Integration Tests:**
+- Full command execution with mocked API
+- Flag parsing and validation
+- Output formatting (table, JSON, TSV)
+- Error message generation
+- **Target:** All commands tested
 
-- End-to-end command execution
-- API interaction (mocked)
-- Error scenarios
+**Contract Tests:**
+- GraphQL query structs match GitHub schema
+- Response parsing with real fixtures
+- Using testdata/ real API responses
+- **Target:** All queries/mutations validated
 
-### Manual Testing
+**E2E Tests (Optional):**
+- Real API calls (expensive, rate-limited)
+- Manual testing on test PR #1 and Issue #2
+- Cross-platform compatibility (Linux, macOS, Windows)
+- **Target:** Smoke tests for main workflows
 
-- Real PR workflows
-- Cross-platform compatibility (macOS, Linux)
-- Different repository types (public, private, org)
+**Test Fixtures:**
+- `testdata/pr_full_response.json` - Complete PR with threads
+- `testdata/issue_full_response.json` - Complete issue with comments
+- `testdata/pr_with_resolved_threads.json` - Mixed resolution states
+
+**Overall Target:** 80%+ code coverage
+
+See [ENGINEERING.md](ENGINEERING.md) for complete testing strategy and CI/CD setup.
 
 ## Future Enhancements
 
@@ -460,23 +539,38 @@ All data fetched via GitHub GraphQL API using the existing workflow patterns fro
 
 ### Phase 3 Features
 
-- **Issue support** - Extend to issue conversations
+- **Full TUI mode** - Bubble Tea interactive interface (like gh-dash)
 - **Discussion support** - GitHub Discussions integration
 - **Search** - Full-text search across conversations
 - **Analytics** - Conversation metrics and insights
+- **URL → Node ID conversion** - Direct URL support (requires API lookup)
+
+**Note:** Issue support is included in Phase 1 (MVP). Issues and PRs share the same comment/reaction model, with issues being simpler (no review threads).
+
+See [WORKFLOWS.md](WORKFLOWS.md) for detailed usage patterns and [REAL-DATA.md](REAL-DATA.md) for Issue vs PR differences.
 
 ## Dependencies
 
 ### Required
 
 - `gh` CLI v2.0+
+- Go 1.21+ (for building from source)
 - GitHub GraphQL API access
-- `jq` for JSON processing (Go implementation: no external dependency)
+
+### Go Dependencies
+
+- `github.com/cli/go-gh/v2` v2.12.2+ - GitHub CLI library
+- `github.com/spf13/cobra` v1.8+ - CLI framework
+- `github.com/charmbracelet/bubbletea` v0.25+ - TUI framework (Phase 3)
+- `github.com/charmbracelet/lipgloss` v0.9+ - Terminal styling (Phase 3)
+
+**Note:** JSON processing uses Go stdlib `encoding/json` (no external jq dependency)
 
 ### Optional
 
-- `fzf` for fuzzy finding in interactive mode
+- `fzf` - Enhanced fuzzy finding (if available, used for better interactive selection)
 - Terminal with Unicode support for emoji rendering
+- Terminal with true color support for best visual experience
 
 ## Distribution
 
@@ -525,59 +619,178 @@ gh extension remove gh-talk
 
 ### Project Structure
 
+**Actual Structure (refined from research):**
+
 ```
 gh-talk/
-├── cmd/
-│   ├── list.go       # List commands
-│   ├── reply.go      # Reply commands
-│   ├── react.go      # Reaction commands
-│   ├── resolve.go    # Resolution commands
-│   ├── hide.go       # Hide commands
-│   ├── dismiss.go    # Dismiss commands
-│   └── show.go       # Show commands
-├── pkg/
-│   ├── api/          # GraphQL API client
-│   ├── filter/       # Filtering logic
-│   ├── format/       # Output formatting
-│   └── config/       # Configuration management
-├── internal/
-│   ├── tui/          # Terminal UI (interactive mode)
-│   └── cache/        # Caching layer
-├── main.go           # Entry point
+├── main.go                    # Entry point (minimal)
+├── internal/                  # All implementation (private)
+│   ├── api/                  # GitHub GraphQL API client wrapper
+│   │   ├── client.go         # Client wrapper around go-gh
+│   │   ├── threads.go        # Thread operations
+│   │   ├── comments.go       # Comment operations
+│   │   ├── reactions.go      # Reaction operations
+│   │   ├── types.go          # GraphQL type definitions
+│   │   └── mock.go           # Test mocks
+│   ├── commands/             # Cobra command implementations
+│   │   ├── root.go           # Root command setup
+│   │   ├── list.go           # List commands
+│   │   ├── reply.go          # Reply command
+│   │   ├── resolve.go        # Resolve/unresolve commands
+│   │   ├── react.go          # React command
+│   │   ├── hide.go           # Hide/unhide commands
+│   │   └── show.go           # Show command
+│   ├── format/               # Output formatting
+│   │   ├── table.go          # Table output (terminal)
+│   │   ├── json.go           # JSON output
+│   │   └── tsv.go            # TSV output (non-TTY)
+│   ├── filter/               # Filtering logic
+│   │   └── threads.go        # Client-side filtering
+│   ├── config/               # Configuration management
+│   │   ├── config.go         # Config file handling
+│   │   └── env.go            # Environment variables
+│   ├── cache/                # Caching layer
+│   │   └── cache.go          # Thread data caching (5min TTL)
+│   └── tui/                  # Terminal UI (Phase 3)
+│       └── tui.go            # Bubble Tea implementation
+├── testdata/                  # Test fixtures (real API responses)
+│   ├── README.md
+│   ├── pr_full_response.json
+│   ├── issue_full_response.json
+│   └── pr_with_resolved_threads.json
+├── docs/                      # Documentation
+│   ├── API.md                # GitHub API reference
+│   ├── REAL-DATA.md          # Real API responses
+│   ├── GO-GH.md              # go-gh library guide
+│   ├── COBRA.md              # Cobra implementation guide
+│   ├── DESIGN.md             # Design decisions
+│   ├── ENGINEERING.md        # Testing & CI/CD
+│   └── ...                   # Additional docs
+├── .github/
+│   └── workflows/
+│       ├── test.yml          # Test, lint, coverage
+│       ├── build.yml         # Multi-platform builds
+│       └── release.yml       # Automated releases
+├── .golangci.yml             # Linter configuration
+├── Makefile                   # Development tasks
 ├── go.mod
 ├── go.sum
-├── SPEC.md           # This file
-└── README.md         # User documentation
+└── README.md                  # User documentation
 ```
+
+**Key Architectural Decisions:**
+- **No cmd/** for binary location (main.go in root per gh extension convention)
+- **No pkg/** (code is not meant to be imported externally)
+- **internal/** for all implementation (enforces encapsulation)
+- **testdata/** for real API response fixtures
+
+See [STRUCTURE.md](STRUCTURE.md) for architecture rationale and [EXTENSION-PATTERNS.md](EXTENSION-PATTERNS.md) for validation from successful extensions.
 
 ### Key Libraries
 
-- `github.com/cli/go-gh` - Official GitHub CLI library
-- `github.com/spf13/cobra` - CLI framework
-- `github.com/charmbracelet/bubbletea` - TUI framework (interactive mode)
-- `github.com/charmbracelet/lipgloss` - Terminal styling
+**Core:**
+- `github.com/cli/go-gh/v2` v2.12.2 - GitHub CLI library (GraphQL/REST clients, auth, terminal)
+- `github.com/spf13/cobra` v1.8 - CLI framework (validated by gh-copilot usage)
+
+**Future (Phase 3):**
+- `github.com/charmbracelet/bubbletea` v0.25 - TUI framework (interactive mode)
+- `github.com/charmbracelet/lipgloss` v0.9 - Terminal styling
+
+**Testing:**
+- Standard library `testing` package
+- Real API fixtures in `testdata/`
+- Mock patterns for API client
+
+**Note:** Cobra choice validated - GitHub's own gh-copilot extension uses Cobra.
 
 ## Documentation
 
 ### User Documentation
 
-- README.md - Installation, quick start, common workflows
-- Man page - Detailed command reference
-- Examples directory - Real-world usage scenarios
+- `README.md` - Installation, quick start, feature overview
+- `docs/ENVIRONMENT.md` - Environment variables reference
+- `docs/WORKFLOWS.md` - Real-world usage patterns and examples
 
 ### Developer Documentation
 
-- CONTRIBUTING.md - How to contribute
-- ARCHITECTURE.md - Technical design decisions
-- API.md - GraphQL query reference
+**Architecture & Design:**
+- `docs/SPEC.md` - This specification (complete feature set)
+- `docs/DESIGN.md` - Key design decisions and rationale
+- `docs/STRUCTURE.md` - Project structure and organization
+
+**APIs & Implementation:**
+- `docs/API.md` - GitHub API capabilities and reference
+- `docs/REAL-DATA.md` - Real API responses from live testing (1,885 lines!)
+- `docs/GO-GH.md` - go-gh library guide and patterns
+- `docs/COBRA.md` - Cobra implementation guide
+
+**Analysis & Validation:**
+- `docs/GH-CLI.md` - GitHub CLI analysis (what gh does/doesn't do)
+- `docs/CLI-FRAMEWORK.md` - Framework choice analysis
+- `docs/EXTENSION-PATTERNS.md` - Successful extension patterns
+- `docs/WORKFLOWS.md` - User workflows and personas
+
+**Quality & Testing:**
+- `docs/ENGINEERING.md` - Testing strategy, CI/CD, quality practices
+- `AGENTS.md` - AI agent development guidelines
+- `testdata/README.md` - Test fixture documentation
+
+**Total:** 11,882 lines of comprehensive documentation
 
 ## License
 
 MIT License (following gh CLI extension conventions)
 
+## Implementation Status
+
+### Research Phase: ✅ Complete
+
+**Completed:**
+- ✅ Comprehensive API research and live testing
+- ✅ Real data structure documentation (PR #1, Issue #2)
+- ✅ Design decisions finalized
+- ✅ Framework choice validated (Cobra used by gh-copilot!)
+- ✅ Extension pattern analysis (5 successful extensions)
+- ✅ Complete engineering infrastructure (CI/CD, testing, linting)
+- ✅ 11,882 lines of documentation
+
+**Ready for Implementation:**
+- ✅ All critical decisions made
+- ✅ Thread ID system designed (Full IDs + Interactive)
+- ✅ Command syntax finalized
+- ✅ Testing strategy defined
+- ✅ CI/CD pipelines created
+- ✅ Quality gates established
+
+### Development Phase: Next
+
+**Phase 1: MVP (Weeks 1-3)**
+- Add Cobra dependency
+- Implement core commands (list, reply, resolve, react)
+- Basic filtering and formatting
+- Unit and integration tests
+- 80%+ code coverage
+
+**Phase 2: Enhancement (Weeks 4-6)**
+- Issue support (comments, reactions)
+- Hide/unhide commands
+- Advanced filtering
+- Bulk operations
+- Shell completion
+
+**Phase 3: Polish (Weeks 7+)**
+- Interactive TUI mode (Bubble Tea)
+- Configuration file support
+- URL → Node ID conversion
+- Advanced features
+
+See [ENGINEERING.md](ENGINEERING.md) for detailed implementation roadmap.
+
 ---
 
 **Version**: 0.1.0 (Specification)  
 **Last Updated**: 2025-11-02  
-**Status**: Draft - Pre-implementation
+**Status**: Specification Complete - Ready for Implementation  
+**Research:** Complete with live API testing  
+**Documentation:** 11,882 lines across 15 files
 

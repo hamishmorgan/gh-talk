@@ -1,8 +1,11 @@
 module github.com/hamishmorgan/gh-talk
 
-go 1.24.6
+go 1.21
 
-require github.com/cli/go-gh/v2 v2.12.2
+require (
+	github.com/cli/go-gh/v2 v2.12.2
+	github.com/spf13/cobra v1.8.1
+)
 
 require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
