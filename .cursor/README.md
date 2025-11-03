@@ -50,7 +50,7 @@ Type `/` in Cursor chat to see all available commands.
 - `/emoji-semantics` - Emoji reaction meanings
 
 **Meta:**
-- `/creating-rules` - Guide for creating new workflows
+- `/create-rule` - Guide for creating new workflows
 
 ## Available Rules
 

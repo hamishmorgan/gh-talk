@@ -57,7 +57,7 @@ globs: ["pattern"]   # optional
 - Must have frontmatter
 - Set alwaysApply or globs
 
-See `creating-rules.mdc` for complete guide.
+See `create-rule.mdc` for complete guide.
 
 ---
 

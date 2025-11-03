@@ -253,7 +253,7 @@ gh talk reply PRRT_xxx "👀 Looking into this
 
 # Step 2: Fix
 
-# Step 3: Confirm  
+# Step 3: Confirm
 gh talk reply PRRT_xxx "Fixed!
 
 🤖 Cursor" --resolve --react 👍
@@ -302,19 +302,19 @@ gh talk react IC_xxx ❤️    # Thanks for input
 
 ## Anti-Patterns
 
-❌ **Using 👎 without explanation** - Always explain disagreement  
-❌ **Over-reacting** - Don't react to every comment  
-❌ **Wrong semantics** - Don't use 🎉 for minor fixes  
-❌ **No acknowledgment** - Use 👀 before fixing  
-❌ **Forgetting 👍 after** - Confirm completion  
+❌ **Using 👎 without explanation** - Always explain disagreement
+❌ **Over-reacting** - Don't react to every comment
+❌ **Wrong semantics** - Don't use 🎉 for minor fixes
+❌ **No acknowledgment** - Use 👀 before fixing
+❌ **Forgetting 👍 after** - Confirm completion
 
 ## Best Practices
 
-✅ **👀 before, 👍 after** - Standard feedback loop  
-✅ **❤️ for good reviews** - Show appreciation  
-✅ **🎉 for major wins** - Celebrate good work  
-✅ **😕 signals confusion** - Then ask for clarification  
-✅ **Explain 👎** - Always add reply with reasoning  
+✅ **👀 before, 👍 after** - Standard feedback loop
+✅ **❤️ for good reviews** - Show appreciation
+✅ **🎉 for major wins** - Celebrate good work
+✅ **😕 signals confusion** - Then ask for clarification
+✅ **Explain 👎** - Always add reply with reasoning
 
 ---
 

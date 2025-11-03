@@ -1,10 +1,10 @@
 ---
 description: "Guide for creating new cursor rules - meta-workflow for rule creation"
 alwaysApply: false
-globs: [".cursor/rules/**/*.mdc", "AGENTS.md"]
+globs: [".cursor/**/*.mdc", ".cursor/**/*.md", "AGENTS.md"]
 ---
 
-# Creating Cursor Rules
+# Creating Cursor Rules and Commands
 
 **Purpose**: Meta-workflow for creating new `.mdc` workflow files in `.cursor/rules/`
 
