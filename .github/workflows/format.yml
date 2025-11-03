@@ -1,0 +1,39 @@
+name: Format
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  format-check:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Check gofmt
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "Go code is not formatted:"
+            gofmt -d .
+            exit 1
+          fi
+
+      - name: Check goimports
+        run: |
+          go install golang.org/x/tools/cmd/goimports@latest
+          if [ -n "$(goimports -l .)" ]; then
+            echo "Go imports are not formatted:"
+            goimports -d .
+            exit 1
+          fi
+

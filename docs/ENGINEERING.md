@@ -505,109 +505,49 @@ yamllint .golangci.yml
 
 ## CI/CD Workflows
 
-### Workflow 1: Test and Lint
+All workflows run on push to main and on pull requests. Each workflow is focused on a single concern for clarity and maintainability.
+
+### Workflow 1: Test
 
 **File: `.github/workflows/test.yml`**
 
-```yaml
-name: Test and Lint
+Runs unit tests with coverage reporting.
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+- Runs tests with race detection
+- Checks coverage threshold (minimum 5%, target 60%)
+- Uploads coverage to Codecov
 
-jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-      
-      - name: Download dependencies
-        run: go mod download
-      
-      - name: Run tests
-        run: go test -v -race -coverprofile=coverage.out ./...
-      
-      - name: Upload coverage
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage.out
-          flags: unittests
-          name: codecov-gh-talk
-  
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-      
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
-          args: --timeout=5m
-  
-  lint-markdown:
-    name: Lint Markdown
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      
-      - name: Install markdownlint-cli
-        run: npm install -g markdownlint-cli
-      
-      - name: Lint .md files
-        run: markdownlint '**/*.md' --ignore node_modules
-      
-      - name: Lint .mdc files
-        run: markdownlint '**/*.mdc' --ignore node_modules
-  
-  format-check:
-    name: Format Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-      
-      - name: Check gofmt
-        run: |
-          if [ -n "$(gofmt -l .)" ]; then
-            echo "Go code is not formatted:"
-            gofmt -d .
-            exit 1
-          fi
-      
-      - name: Check goimports
-        run: |
-          go install golang.org/x/tools/cmd/goimports@latest
-          if [ -n "$(goimports -l .)" ]; then
-            echo "Go imports are not formatted:"
-            goimports -d .
-            exit 1
-          fi
-```
+### Workflow 2: Lint
 
-### Workflow 2: Build Check
+**File: `.github/workflows/lint.yml`**
+
+Runs Go code linting with golangci-lint.
+
+- Uses golangci-lint with multiple enabled linters
+- 5 minute timeout
+- Checks code quality, style, and common issues
+
+### Workflow 3: Format
+
+**File: `.github/workflows/format.yml`**
+
+Checks code formatting with gofmt and goimports.
+
+- Verifies gofmt compliance
+- Verifies goimports compliance
+- Fails if any files need formatting
+
+### Workflow 4: Markdown Lint
+
+**File: `.github/workflows/markdown-lint.yml`**
+
+Lints all markdown files (.md and .mdc).
+
+- Checks markdown formatting and style
+- Uses markdownlint-cli with project configuration
+- Validates documentation quality
+
+### Workflow 5: Build Check
 
 **File: `.github/workflows/build.yml`**
 
@@ -648,7 +588,7 @@ jobs:
         shell: bash
 ```
 
-### Workflow 3: Release (Already Exists)
+### Workflow 6: Release
 
 **File: `.github/workflows/release.yml`**
 
@@ -688,7 +628,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-### Workflow 4: PR Validation
+### Workflow 7: PR Validation
 
 **File: `.github/workflows/pr.yml`**
 
@@ -752,7 +692,7 @@ jobs:
           config_file: .markdownlint.json
 ```
 
-### Workflow 5: Dependency Updates
+### Workflow 8: Dependency Updates
 
 **File: `.github/workflows/dependabot-auto-merge.yml`**
 
