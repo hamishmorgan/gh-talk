@@ -17,6 +17,35 @@ alwaysApply: false
 - Copilot review requested
 - CI running or completed
 
+## Step 0: Check if Rebase Needed (DO THIS FIRST!)
+
+**CRITICAL**: ALWAYS check and rebase BEFORE investigating failures. Many CI issues (formatting, linting, config) are already fixed in main.
+
+```bash
+# Check if PR is behind main
+gh pr view <PR> --json mergeStateStatus --jq '.mergeStateStatus'
+
+# If "BEHIND", rebase IMMEDIATELY:
+gh pr checkout <PR>
+git fetch origin main
+git rebase origin/main
+# Fix conflicts if any
+git push --force-with-lease
+
+# Re-check CI after rebase
+gh pr checks <PR>
+```
+
+**Why rebase first?**
+- Main branch may have recent fixes (golangci-lint config, formatting rules)
+- Rebasing brings in those fixes automatically
+- Saves time investigating issues that are already solved
+- Ensures you're working with latest codebase state
+
+**After rebasing:**
+- CI may pass immediately without any fixes needed
+- Only investigate failures that persist after rebase
+
 ## Monitor CI and Fix Failures
 
 **Check CI status (exit code 0 = ALL pass):**
@@ -229,6 +258,7 @@ gh pr comment <PR> --body "@github-copilot please re-review"
 
 ## Anti-Patterns
 
+❌ **NOT rebasing first** - ALWAYS rebase before investigating CI failures
 ❌ **Claiming ready while CI failing** - Check exit code!
 ❌ **Accumulating fixes** - Push after each fix
 ❌ **Forgetting to respond** - Always acknowledge before fixing
@@ -238,6 +268,11 @@ gh pr comment <PR> --body "@github-copilot please re-review"
 ## Quick Reference
 
 ```bash
+# STEP 0: Rebase if behind (DO THIS FIRST!)
+gh pr view <PR> --json mergeStateStatus --jq '.mergeStateStatus'
+# If "BEHIND":
+gh pr checkout <PR> && git fetch && git rebase origin/main && git push --force-with-lease
+
 # Check CI (wait for exit code 0)
 gh pr checks <PR>
 
