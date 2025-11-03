@@ -132,11 +132,11 @@ Closes #<issue-number> (if applicable)
 **Immediately:**
 
 ```bash
-# Add Copilot as reviewer
-gh pr edit <PR> --add-reviewer copilot
+# Request Copilot review via comment (only method that works)
+gh pr comment <PR> --body "@github-copilot please review"
 ```
 
-**This triggers Copilot to review the PR**
+**Note**: Copilot is not a regular reviewer, must use @mention in comment
 
 ## Quick Reference
 

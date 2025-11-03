@@ -100,12 +100,12 @@ Fixed by doing Y.
 git push
 
 # IMMEDIATELY REQUEST RE-REVIEW (REQUIRED)
-gh pr edit <PR> --add-reviewer copilot
+gh pr comment <PR> --body "@github-copilot please re-review"
 ```
 
 **CRITICAL**: ALWAYS request Copilot re-review immediately after pushing changes
 
-**Note**: `--add-reviewer copilot` triggers re-review even if already a reviewer
+**Note**: Must use comment @mention (Copilot not a regular reviewer)
 
 ### 5. Respond AFTER Fixing
 
@@ -215,7 +215,7 @@ git fetch && git rebase origin/main
 git push --force-with-lease
 
 # IMMEDIATELY REQUEST RE-REVIEW (REQUIRED)
-gh pr edit <PR> --add-reviewer copilot
+gh pr comment <PR> --body "@github-copilot please re-review"
 ```
 
 ## Anti-Patterns
@@ -241,7 +241,7 @@ gh talk reply PRRT_xxx "👀 Looking
 make fmt && make ci && git push
 
 # IMMEDIATELY re-review (REQUIRED)
-gh pr edit <PR> --add-reviewer copilot
+gh pr comment <PR> --body "@github-copilot please re-review"
 
 # Then respond
 gh talk reply PRRT_xxx "Fixed
