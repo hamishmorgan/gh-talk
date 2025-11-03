@@ -5,11 +5,11 @@ alwaysApply: false
 
 # Merging Pull Requests
 
-**Purpose**: Final verification, status update, and merge workflow.
+**Purpose**: Final verification and merge workflow.
 
 **When to Use**: 
-- When all feedback addressed and CI passing (invoke with `/pr-merge`)
-- User can instruct to merge by running `/pr-merge` or explicitly saying "merge this"
+- When all feedback addressed and CI passing (invoke with `/pr-merge <PR>`)
+- User invoking `/pr-merge` IS their instruction to merge
 
 **Previous Step**: Iterations complete via `/pr-iterate`
 
@@ -17,11 +17,12 @@ alwaysApply: false
 
 - All review feedback addressed
 - All CI checks passing (verified)
-- Copilot review satisfied
 
 **Behavior**:
-- **With explicit merge instruction**: Verifies CI, then merges PR
-- **Without merge instruction**: Verifies CI, posts status update, awaits approval
+- Verifies all CI checks pass (exit code 0)
+- Posts final status update
+- Merges PR with `--squash --delete-branch`
+- Updates local main branch
 
 ## Final Verification
 
@@ -92,38 +93,38 @@ Awaiting your approval to merge.
 - Verify exit code 0 before posting
 - Include agent signature
 
-## Request Merge
+## Merge Workflow
 
 **Merge Policy:**
 
-- **CAN merge** when explicitly instructed by user (e.g., user runs `/pr-merge` or directly says "merge this")
-- **DO NOT merge** automatically without explicit instruction
+- User invoking `/pr-merge <PR>` IS their instruction to merge
 - **ALWAYS verify** `gh pr checks` returns exit code 0 before merging
+- If CI not passing, STOP and notify user
 
-**When user explicitly instructs to merge:**
+**Steps:**
 
 ```bash
-# Verify one final time
+# 1. Verify CI passes (CRITICAL)
 gh pr checks <PR>  # MUST be exit code 0
 
-# Merge the PR
+# 2. If exit code 0, proceed to merge
 gh pr merge <PR> --squash --delete-branch
 
-# Confirm completion
-echo "✓ Merged and branch deleted"
+# 3. Confirm completion
+echo "✓ PR merged and branch deleted"
 ```
 
-**When verification complete but no explicit merge instruction:**
+**If CI fails (exit code ≠ 0):**
 
 ```bash
-gh pr comment <PR> --body "## Status Update
+# DO NOT merge - notify user
+gh pr comment <PR> --body "## ❌ Cannot Merge
 
-✓ All checks passing (verified: gh pr checks returned 0)
-✓ All feedback addressed
-✓ Tests added
-✓ Documentation updated
+CI checks are not passing. Please fix:
 
-Awaiting your approval to merge.
+[List failing checks]
+
+Run /pr-iterate to address failures.
 
 🤖 Cursor"
 ```
@@ -148,35 +149,36 @@ git push origin --delete <branch-name>
 
 ## Anti-Patterns
 
-❌ **Merging without explicit instruction** - Only merge when user directly instructs
+❌ **Merging without verifying CI** - ALWAYS check `gh pr checks` returns 0
 ❌ **Claiming ready without exit code 0** - Verify CI!
-❌ **Skipping status update** - Keep PR updated
 ❌ **Leaving old status comments** - Hide as outdated
-❌ **Merging while CI failing** - Always verify `gh pr checks` returns 0
+❌ **Merging while CI failing/pending** - Always verify `gh pr checks` returns 0 first
 
 ## Quick Reference
 
 ```bash
-# Verify ready
-gh pr checks <PR>  # Must be exit code 0
-gh talk status
+# User runs: /pr-merge <PR>
+# This IS their instruction to merge
 
-# FIRST: Hide ALL old status updates (CRITICAL STEP)
+# Step 1: Verify CI (CRITICAL)
+gh pr checks <PR>  # Must return exit code 0
+
+# Step 2: Hide old status updates
 gh pr view <PR> --comments --json comments | \
   jq -r '.comments[] | select(.body | contains("Status Update")) | .id' | \
   xargs -I {} gh talk hide {} --reason outdated
 
-# THEN: Post status update
-gh pr comment <PR> --body "...
+# Step 3: Post final status
+gh pr comment <PR> --body "✓ All checks passing
+✓ Merging now...
+
 🤖 Cursor"
 
-# When user instructs to merge
-gh pr checks <PR>  # Verify one final time (must be 0)
+# Step 4: Merge (if CI passed)
 gh pr merge <PR> --squash --delete-branch
 
-# After merge (cleanup)
+# Step 5: Update local main
 git checkout main && git pull
-git branch -d <branch>
 ```
 
 ## Cycle Complete
