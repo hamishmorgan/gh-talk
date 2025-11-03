@@ -100,10 +100,12 @@ Fixed by doing Y.
 git push
 
 # IMMEDIATELY REQUEST RE-REVIEW (REQUIRED)
-gh pr comment <PR> --body "@github-copilot please re-review"
+gh pr edit <PR> --add-reviewer copilot
 ```
 
 **CRITICAL**: ALWAYS request Copilot re-review immediately after pushing changes
+
+**Note**: `--add-reviewer copilot` triggers re-review even if already a reviewer
 
 ### 5. Respond AFTER Fixing
 
@@ -213,7 +215,7 @@ git fetch && git rebase origin/main
 git push --force-with-lease
 
 # IMMEDIATELY REQUEST RE-REVIEW (REQUIRED)
-gh pr comment <PR> --body "@github-copilot please re-review"
+gh pr edit <PR> --add-reviewer copilot
 ```
 
 ## Anti-Patterns
@@ -237,13 +239,15 @@ gh talk reply PRRT_xxx "👀 Looking
 🤖 Cursor"
 # fix
 make fmt && make ci && git push
+
+# IMMEDIATELY re-review (REQUIRED)
+gh pr edit <PR> --add-reviewer copilot
+
+# Then respond
 gh talk reply PRRT_xxx "Fixed
 
 🤖 Cursor" --resolve --react 👍
 gh talk hide PRRC_xxx --reason resolved
-
-# Request re-review
-gh pr comment <PR> --body "@github-copilot please re-review"
 ```
 
 ## Next Steps
