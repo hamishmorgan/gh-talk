@@ -16,10 +16,15 @@ This directory contains auto-applying rules for AI agents working on gh-talk.
 
 ## Files in This Directory
 
-**`create-rule.mdc`** - Guide for creating cursor commands and rules
-- **Load strategy**: Context-based (`globs: [".cursor/**/*.md", ".cursor/**/*.mdc", "AGENTS.md"]`)
-- **Purpose**: Meta-guide for creating new workflows
-- **When it loads**: When editing cursor commands, rules, or AGENTS.md
+**`create-rule.mdc`** - Guide for creating cursor workflow rules
+- **Load strategy**: Context-based (`globs: [".cursor/**/*.mdc", "AGENTS.md"]`)
+- **Purpose**: Creating full workflow rules in .cursor/rules/
+- **When it loads**: When editing rule files or AGENTS.md
+
+**`create-command.mdc`** - Guide for creating command wrappers
+- **Load strategy**: Context-based (`globs: [".cursor/commands/**/*.md"]`)
+- **Purpose**: Creating thin command wrappers in .cursor/commands/
+- **When it loads**: When editing command files
 
 ## Frontmatter Format
 
