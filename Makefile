@@ -7,7 +7,8 @@ build: ## Build the binary
 	go build -o gh-talk
 
 .PHONY: install
-install: ## Install as gh extension
+install: build ## Install as gh extension (removes old installation first)
+	@gh extension remove talk 2>/dev/null || true
 	gh extension install .
 
 .PHONY: test
@@ -58,6 +59,13 @@ update-deps: ## Update dependencies
 .PHONY: ci
 ci: lint test ## Run CI checks locally
 	@echo "✓ All CI checks passed"
+
+.PHONY: reinstall
+reinstall: install ## Alias for install (always removes and reinstalls)
+
+.PHONY: uninstall
+uninstall: ## Remove the gh extension
+	gh extension remove talk
 
 .DEFAULT_GOAL := help
 
