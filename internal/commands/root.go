@@ -47,4 +47,5 @@ func init() {
 	rootCmd.AddCommand(hideCmd)
 	rootCmd.AddCommand(unhideCmd)
 	rootCmd.AddCommand(showCmd)
+	rootCmd.AddCommand(statusCmd)
 }
