@@ -8,4 +8,5 @@ coverage.html
 
 # IDE/Editor directories
 .claude/
-.cursor/.keep
+.cursor/rules/personal/.keep
+.cursor/commands/personal/.keep
