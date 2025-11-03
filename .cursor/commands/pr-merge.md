@@ -2,9 +2,16 @@
 
 @.cursor/rules/pr-merge.mdc
 
-This workflow covers final verification, status updates, and merging PRs.
+Final verification and merge workflow for PRs.
 
 **Usage:**
-- `/pr-merge <PR>` - Verify PR and post status update (awaits approval)
-- `/pr-merge <PR> --merge` - Verify PR and merge if all checks pass
+- `/pr-merge <PR>` - Verify CI passes, then merge (squash and delete branch)
+
+**Behavior:**
+- Verifies all CI checks pass (exit code 0)
+- Posts status update
+- Merges PR with `--squash --delete-branch`
+- Updates local main branch
+
+**When invoked:** Your use of `/pr-merge` IS your instruction to merge
 
