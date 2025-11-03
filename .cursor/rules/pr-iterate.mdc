@@ -143,8 +143,9 @@ gh pr comment <PR> --body "## Status Update
 
 **CRITICAL**: ALWAYS hide old updates before posting new one
 
-**Emoji Guide:**
+**Emoji Usage:** See `/emoji-semantics` for complete guide
 
+**Standard pattern:**
 - 👀 Before fixing (acknowledging)
 - 👍 After fixing (confirmation)
 - ❤️ For helpful suggestions
