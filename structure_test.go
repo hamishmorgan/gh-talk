@@ -32,4 +32,3 @@ func TestDirectoryStructure(t *testing.T) {
 		})
 	}
 }
-

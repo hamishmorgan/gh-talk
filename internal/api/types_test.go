@@ -50,5 +50,3 @@ func TestThreadStructure(t *testing.T) {
 		}
 	}
 }
-
-

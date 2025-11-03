@@ -200,5 +200,3 @@ func openEditor() (string, error) {
 	// For now, return error
 	return "", fmt.Errorf("editor integration not yet implemented\n\nUse --message flag or provide message as argument")
 }
-
-

@@ -4,17 +4,17 @@ import "time"
 
 // Thread represents a pull request review thread
 type Thread struct {
-	ID           string
-	IsResolved   bool
-	IsCollapsed  bool
-	IsOutdated   bool
-	Path         string
-	Line         int
-	StartLine    int
-	DiffSide     string
-	SubjectType  string
-	ResolvedBy   *User
-	Comments     []Comment
+	ID                 string
+	IsResolved         bool
+	IsCollapsed        bool
+	IsOutdated         bool
+	Path               string
+	Line               int
+	StartLine          int
+	DiffSide           string
+	SubjectType        string
+	ResolvedBy         *User
+	Comments           []Comment
 	ViewerCanResolve   bool
 	ViewerCanUnresolve bool
 	ViewerCanReply     bool
@@ -22,23 +22,23 @@ type Thread struct {
 
 // Comment represents a review comment or issue comment
 type Comment struct {
-	ID              string
-	DatabaseID      int
-	Body            string
-	Path            string
-	Position        int
-	DiffHunk        string
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
-	Author          User
+	ID                string
+	DatabaseID        int
+	Body              string
+	Path              string
+	Position          int
+	DiffHunk          string
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	Author            User
 	AuthorAssociation string
-	ReplyTo         *CommentRef
-	IsMinimized     bool
-	MinimizedReason string
-	ReactionGroups  []ReactionGroup
-	ViewerCanReact  bool
-	ViewerCanUpdate bool
-	ViewerCanDelete bool
+	ReplyTo           *CommentRef
+	IsMinimized       bool
+	MinimizedReason   string
+	ReactionGroups    []ReactionGroup
+	ViewerCanReact    bool
+	ViewerCanUpdate   bool
+	ViewerCanDelete   bool
 	ViewerCanMinimize bool
 }
 
@@ -54,9 +54,9 @@ type User struct {
 
 // ReactionGroup represents aggregated reactions
 type ReactionGroup struct {
-	Content         string
-	CreatedAt       *time.Time
-	Users           ReactionUsers
+	Content          string
+	CreatedAt        *time.Time
+	Users            ReactionUsers
 	ViewerHasReacted bool
 }
 
@@ -84,5 +84,3 @@ type PullRequest struct {
 	State         string
 	ReviewThreads []Thread
 }
-
-

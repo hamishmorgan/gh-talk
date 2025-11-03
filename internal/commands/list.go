@@ -312,5 +312,3 @@ func contentToEmoji(content string) string {
 		return content
 	}
 }
-
-

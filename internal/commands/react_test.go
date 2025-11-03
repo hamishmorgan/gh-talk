@@ -60,4 +60,3 @@ func TestParseEmoji(t *testing.T) {
 		})
 	}
 }
-

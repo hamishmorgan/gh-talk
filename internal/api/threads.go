@@ -15,22 +15,22 @@ func (c *Client) ListThreads(ctx context.Context, owner, name string, pr int) ([
 			PullRequest struct {
 				ReviewThreads struct {
 					Nodes []struct {
-						ID           graphql.String
-						IsResolved   graphql.Boolean
-						IsCollapsed  graphql.Boolean
-						IsOutdated   graphql.Boolean
-						Path         graphql.String
-						Line         *graphql.Int
-						StartLine    *graphql.Int
-						DiffSide     graphql.String
-						SubjectType  graphql.String
-						ResolvedBy   *struct {
+						ID          graphql.String
+						IsResolved  graphql.Boolean
+						IsCollapsed graphql.Boolean
+						IsOutdated  graphql.Boolean
+						Path        graphql.String
+						Line        *graphql.Int
+						StartLine   *graphql.Int
+						DiffSide    graphql.String
+						SubjectType graphql.String
+						ResolvedBy  *struct {
 							Login graphql.String
 						}
 						ViewerCanResolve   graphql.Boolean
 						ViewerCanUnresolve graphql.Boolean
 						ViewerCanReply     graphql.Boolean
-						Comments struct {
+						Comments           struct {
 							TotalCount graphql.Int
 							Nodes      []struct {
 								ID        graphql.String
@@ -40,8 +40,8 @@ func (c *Client) ListThreads(ctx context.Context, owner, name string, pr int) ([
 									Login graphql.String
 								}
 								ReactionGroups []struct {
-									Content  graphql.String
-									Users    struct {
+									Content graphql.String
+									Users   struct {
 										TotalCount graphql.Int
 									} `graphql:"users(first: 1)"`
 									ViewerHasReacted graphql.Boolean
@@ -134,5 +134,3 @@ func (c *Client) ListThreads(ctx context.Context, owner, name string, pr int) ([
 
 	return threads, nil
 }
-
-

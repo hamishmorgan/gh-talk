@@ -65,5 +65,3 @@ func (c *Client) mutateWithContext(ctx context.Context, name string, mutation in
 	}
 	return nil
 }
-
-

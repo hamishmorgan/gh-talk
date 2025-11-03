@@ -125,4 +125,3 @@ func TestContentToEmoji(t *testing.T) {
 		})
 	}
 }
-

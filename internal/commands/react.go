@@ -96,14 +96,14 @@ func parseEmoji(input string) (string, error) {
 	// Map various formats to GraphQL enum
 	emojiMap := map[string]string{
 		// Unicode
-		"👍": "THUMBS_UP",
-		"👎": "THUMBS_DOWN",
-		"😄": "LAUGH",
-		"🎉": "HOORAY",
-		"😕": "CONFUSED",
+		"👍":  "THUMBS_UP",
+		"👎":  "THUMBS_DOWN",
+		"😄":  "LAUGH",
+		"🎉":  "HOORAY",
+		"😕":  "CONFUSED",
 		"❤️": "HEART",
-		"🚀": "ROCKET",
-		"👀": "EYES",
+		"🚀":  "ROCKET",
+		"👀":  "EYES",
 		// Lowercase names
 		"thumbs_up":   "THUMBS_UP",
 		"thumbs_down": "THUMBS_DOWN",
@@ -146,5 +146,3 @@ func parseEmoji(input string) (string, error) {
 
 	return "", fmt.Errorf("invalid emoji: %s\n\nSupported reactions:\n  👍 THUMBS_UP     😄 LAUGH      ❤️ HEART\n  👎 THUMBS_DOWN   🎉 HOORAY     🚀 ROCKET\n  😕 CONFUSED      👀 EYES", input)
 }
-
-

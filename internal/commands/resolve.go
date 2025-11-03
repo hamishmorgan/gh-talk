@@ -260,5 +260,3 @@ func selectThreadsInteractive(ctx context.Context, owner, name string, pr int, o
 
 	return ids, nil
 }
-
-

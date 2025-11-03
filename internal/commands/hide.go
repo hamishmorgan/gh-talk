@@ -107,5 +107,3 @@ func runUnhide(cmd *cobra.Command, args []string) error {
 	fmt.Printf("✓ Unhidden comment %s\n", commentID)
 	return nil
 }
-
-

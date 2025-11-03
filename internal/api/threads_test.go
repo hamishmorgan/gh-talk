@@ -22,16 +22,16 @@ func TestListThreads(t *testing.T) {
 				PullRequest struct {
 					ReviewThreads struct {
 						Nodes []struct {
-							ID           string
-							IsResolved   bool
-							IsCollapsed  bool
-							IsOutdated   bool
-							Path         string
-							Line         int
-							StartLine    int
-							DiffSide     string
-							SubjectType  string
-							ResolvedBy   *struct {
+							ID          string
+							IsResolved  bool
+							IsCollapsed bool
+							IsOutdated  bool
+							Path        string
+							Line        int
+							StartLine   int
+							DiffSide    string
+							SubjectType string
+							ResolvedBy  *struct {
 								Login string
 							}
 							ViewerCanResolve   bool
@@ -148,4 +148,3 @@ func TestParseThreadID(t *testing.T) {
 		})
 	}
 }
-

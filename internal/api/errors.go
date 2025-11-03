@@ -63,5 +63,3 @@ func handleHTTPError(httpErr *api.HTTPError) error {
 		return fmt.Errorf("HTTP %d: %s", httpErr.StatusCode, httpErr.Message)
 	}
 }
-
-

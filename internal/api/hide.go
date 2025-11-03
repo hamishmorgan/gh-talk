@@ -80,5 +80,3 @@ func ParseClassifier(reason string) (string, error) {
 
 	return "", fmt.Errorf("invalid reason: %s\n\nValid reasons: spam, abuse, off-topic, outdated, duplicate, resolved", reason)
 }
-
-

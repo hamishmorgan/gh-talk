@@ -154,5 +154,3 @@ func (c *Client) RemoveReaction(ctx context.Context, subjectID, content string) 
 
 	return nil
 }
-
-
