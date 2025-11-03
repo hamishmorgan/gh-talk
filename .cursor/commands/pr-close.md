@@ -1,9 +1,6 @@
----
-description: "Close PR when taking different approach or abandoning work"
-alwaysApply: false
----
+# pr-close
 
-# Closing Pull Requests
+Closing Pull Requests
 
 **Purpose**: Properly close a PR when deciding not to merge (different approach, superseded, etc.)
 

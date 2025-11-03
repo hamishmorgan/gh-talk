@@ -1,9 +1,6 @@
----
-description: "Create well-structured GitHub issues with proper context"
-alwaysApply: false
----
+# issue-create
 
-# Creating GitHub Issues
+Creating GitHub Issues
 
 **Purpose**: Create clear, actionable issues with proper context and formatting.
 

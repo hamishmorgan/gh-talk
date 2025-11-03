@@ -1,9 +1,6 @@
----
-description: "Final PR review, merge request, and post-merge cleanup"
-alwaysApply: false
----
+# pr-merge
 
-# Merging Pull Requests
+Merging Pull Requests
 
 **Purpose**: Final verification and merge request workflow.
 

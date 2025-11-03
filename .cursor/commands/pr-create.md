@@ -1,9 +1,6 @@
----
-description: "Create and submit a pull request with proper setup"
-alwaysApply: false
----
+# pr-create
 
-# Creating Pull Requests
+Creating Pull Requests
 
 **Purpose**: Workflow for creating a new PR from branch creation through initial submission.
 

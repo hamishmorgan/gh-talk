@@ -1,9 +1,6 @@
----
-description: "Respond to issue comments and discussions effectively"
-alwaysApply: false
----
+# issue-respond
 
-# Responding to GitHub Issues
+Responding to GitHub Issues
 
 **Purpose**: Handle issue discussions, questions, and comments.
 

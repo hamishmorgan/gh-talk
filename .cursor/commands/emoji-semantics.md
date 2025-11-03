@@ -1,10 +1,6 @@
----
-description: "Emoji reaction semantics and usage guide for PR and issue comments"
-alwaysApply: false
-globs: [".cursor/rules/pr-*.mdc", ".cursor/rules/issue-*.mdc"]
----
+# emoji-semantics
 
-# Emoji Reaction Semantics
+Emoji Reaction Semantics
 
 **Purpose**: Standardized meanings and usage guide for GitHub's 8 supported emoji reactions.
 

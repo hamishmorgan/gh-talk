@@ -1,9 +1,6 @@
----
-description: "Iterate on PR: monitor CI, address feedback, push fixes"
-alwaysApply: false
----
+# pr-iterate
 
-# Iterating on Pull Requests
+Iterating on Pull Requests
 
 **Purpose**: Handle CI monitoring, review feedback, and iterative improvements on an open PR.
 

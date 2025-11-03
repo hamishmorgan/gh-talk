@@ -1,9 +1,6 @@
----
-description: "Review pull requests: check code, leave feedback, approve/request changes"
-alwaysApply: false
----
+# pr-review
 
-# Reviewing Pull Requests
+Reviewing Pull Requests
 
 **Purpose**: Workflow for reviewing code in pull requests and providing feedback.
 

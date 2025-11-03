@@ -1,9 +1,6 @@
----
-description: "Close issues with appropriate reason and comment"
-alwaysApply: false
----
+# issue-close
 
-# Closing GitHub Issues
+Closing GitHub Issues
 
 **Purpose**: Properly close issues with clear reason and context.
 

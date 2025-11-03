@@ -1,9 +1,6 @@
----
-description: "Implement feature from issue and raise PR"
-alwaysApply: false
----
+# issue-implement
 
-# Implementing Issues
+Implementing Issues
 
 **Purpose**: Complete workflow for implementing a feature/fix from an issue and submitting as PR.
 
