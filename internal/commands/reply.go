@@ -29,6 +29,9 @@ Examples:
   # Reply and resolve
   gh talk reply PRRT_kwDOQN97u85gQeTN "Done!" --resolve
 
+  # Reply, react, and resolve (complete workflow)
+  gh talk reply PRRT_kwDOQN97u85gQeTN "Fixed!" --react 👍 --resolve
+
   # Using editor
   gh talk reply PRRT_kwDOQN97u85gQeTN --editor`,
 	Args: cobra.RangeArgs(0, 2),
@@ -39,6 +42,7 @@ func init() {
 	replyCmd.Flags().BoolP("editor", "e", false, "Open editor for message composition")
 	replyCmd.Flags().Bool("resolve", false, "Resolve thread after replying")
 	replyCmd.Flags().StringP("message", "m", "", "Message text (alternative to positional argument)")
+	replyCmd.Flags().String("react", "", "Add reaction to original comment (emoji or name)")
 
 	replyCmd.MarkFlagsMutuallyExclusive("editor", "message")
 }
@@ -128,6 +132,48 @@ func runReply(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("✓ Replied to thread %s\n", threadID)
+
+	// Add reaction if requested
+	reactEmoji, _ := cmd.Flags().GetString("react")
+	if reactEmoji != "" {
+		// Get the first comment in the thread to react to
+		// We need to fetch thread details to get comment ID
+		owner, name, err := getRepository(cmd)
+		if err != nil {
+			return fmt.Errorf("replied successfully but failed to add reaction: %w", err)
+		}
+		prNum, err := getCurrentPR(cmd)
+		if err != nil {
+			return fmt.Errorf("replied successfully but failed to add reaction: %w", err)
+		}
+
+		threads, err := client.ListThreads(ctx, owner, name, prNum)
+		if err != nil {
+			return fmt.Errorf("replied successfully but failed to add reaction: %w", err)
+		}
+
+		// Find our thread and get first comment
+		for _, t := range threads {
+			if t.ID == threadID && len(t.Comments) > 0 {
+				firstCommentID := t.Comments[0].ID
+
+				// Parse and add reaction
+				content, err := parseEmoji(reactEmoji)
+				if err != nil {
+					return fmt.Errorf("replied successfully but invalid emoji: %w", err)
+				}
+
+				err = client.AddReaction(ctx, firstCommentID, content)
+				if err != nil {
+					return fmt.Errorf("replied successfully but failed to add reaction: %w", err)
+				}
+
+				emoji := contentToEmoji(content)
+				fmt.Printf("✓ Added %s reaction to original comment\n", emoji)
+				break
+			}
+		}
+	}
 
 	// Resolve if requested
 	shouldResolve, _ := cmd.Flags().GetBool("resolve")
