@@ -123,10 +123,10 @@ git push origin --delete <branch-name>
 
 ## Anti-Patterns
 
-❌ **Merging yourself** - Always wait for user  
-❌ **Claiming ready without exit code 0** - Verify CI!  
-❌ **Skipping status update** - Keep PR updated  
-❌ **Leaving old status comments** - Hide as outdated  
+❌ **Merging yourself** - Always wait for user
+❌ **Claiming ready without exit code 0** - Verify CI!
+❌ **Skipping status update** - Keep PR updated
+❌ **Leaving old status comments** - Hide as outdated
 
 ## Quick Reference
 

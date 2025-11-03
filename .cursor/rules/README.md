@@ -29,6 +29,11 @@ This directory contains workflow files for AI agents working on gh-talk in Curso
 - **Load strategy**: On-demand
 - **Purpose**: Check out PR → Review code → Leave feedback → Approve/request changes
 
+**`pr-close.mdc`** - Close PR without merging
+- **Slash command**: `/pr-close`
+- **Load strategy**: On-demand
+- **Purpose**: Abandon PR with explanation → Clean up branches
+
 ### Issue Workflows (Slash Commands: `/issue-*`)
 
 **`issue-create.mdc`** - Create well-structured issues
@@ -39,7 +44,12 @@ This directory contains workflow files for AI agents working on gh-talk in Curso
 **`issue-respond.mdc`** - Respond to issue discussions
 - **Slash command**: `/issue-respond`
 - **Load strategy**: On-demand
-- **Purpose**: Answer questions, provide updates, close issues
+- **Purpose**: Answer questions, provide updates
+
+**`issue-close.mdc`** - Close issues with proper reason
+- **Slash command**: `/issue-close`
+- **Load strategy**: On-demand
+- **Purpose**: Close as completed, not planned, duplicate, etc. with comments
 
 ### Meta Workflow
 
@@ -144,16 +154,18 @@ See `creating-rules.mdc` for detailed guide.
 | `pr-create.mdc` | `/pr-create` | On-demand | Create PRs |
 | `pr-iterate.mdc` | `/pr-iterate` | On-demand | Handle feedback |
 | `pr-merge.mdc` | `/pr-merge` | On-demand | Merge PRs |
+| `pr-close.mdc` | `/pr-close` | On-demand | Close/abandon PRs |
 | `pr-review.mdc` | `/pr-review` | On-demand | Review PRs |
 | `issue-create.mdc` | `/issue-create` | On-demand | Create issues |
 | `issue-respond.mdc` | `/issue-respond` | On-demand | Respond to issues |
+| `issue-close.mdc` | `/issue-close` | On-demand | Close issues |
 | `creating-rules.mdc` | `/creating-rules` | Globs | Meta-workflow |
 
-**Total**: 7 workflow files
+**Total**: 9 workflow files
 
 **Organized by prefix:**
-- `pr-*` (4 files) - Pull request workflows
-- `issue-*` (2 files) - Issue workflows
+- `pr-*` (5 files) - Pull request workflows (full lifecycle)
+- `issue-*` (3 files) - Issue workflows (full lifecycle)
 - `creating-*` (1 file) - Meta workflow
 
 ## Design Principles

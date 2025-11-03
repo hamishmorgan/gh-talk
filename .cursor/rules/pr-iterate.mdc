@@ -191,11 +191,11 @@ gh pr comment <PR> --body "@github-copilot please re-review"
 
 ## Anti-Patterns
 
-❌ **Claiming ready while CI failing** - Check exit code!  
-❌ **Accumulating fixes** - Push after each fix  
-❌ **Forgetting to respond** - Always acknowledge before fixing  
-❌ **Missing re-review request** - Always request after changes  
-❌ **Skipping gh talk** - Use our own tool!  
+❌ **Claiming ready while CI failing** - Check exit code!
+❌ **Accumulating fixes** - Push after each fix
+❌ **Forgetting to respond** - Always acknowledge before fixing
+❌ **Missing re-review request** - Always request after changes
+❌ **Skipping gh talk** - Use our own tool!
 
 ## Quick Reference
 
