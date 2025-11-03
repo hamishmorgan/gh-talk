@@ -1,0 +1,17 @@
+{
+  "default": true,
+  "MD003": { "style": "atx" },
+  "MD013": false,
+  "MD024": { "siblings_only": true },
+  "MD029": false,
+  "MD033": {
+    "allowed_elements": ["details", "summary", "br", "img", "id", "message", "emoji"]
+  },
+  "MD034": false,
+  "MD036": false,
+  "MD040": false,
+  "MD041": false,
+  "no-hard-tabs": true,
+  "whitespace": true
+}
+

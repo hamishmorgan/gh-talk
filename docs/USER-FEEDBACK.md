@@ -26,12 +26,14 @@ $ gh talk help
 ```
 
 **What was great**:
+
 - Clear categorization of commands (reply, react, resolve, hide, etc.)
 - Each command had a short description
 - Help was accessible at every level (`gh talk [command] --help`)
 - Examples in help text were actual, copy-paste-able commands
 
 **Suggestion**: Consider adding a "Quick Start" section to help output showing the most common workflow:
+
 ```bash
 # Quick Start Examples:
   gh talk list threads --pr 137           # See what needs attention
@@ -44,11 +46,12 @@ $ gh talk help
 **Experience**: `gh talk list threads --pr 137` gave perfect overview of all review comments.
 
 ```bash
-ID	Path	Line	IsResolved	CommentCount	Preview
-PRRT_kwDOBP63ns5gT6cf	packages/rust/.cargo/config.toml	0	false	1	The `[include]` section...
+ID Path Line IsResolved CommentCount Preview
+PRRT_kwDOBP63ns5gT6cf packages/rust/.cargo/config.toml 0 false 1 The `[include]` section...
 ```
 
 **What was great**:
+
 - Tabular format made scanning easy
 - Thread IDs prominently displayed (needed for other commands)
 - `IsResolved` status at a glance
@@ -56,6 +59,7 @@ PRRT_kwDOBP63ns5gT6cf	packages/rust/.cargo/config.toml	0	false	1	The `[include]`
 - Could immediately copy-paste thread IDs into reply commands
 
 **Suggestion**: Add a `--unresolved` flag to only show threads needing attention:
+
 ```bash
 gh talk list threads --pr 137 --unresolved  # Filter out resolved threads
 ```
@@ -71,6 +75,7 @@ $ gh talk reply PRRT_xxx "Fixed in commit abc123" --resolve
 ```
 
 **What was great**:
+
 - Single command did two operations atomically
 - Clear confirmation of both actions
 - No need to run separate resolve command
@@ -89,12 +94,14 @@ gh talk react PRRC_xxx :heart: # Slack-style
 ```
 
 **What was great**:
+
 - Multiple input formats (emoji, name, slack-style)
 - Help text showed all supported reactions
 - Clear success message with emoji displayed
 - Worked consistently across all comment types
 
 **Minor suggestion**: Consider a bulk react command:
+
 ```bash
 gh talk react --threads PRRT_x,PRRT_y,PRRT_z 👍  # React to multiple threads
 ```
@@ -109,6 +116,7 @@ $ gh talk hide PRRC_xxx --reason resolved
 ```
 
 **What was great**:
+
 - Clear success message
 - Reason displayed in confirmation
 - Multiple reason options (spam, abuse, off-topic, outdated, duplicate, resolved)
@@ -131,22 +139,27 @@ Expected format: PRRC_... or IC_...
 ```
 
 **The confusion**:
+
 - GitHub API returns both `id` (numeric) and `node_id` (PRRC_xxx format)
 - Error message was helpful, but I had to query API again to get right format
 - Not obvious which ID to use when looking at raw API responses
 
 **Suggestion**:
+
 1. Accept both formats and auto-convert:
+
    ```bash
    gh talk react 2486231843 👍  # Auto-convert to node_id
    ```
 
 2. Or add a utility command:
+
    ```bash
    gh talk id 2486231843  # Returns: PRRC_kwDOBP63ns6UMOMj
    ```
 
 3. Update error message with conversion hint:
+
    ```
    ✗ invalid comment ID: 2486231843
    Expected format: PRRC_... or IC_...
@@ -160,6 +173,7 @@ Expected format: PRRC_... or IC_...
 **Experience**: Had to learn difference between thread IDs (PRRT_) and comment IDs (PRRC_).
 
 **The confusion**:
+
 - `list threads` returns thread IDs (PRRT_xxx)
 - `reply` takes thread IDs (PRRT_xxx)
 - `react` takes comment IDs (PRRC_xxx)
@@ -167,10 +181,12 @@ Expected format: PRRC_... or IC_...
 - Not immediately obvious what ID to use for each command
 
 **What helped**:
+
 - Help text specified the ID format for each command
 - Error messages were clear about expected format
 
 **Suggestion**: Add a `gh talk show <thread-id>` command that displays thread details INCLUDING comment IDs:
+
 ```bash
 $ gh talk show PRRT_kwDOBP63ns5gT6cf
 
@@ -188,6 +204,7 @@ Comments:
 ```
 
 This would make it easy to:
+
 - Get comment IDs for reactions
 - See thread history
 - Understand conversation structure
@@ -197,11 +214,13 @@ This would make it easy to:
 **Experience**: After hiding comments, wanted to verify they were minimized without opening browser.
 
 **The gap**:
+
 - `list threads` doesn't show minimized status
 - Had to use `gh api graphql` to verify
 - No way to see reactions or minimized state in terminal
 
 **Suggestion**: Enhance `list threads` with more status indicators:
+
 ```bash
 $ gh talk list threads --pr 137 --verbose
 
@@ -212,6 +231,7 @@ PRRT_kwDOBP63ns5gT6cf  config.toml   40    ✓ Resolved  5/5    👍×5
 ```
 
 Or add a dedicated command:
+
 ```bash
 $ gh talk status --pr 137
 ✓ All threads resolved (5/5)
@@ -246,6 +266,7 @@ gh talk hide PRRC_yyy --reason resolved --pr 137
 ```
 
 **What would be better**:
+
 ```bash
 # React to all comments in resolved threads
 gh talk react --threads resolved 👍 --pr 137
@@ -336,7 +357,7 @@ gh talk summary --pr 137
 ```bash
 # Current: Human-readable only
 $ gh talk list threads --pr 137
-ID	Path	Line...
+ID Path Line...
 
 # Suggested: Add --json flag
 $ gh talk list threads --pr 137 --json
@@ -441,12 +462,14 @@ Run without --dry-run to execute.
 ### vs. GitHub Web UI
 
 **Advantages of gh talk**:
+
 - ✅ Much faster (no page loads, no clicking)
 - ✅ Scriptable and automatable
 - ✅ Bulk operations possible
 - ✅ Can stay in terminal workflow
 
 **Disadvantages**:
+
 - ❌ Can't see rendered markdown/code diffs
 - ❌ Need to remember IDs
 - ❌ Less visual feedback
@@ -454,6 +477,7 @@ Run without --dry-run to execute.
 ### vs. gh pr comment
 
 **What gh talk adds**:
+
 - ✅ Thread resolution management
 - ✅ Reactions support
 - ✅ Hide/minimize comments
@@ -463,6 +487,7 @@ Run without --dry-run to execute.
 ### vs. Manual API calls
 
 **Advantages of gh talk**:
+
 - ✅ No need to construct GraphQL queries
 - ✅ Handles authentication automatically
 - ✅ Clear error messages
@@ -483,6 +508,7 @@ Run without --dry-run to execute.
 ### What Could Be Smoother
 
 **Current workflow (20 commands)**:
+
 ```bash
 gh talk list threads --pr 137                    # 1 command
 gh talk reply PRRT_1 "..." --resolve --pr 137    # 5 commands (one per thread)
@@ -503,6 +529,7 @@ gh talk hide PRRC_5 --reason resolved --pr 137
 ```
 
 **Ideal workflow (4-5 commands)**:
+
 ```bash
 gh talk list threads --pr 137                           # 1: see threads
 gh talk reply PRRT_1 "..." --resolve --react 👍 --pr 137  # 5: reply+resolve+react each
@@ -514,6 +541,7 @@ gh talk hide --threads resolved --reason resolved --pr 137  # 1: bulk hide
 ```
 
 Or even better:
+
 ```bash
 gh talk address-all --pr 137  # Interactive wizard through all threads
 ```
@@ -565,12 +593,14 @@ All commands worked as documented. No crashes, no data loss, no incorrect behavi
 ### Recommendation for Others
 
 **Highly recommended for:**
+
 - Maintainers handling many review comments
 - AI agents automating PR responses
 - Teams with structured review processes
 - Anyone who lives in the terminal
 
 **Maybe not ideal for:**
+
 - Occasional reviewers (web UI might be easier)
 - Visual reviewers who need to see code diffs
 - First-time users unfamiliar with terminal tools

@@ -1,0 +1,28 @@
+name: Markdown Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-markdown:
+    name: Lint Markdown Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+
+      - name: Lint .md files
+        run: markdownlint '**/*.md' --ignore node_modules
+
+      - name: Lint .mdc files
+        run: markdownlint '**/*.mdc' --ignore node_modules
+

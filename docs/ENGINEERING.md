@@ -15,6 +15,7 @@ This document defines engineering practices for gh-talk to ensure high quality, 
 **Scope:** Individual functions and methods
 
 **Pattern:**
+
 ```go
 // internal/api/threads_test.go
 package api
@@ -66,6 +67,7 @@ func TestParseThreadID(t *testing.T) {
 ```
 
 **Coverage Areas:**
+
 - ID parsing and validation
 - Filtering logic
 - Formatting functions
@@ -80,6 +82,7 @@ func TestParseThreadID(t *testing.T) {
 **Scope:** Full command execution with mocked API
 
 **Pattern:**
+
 ```go
 // internal/commands/list_test.go
 package commands
@@ -127,6 +130,7 @@ func TestListThreadsCommand(t *testing.T) {
 ```
 
 **Coverage Areas:**
+
 - Full command execution
 - Flag parsing
 - Output formatting
@@ -140,6 +144,7 @@ func TestListThreadsCommand(t *testing.T) {
 **Scope:** Validate GraphQL queries/mutations against schema
 
 **Pattern:**
+
 ```go
 // internal/api/queries_test.go
 package api
@@ -183,6 +188,7 @@ func TestQueryStructures(t *testing.T) {
 ```
 
 **Coverage Areas:**
+
 - Query structures match GitHub schema
 - Response parsing works
 - All fields accessible
@@ -194,6 +200,7 @@ func TestQueryStructures(t *testing.T) {
 **Scope:** Real API calls (optional, can be expensive)
 
 **Pattern:**
+
 ```go
 // e2e/basic_test.go
 // +build e2e
@@ -230,6 +237,7 @@ func TestRealAPIListThreads(t *testing.T) {
 ```
 
 **Run with:**
+
 ```bash
 E2E_TEST=1 go test -tags=e2e ./e2e/...
 ```
@@ -295,6 +303,7 @@ E2E_TEST=1 go test -tags=e2e ./e2e/...
 ### Test Helpers
 
 **Mock API Client:**
+
 ```go
 // internal/api/mock.go
 package api
@@ -320,6 +329,7 @@ func NewMockClient(opts MockOptions) *MockClient {
 ```
 
 **Fixture Loading:**
+
 ```go
 // internal/testutil/fixtures.go
 package testutil
@@ -350,12 +360,14 @@ func LoadFixture(t *testing.T, path string, v interface{}) {
 ### Go Linting
 
 **Tools:**
+
 - **golangci-lint** - Meta-linter running multiple linters
 - **gofmt** - Code formatting
 - **goimports** - Import organization
 - **go vet** - Static analysis
 
 **Configuration: `.golangci.yml`**
+
 ```yaml
 run:
   timeout: 5m
@@ -394,6 +406,7 @@ issues:
 ```
 
 **Pre-commit Script:**
+
 ```bash
 #!/bin/bash
 # .git/hooks/pre-commit
@@ -419,6 +432,7 @@ echo "✓ All checks passed"
 ```
 
 **Make executable:**
+
 ```bash
 chmod +x .git/hooks/pre-commit
 ```
@@ -428,31 +442,50 @@ chmod +x .git/hooks/pre-commit
 **Tool:** markdownlint-cli
 
 **Configuration: `.markdownlint.json`**
+
 ```json
 {
   "default": true,
+  "MD003": { "style": "atx" },
   "MD013": false,
+  "MD024": { "siblings_only": true },
+  "MD029": false,
   "MD033": {
-    "allowed_elements": ["details", "summary"]
+    "allowed_elements": ["details", "summary", "br", "img", "id", "message", "emoji"]
   },
+  "MD034": false,
+  "MD036": false,
+  "MD040": false,
   "MD041": false,
-  "line-length": false,
-  "no-inline-html": {
-    "allowed_elements": ["details", "summary", "br"]
-  }
+  "no-hard-tabs": true,
+  "whitespace": true
 }
 ```
 
+**Rules Disabled:**
+
+- `MD013`: Line length (documentation often has long lines)
+- `MD029`: Ordered list prefixes (intentional non-sequential numbering)
+- `MD034`: Bare URLs (common in documentation)
+- `MD036`: Emphasis as heading (intentional documentation style)
+- `MD040`: Code block language (not all code blocks need language tags)
+- `MD041`: First line heading (not required)
+
 **Commands:**
+
 ```bash
 # Install
 npm install -g markdownlint-cli
 
-# Lint markdown files
-markdownlint '**/*.md' --ignore node_modules
+# Lint markdown files (via Makefile)
+make lint-md
 
 # Fix automatically
-markdownlint '**/*.md' --fix
+make lint-md-fix
+
+# Manual commands
+markdownlint '**/*.md' '**/*.mdc' --ignore node_modules
+markdownlint '**/*.md' '**/*.mdc' --ignore node_modules --fix
 ```
 
 ### YAML Linting
@@ -460,6 +493,7 @@ markdownlint '**/*.md' --fix
 **Tool:** yamllint
 
 **Configuration: `.yamllint.yml`**
+
 ```yaml
 extends: default
 
@@ -473,6 +507,7 @@ rules:
 ```
 
 **Commands:**
+
 ```bash
 # Install
 pip install yamllint
@@ -487,6 +522,7 @@ yamllint .golangci.yml
 ### Workflow 1: Test and Lint
 
 **File: `.github/workflows/test.yml`**
+
 ```yaml
 name: Test and Lint
 
@@ -548,11 +584,14 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Install markdownlint
+      - name: Install markdownlint-cli
         run: npm install -g markdownlint-cli
       
-      - name: Lint markdown
+      - name: Lint .md files
         run: markdownlint '**/*.md' --ignore node_modules
+      
+      - name: Lint .mdc files
+        run: markdownlint '**/*.mdc' --ignore node_modules
   
   format-check:
     name: Format Check
@@ -585,6 +624,7 @@ jobs:
 ### Workflow 2: Build Check
 
 **File: `.github/workflows/build.yml`**
+
 ```yaml
 name: Build
 
@@ -625,6 +665,7 @@ jobs:
 ### Workflow 3: Release (Already Exists)
 
 **File: `.github/workflows/release.yml`**
+
 ```yaml
 name: release
 on:
@@ -649,11 +690,13 @@ jobs:
 ```
 
 **Builds For:**
+
 - Linux (amd64, arm64)
 - macOS (amd64, arm64)
 - Windows (amd64, arm64)
 
 **Triggered by:**
+
 ```bash
 git tag v0.1.0
 git push origin v0.1.0
@@ -662,6 +705,7 @@ git push origin v0.1.0
 ### Workflow 4: PR Validation
 
 **File: `.github/workflows/pr.yml`**
+
 ```yaml
 name: PR Checks
 
@@ -725,6 +769,7 @@ jobs:
 ### Workflow 5: Dependency Updates
 
 **File: `.github/workflows/dependabot-auto-merge.yml`**
+
 ```yaml
 name: Dependabot Auto-merge
 
@@ -759,6 +804,7 @@ jobs:
 ### Dependabot Configuration
 
 **File: `.github/dependabot.yml`**
+
 ```yaml
 version: 2
 updates:
@@ -778,6 +824,7 @@ updates:
 ### golangci-lint Configuration
 
 **File: `.golangci.yml`**
+
 ```yaml
 run:
   timeout: 5m
@@ -856,15 +903,20 @@ issues:
 ### Markdown Linting
 
 **File: `.markdownlint.json`**
+
 ```json
 {
   "default": true,
   "MD003": { "style": "atx" },
-  "MD013": { "line_length": 120 },
+  "MD013": false,
   "MD024": { "siblings_only": true },
+  "MD029": false,
   "MD033": {
-    "allowed_elements": ["details", "summary", "br", "img"]
+    "allowed_elements": ["details", "summary", "br", "img", "id", "message", "emoji"]
   },
+  "MD034": false,
+  "MD036": false,
+  "MD040": false,
   "MD041": false,
   "no-hard-tabs": true,
   "whitespace": true
@@ -872,16 +924,20 @@ issues:
 ```
 
 **Files to Lint:**
+
 ```
 - README.md
-- AGENTS.md  
+- AGENTS.md
 - docs/*.md
 - testdata/README.md
+- .cursor/commands/*.md
+- .cursor/rules/*.mdc
 ```
 
 ### EditorConfig
 
 **File: `.editorconfig`**
+
 ```ini
 root = true
 
@@ -911,80 +967,82 @@ indent_style = tab
 ## Makefile
 
 **File: `Makefile`**
+
 ```makefile
 .PHONY: help
 help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+ @grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: build
 build: ## Build the binary
-	go build -o gh-talk
+ go build -o gh-talk
 
 .PHONY: install
 install: ## Install as gh extension
-	gh extension install .
+ gh extension install .
 
 .PHONY: test
 test: ## Run tests
-	go test -v -race ./...
+ go test -v -race ./...
 
 .PHONY: test-coverage
 test-coverage: ## Run tests with coverage
-	go test -v -race -coverprofile=coverage.out ./...
-	go tool cover -html=coverage.out -o coverage.html
-	@echo "Coverage report: coverage.html"
+ go test -v -race -coverprofile=coverage.out ./...
+ go tool cover -html=coverage.out -o coverage.html
+ @echo "Coverage report: coverage.html"
 
 .PHONY: test-e2e
 test-e2e: ## Run E2E tests
-	E2E_TEST=1 go test -v -tags=e2e ./e2e/...
+ E2E_TEST=1 go test -v -tags=e2e ./e2e/...
 
 .PHONY: lint
 lint: ## Run all linters
-	gofmt -w .
-	goimports -w .
-	go vet ./...
-	golangci-lint run
+ gofmt -w .
+ goimports -w .
+ go vet ./...
+ golangci-lint run
 
 .PHONY: lint-fix
 lint-fix: ## Fix linting issues
-	golangci-lint run --fix
+ golangci-lint run --fix
 
 .PHONY: lint-md
 lint-md: ## Lint markdown files
-	markdownlint '**/*.md' --ignore node_modules
+ markdownlint '**/*.md' --ignore node_modules
 
 .PHONY: lint-md-fix
 lint-md-fix: ## Fix markdown issues
-	markdownlint '**/*.md' --ignore node_modules --fix
+ markdownlint '**/*.md' --ignore node_modules --fix
 
 .PHONY: fmt
 fmt: ## Format code
-	gofmt -w .
-	goimports -w .
+ gofmt -w .
+ goimports -w .
 
 .PHONY: clean
 clean: ## Clean build artifacts
-	rm -f gh-talk
-	rm -f coverage.out coverage.html
+ rm -f gh-talk
+ rm -f coverage.out coverage.html
 
 .PHONY: deps
 deps: ## Download dependencies
-	go mod download
-	go mod tidy
+ go mod download
+ go mod tidy
 
 .PHONY: update-deps
 update-deps: ## Update dependencies
-	go get -u ./...
-	go mod tidy
+ go get -u ./...
+ go mod tidy
 
 .PHONY: ci
 ci: lint test ## Run CI checks locally
-	@echo "✓ All CI checks passed"
+ @echo "✓ All CI checks passed"
 
 .DEFAULT_GOAL := help
 ```
 
 **Usage:**
+
 ```bash
 make help          # Show available commands
 make build         # Build binary
@@ -998,6 +1056,7 @@ make ci            # Run all CI checks locally
 ### Supported Variables
 
 **From gh CLI (Automatically Used):**
+
 ```bash
 GH_TOKEN              # GitHub auth token
 GH_HOST               # GitHub host (default: github.com)
@@ -1010,6 +1069,7 @@ CLICOLOR_FORCE        # Force colors
 ```
 
 **gh-talk Specific:**
+
 ```bash
 GH_TALK_CONFIG        # Config file location (default: ~/.config/gh-talk/config.yml)
 GH_TALK_CACHE_DIR     # Cache directory (default: ~/.cache/gh-talk)
@@ -1021,6 +1081,7 @@ GH_TALK_EDITOR        # Editor for message composition (falls back to $EDITOR)
 ### Environment Variable Handling
 
 **Implementation:**
+
 ```go
 // internal/config/env.go
 package config
@@ -1094,6 +1155,7 @@ func FromEnvironment() Env {
 ### Documentation
 
 **File: `docs/ENVIRONMENT.md`**
+
 ```markdown
 # Environment Variables
 
@@ -1146,24 +1208,29 @@ NO_COLOR=1 gh talk list threads
 ```
 
 ### Force JSON Output
+
 ```bash
 GH_TALK_FORMAT=json gh talk list threads
 ```
 
 ### Use Custom Editor
+
 ```bash
 GH_TALK_EDITOR=code gh talk reply --editor
 ```
 
 ### Debug Mode
+
 ```bash
 GH_DEBUG=1 gh talk list threads
 ```
 
 ### Custom Cache Location
+
 ```bash
 GH_TALK_CACHE_DIR=/tmp/cache gh talk list threads
 ```
+
 ```
 
 ## Code Coverage
@@ -1220,6 +1287,7 @@ go test -cover ./internal/format
 ### Pre-Merge Requirements
 
 **All PRs Must:**
+
 1. ✅ Pass all tests
 2. ✅ Pass all linters
 3. ✅ Pass format check (gofmt, goimports)
@@ -1229,6 +1297,7 @@ go test -cover ./internal/format
 7. ✅ No broken links in docs
 
 **GitHub Branch Protection:**
+
 ```yaml
 # Settings → Branches → main
 Protection rules:
@@ -1248,6 +1317,7 @@ Protection rules:
 ### Code Documentation
 
 **Package Documentation:**
+
 ```go
 // Package api provides GitHub GraphQL API client for PR conversation management.
 //
@@ -1256,16 +1326,17 @@ Protection rules:
 //
 // Example:
 //
-//	client, err := api.NewClient()
-//	if err != nil {
-//	    return err
-//	}
+// client, err := api.NewClient()
+// if err != nil {
+//     return err
+// }
 //
-//	threads, err := client.ListThreads("owner", "repo", 123)
+// threads, err := client.ListThreads("owner", "repo", 123)
 package api
 ```
 
 **Function Documentation:**
+
 ```go
 // ListThreads fetches all review threads for a pull request.
 //
@@ -1284,10 +1355,10 @@ package api
 //
 // Example:
 //
-//	threads, err := client.ListThreads("hamishmorgan", "gh-talk", 1)
-//	if err != nil {
-//	    return err
-//	}
+// threads, err := client.ListThreads("hamishmorgan", "gh-talk", 1)
+// if err != nil {
+//     return err
+// }
 func (c *Client) ListThreads(owner, name string, pr int) ([]Thread, error) {
     // Implementation
 }
@@ -1296,6 +1367,7 @@ func (c *Client) ListThreads(owner, name string, pr int) ([]Thread, error) {
 ### Markdown Documentation
 
 **Required Files:**
+
 - `README.md` - User-facing quick start
 - `AGENTS.md` - AI agent guidelines
 - `docs/*.md` - Technical documentation
@@ -1303,6 +1375,7 @@ func (c *Client) ListThreads(owner, name string, pr int) ([]Thread, error) {
 - `CONTRIBUTING.md` - Contribution guidelines (optional)
 
 **Standards:**
+
 - Clear headings
 - Code examples
 - Links between docs
@@ -1313,6 +1386,7 @@ func (c *Client) ListThreads(owner, name string, pr int) ([]Thread, error) {
 ### Commit Messages
 
 **Format:**
+
 ```
 <type>: <subject>
 
@@ -1322,6 +1396,7 @@ func (c *Client) ListThreads(owner, name string, pr int) ([]Thread, error) {
 ```
 
 **Types:**
+
 - `feat` - New feature
 - `fix` - Bug fix
 - `docs` - Documentation only
@@ -1331,6 +1406,7 @@ func (c *Client) ListThreads(owner, name string, pr int) ([]Thread, error) {
 - `chore` - Maintenance
 
 **Examples:**
+
 ```
 feat: add list threads command
 
@@ -1359,6 +1435,7 @@ with examples and patterns.
 ### AI Agent Attribution
 
 **For AI commits (as per AGENTS.md):**
+
 ```bash
 git commit --author="Cursor <cursor@noreply.local>" -m "feat: implement list threads command"
 ```
@@ -1366,11 +1443,13 @@ git commit --author="Cursor <cursor@noreply.local>" -m "feat: implement list thr
 ### Branch Strategy
 
 **Main Branch:**
+
 - Protected
 - All changes via PR
 - Linear history (rebase)
 
 **Feature Branches:**
+
 ```bash
 feat/list-command
 fix/thread-resolution
@@ -1379,6 +1458,7 @@ refactor/api-client
 ```
 
 **Release Branches:**
+
 ```bash
 release/v0.1.0
 release/v0.2.0
@@ -1404,12 +1484,14 @@ release/v0.2.0
 ### Test Metrics
 
 **Track:**
+
 - Coverage percentage
 - Test execution time
 - Flaky test rate
 - Test count
 
 **Report in CI:**
+
 ```yaml
 - name: Test Metrics
   run: |
@@ -1420,11 +1502,13 @@ release/v0.2.0
 ### Build Metrics
 
 **Track:**
+
 - Build time
 - Binary size
 - Dependency count
 
 **Report:**
+
 ```yaml
 - name: Build Metrics
   run: |
@@ -1440,6 +1524,7 @@ release/v0.2.0
 **Dependabot already configured** (in release.yml)
 
 **Additional: govulncheck**
+
 ```yaml
 # .github/workflows/security.yml
 name: Security
@@ -1473,11 +1558,13 @@ jobs:
 ### Secret Scanning
 
 **GitHub Features:**
+
 - Secret scanning (enabled by default)
 - Push protection
 - Dependency review
 
 **In Code:**
+
 ```go
 // Never log tokens
 if debug {
@@ -1491,6 +1578,7 @@ if debug {
 ### Complete Engineering Setup
 
 **Testing:**
+
 - ✅ Unit tests with table-driven patterns
 - ✅ Integration tests with fixtures
 - ✅ Contract tests for GraphQL
@@ -1499,6 +1587,7 @@ if debug {
 - ✅ Coverage reporting
 
 **Linting:**
+
 - ✅ golangci-lint (15+ linters)
 - ✅ gofmt, goimports
 - ✅ markdownlint for docs
@@ -1506,6 +1595,7 @@ if debug {
 - ✅ Pre-commit hooks
 
 **CI/CD:**
+
 - ✅ Test workflow (all tests + coverage)
 - ✅ Lint workflow (Go + Markdown)
 - ✅ Build workflow (multi-platform)
@@ -1514,18 +1604,21 @@ if debug {
 - ✅ Security scanning
 
 **Quality Gates:**
+
 - ✅ Branch protection
 - ✅ Required status checks
 - ✅ Coverage threshold
 - ✅ Format validation
 
 **Tooling:**
+
 - ✅ Makefile for common tasks
 - ✅ EditorConfig for consistency
 - ✅ Dependabot for updates
 - ✅ Pre-commit hooks
 
 **Documentation:**
+
 - ✅ Code documentation (godoc)
 - ✅ README (user-facing)
 - ✅ Technical docs (docs/)
@@ -1535,6 +1628,7 @@ if debug {
 ### Implementation Order
 
 **Phase 0: Setup (Before Coding)**
+
 1. Add .golangci.yml
 2. Add .markdownlint.json
 3. Add .editorconfig
@@ -1543,12 +1637,14 @@ if debug {
 6. Create docs/ENVIRONMENT.md
 
 **Phase 1: MVP (With Testing)**
+
 1. Implement feature
 2. Write unit tests (same PR)
 3. Write integration test
 4. Verify coverage
 
 **Phase 2: Polish**
+
 1. Add pre-commit hooks
 2. Security scanning
 3. Performance tests
@@ -1559,5 +1655,3 @@ if debug {
 **Last Updated**: 2025-11-02  
 **Status**: Engineering practices defined and ready to implement  
 **Coverage Target**: 80%+ overall, 90%+ for critical packages
-
-

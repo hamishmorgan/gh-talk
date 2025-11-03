@@ -7,16 +7,19 @@
 ### Decision: Hybrid Multi-Format Support
 
 **Supports:**
+
 - ✅ Full Node IDs (for scripting/automation)
 - ✅ Interactive selection (for exploration)
 - ✅ URLs (for convenience)
 
 **Does NOT Support:**
+
 - ❌ Short numeric IDs (1, 2, 3) - Requires persistent caching, complex invalidation
 
 ### Rationale
 
 **Why Full IDs:**
+
 - Accurate and unambiguous
 - No caching required
 - Works in any context
@@ -24,18 +27,21 @@
 - Copy-paste from API responses
 
 **Why Interactive:**
+
 - Best UX for exploratory use
 - No need to copy/paste IDs
 - See context while selecting
 - Natural for terminal workflows
 
 **Why URLs:**
+
 - Copy-paste from browser
 - Shareable references
 - Human-readable context
 - Natural for collaboration
 
 **Why NOT Short IDs:**
+
 - Requires persistent cache (complexity)
 - Cache invalidation is hard (new threads, deleted threads)
 - Context-dependent (which PR?)
@@ -126,6 +132,7 @@ func selectThreadInteractively() (string, error) {
 #### 3. URL Parsing
 
 **GitHub URL Formats:**
+
 ```
 Review Thread:
 https://github.com/owner/repo/pull/123#discussion_r1234567890
@@ -138,6 +145,7 @@ https://github.com/owner/repo/issues/456#issuecomment-7890123456
 ```
 
 **Implementation:**
+
 ```go
 func extractThreadIDFromURL(urlStr string) (string, error) {
     u, err := url.Parse(urlStr)
@@ -175,6 +183,7 @@ func extractThreadIDFromURL(urlStr string) (string, error) {
 The URL contains a **discussion ID** (integer), but we need the **Node ID** (base64 string).
 
 **Solution: Query API to Convert:**
+
 ```go
 func convertDiscussionIDToNodeID(discussionID string) (string, error) {
     // Must query GitHub to convert discussion ID to Node ID
@@ -219,11 +228,13 @@ gh talk reply https://github.com/hamishmorgan/gh-talk/pull/1#discussion_r1610088
 ### Implementation Phases
 
 **Phase 1 (MVP):**
+
 - ✅ Full Node IDs
 - ✅ Interactive selection
 - ❌ URLs (deferred - requires conversion logic)
 
 **Phase 2:**
+
 - ✅ URL support with API conversion
 - ✅ Short ID caching (optional enhancement)
 
@@ -234,6 +245,7 @@ gh talk reply https://github.com/hamishmorgan/gh-talk/pull/1#discussion_r1610088
 **Pattern:** `gh talk <verb> [<object>] [<args>] [flags]`
 
 **Following `gh` conventions:**
+
 ```bash
 gh pr view <number>       # gh pattern
 gh talk show <id>         # gh-talk equivalent
@@ -309,6 +321,7 @@ Flags:
 ### Context Inference
 
 **Automatic Detection:**
+
 ```bash
 # In repo with current branch having PR
 gh talk list threads
@@ -320,6 +333,7 @@ gh talk list threads --repo owner/repo --pr 123
 ```
 
 **Priority:**
+
 1. Explicit flags (--pr, --issue, --repo)
 2. Environment variables (GH_REPO)
 3. Git context (current repository + branch)
@@ -328,17 +342,20 @@ gh talk list threads --repo owner/repo --pr 123
 ### Argument vs Flag Philosophy
 
 **Arguments (Positional):**
+
 - Primary object: thread ID, comment ID
 - Primary action: message text
 - Required for command to work
 
 **Flags (Named):**
+
 - Modifiers: --resolve, --editor
 - Filters: --unresolved, --author
 - Context: --pr, --repo
 - Output: --format, --json
 
 **Examples:**
+
 ```bash
 # ID and message as arguments (most common)
 gh talk reply PRRT_abc123 "Fixed!"
@@ -359,6 +376,7 @@ gh talk reply PRRT_abc123 --editor
 ### Decision: Helpful, Actionable, Contextual
 
 **Pattern:**
+
 ```
 <emoji> <short description>
 
@@ -372,6 +390,7 @@ gh talk reply PRRT_abc123 --editor
 **Examples:**
 
 **Thread Not Found:**
+
 ```
 ✗ Thread not found
 
@@ -387,6 +406,7 @@ To see available threads, run:
 ```
 
 **Permission Denied:**
+
 ```
 ✗ Permission denied
 
@@ -402,6 +422,7 @@ PR: hamishmorgan/gh-talk#1
 ```
 
 **No PR Context:**
+
 ```
 ✗ Not in a PR context
 
@@ -419,6 +440,7 @@ Git branch: main
 ### Error Message Guidelines
 
 **DO:**
+
 - ✅ Use emoji for quick visual recognition (✓ ✗ ⚠️ 💡)
 - ✅ Provide context (what failed, why)
 - ✅ Suggest actionable next steps
@@ -426,6 +448,7 @@ Git branch: main
 - ✅ Format for readability (bullets, sections)
 
 **DON'T:**
+
 - ❌ Just print raw API errors
 - ❌ Use technical jargon unnecessarily
 - ❌ Leave user stuck (always suggest action)
@@ -436,6 +459,7 @@ Git branch: main
 ### Decision: Terminal-Adaptive with Explicit Override
 
 **Auto-Detection:**
+
 ```go
 terminal := term.FromEnv()
 
@@ -449,6 +473,7 @@ if terminal.IsTerminalOutput() {
 ```
 
 **Explicit Formats:**
+
 ```bash
 --format table    # Force table (even in pipe)
 --format json     # JSON output
@@ -459,6 +484,7 @@ if terminal.IsTerminalOutput() {
 ### Table Format
 
 **For List Threads:**
+
 ```
 ID                       File:Line       Status      Comments  Preview
 -----------------------  --------------  ----------  --------  ----------------------------
@@ -468,12 +494,14 @@ PRRT_kwDOQN97u85gQfgh   test_file.go:10 ✓ RESOLVED       2  Good naming for va
 ```
 
 **With Colors:**
+
 - Green ✓ for resolved
 - Default ○ for unresolved
 - Gray for file paths
 - Bold for preview
 
 **Auto-Truncation:**
+
 - Preview column truncates to fit terminal
 - ID column never truncates
 - File:Line column never truncates
@@ -481,6 +509,7 @@ PRRT_kwDOQN97u85gQfgh   test_file.go:10 ✓ RESOLVED       2  Good naming for va
 ### JSON Format
 
 **Like `gh` CLI:**
+
 ```bash
 # List specific fields
 gh talk list threads --json id,path,line,isResolved
@@ -503,6 +532,7 @@ gh talk list threads --json id,path,line,isResolved
 ```
 
 **Can pipe to jq:**
+
 ```bash
 gh talk list threads --json id,isResolved | jq '.[] | select(.isResolved == false) | .id'
 ```
@@ -510,16 +540,18 @@ gh talk list threads --json id,isResolved | jq '.[] | select(.isResolved == fals
 ### TSV Format
 
 **Non-TTY Default:**
+
 ```bash
 gh talk list threads | cat
 # Outputs TSV automatically
 
-ID	Path	Line	IsResolved	CommentCount	Preview
-PRRT_kwDOQN97u85gQeTN	test_file.go	7	false	2	Consider using a constant...
-PRRT_kwDOQN97u85gQecu	test_file.go	14	false	1	This loop could be optimized...
+ID Path Line IsResolved CommentCount Preview
+PRRT_kwDOQN97u85gQeTN test_file.go 7 false 2 Consider using a constant...
+PRRT_kwDOQN97u85gQecu test_file.go 14 false 1 This loop could be optimized...
 ```
 
 **Perfect for:**
+
 - Piping to other commands
 - Processing in scripts
 - No truncation
@@ -530,6 +562,7 @@ PRRT_kwDOQN97u85gQecu	test_file.go	14	false	1	This loop could be optimized...
 ### Decision: Follow `gh` Patterns
 
 **Standard Flags (like gh):**
+
 ```bash
 -R, --repo OWNER/REPO      Repository
 -q, --jq <expression>      Filter JSON with jq
@@ -540,6 +573,7 @@ PRRT_kwDOQN97u85gQecu	test_file.go	14	false	1	This loop could be optimized...
 ```
 
 **gh-talk Specific:**
+
 ```bash
     --pr <number>          PR number
     --issue <number>       Issue number
@@ -560,22 +594,26 @@ PRRT_kwDOQN97u85gQecu	test_file.go	14	false	1	This loop could be optimized...
 ### Flag Groups
 
 **Filter Flags (for list commands):**
+
 - `--unresolved`, `--resolved`, `--all`
 - `--author <user>`
 - `--file <path>`
 - `--since <date>`
 
 **Context Flags (global):**
+
 - `--repo OWNER/REPO`
 - `--pr <number>`
 - `--issue <number>`
 
 **Output Flags (global):**
+
 - `--format <type>`
 - `--json <fields>`
 - `--jq <expression>`
 
 **Action Modifiers:**
+
 - `--resolve` (for reply)
 - `--reason <type>` (for hide)
 - `--remove` (for react)
@@ -586,6 +624,7 @@ PRRT_kwDOQN97u85gQecu	test_file.go	14	false	1	This loop could be optimized...
 ### Decision: Accept Both Emoji and Names
 
 **Supported Formats:**
+
 ```bash
 gh talk react <id> 👍              # Unicode emoji
 gh talk react <id> THUMBS_UP       # GraphQL enum name
@@ -595,6 +634,7 @@ gh talk react <id> "+1"            # Shorthand
 ```
 
 **Mapping:**
+
 ```go
 var emojiMap = map[string]string{
     "👍":         "THUMBS_UP",
@@ -649,12 +689,14 @@ func parseEmoji(input string) (string, error) {
 ### Decision: Follow `gh` Precedence
 
 **Priority Order:**
+
 1. Explicit `--repo` flag
 2. `GH_REPO` environment variable  
 3. Git remotes in current directory
 4. Error if none available
 
 **Implementation:**
+
 ```go
 func getRepository(repoFlag string) (repository.Repository, error) {
     // 1. Explicit flag
@@ -692,6 +734,7 @@ func getRepository(repoFlag string) (repository.Repository, error) {
 ### Decision: Explicit Context Required for Some Commands
 
 **Commands Needing PR Context:**
+
 - `list threads` - PRs only
 - `resolve` - PR threads only
 - `reply` - Needs to know if PR thread or issue comment
@@ -699,6 +742,7 @@ func getRepository(repoFlag string) (repository.Repository, error) {
 **Two Approaches:**
 
 **Approach 1: Infer from Current Branch**
+
 ```go
 func getCurrentPR() (int, error) {
     // Use gh to check current branch
@@ -714,16 +758,19 @@ func getCurrentPR() (int, error) {
 ```
 
 **Approach 2: Require Explicit Flag**
+
 ```bash
 gh talk list threads --pr 123
 ```
 
 **Decision: Hybrid**
+
 - Try to infer from current branch
 - Fall back to requiring flag
 - Clear error message if neither works
 
 **Example:**
+
 ```bash
 # In branch with PR → Works
 git checkout my-feature-branch
@@ -744,6 +791,7 @@ gh talk list threads --pr 123
 ### Decision: Auto-Detect from ID Prefix
 
 **ID Prefix → Type Mapping:**
+
 ```go
 func detectType(id string) string {
     switch {
@@ -766,14 +814,17 @@ func detectType(id string) string {
 **Ambiguity: `IC_` Comments**
 
 `IC_` can be:
+
 - Issue comment
 - PR top-level comment
 
 **Resolution:**
+
 - Query API to determine parent
 - Or accept both work the same (reactions, hiding)
 
 **For commands that care:**
+
 ```go
 func getCommentContext(commentID string) (Context, error) {
     // Query to determine parent
@@ -802,6 +853,7 @@ func getCommentContext(commentID string) (Context, error) {
 ### Decision: Show Non-Zero Only (with --all Flag)
 
 **Default Behavior:**
+
 ```
 Comments:
   PRRC_kwDO...  "Consider using a constant..."  by hamishmorgan
@@ -812,6 +864,7 @@ Comments:
 ```
 
 **With --all Flag:**
+
 ```bash
 gh talk show <id> --reactions all
 
@@ -821,6 +874,7 @@ Comments:
 ```
 
 **With --verbose:**
+
 ```bash
 gh talk show <id> --verbose
 
@@ -831,6 +885,7 @@ Comments:
 ```
 
 **In Lists:**
+
 ```
 ID                       File:Line       Status    Reactions  Preview
 -----------------------  --------------  --------  ---------  --------------------
@@ -842,11 +897,13 @@ PRRT_kwDOQN97u85gQeTN   test_file.go:7  ○ OPEN    🚀 1       Consider using.
 ### Decision: Client-Side Filtering
 
 **Why:**
+
 - GitHub API doesn't support server-side thread filtering
 - Must fetch all, filter locally
 - Cache to avoid repeated fetches
 
 **Implementation:**
+
 ```go
 func (c *Client) ListThreads(owner, name string, pr int, filter Filter) ([]Thread, error) {
     // 1. Fetch all threads (with caching)
@@ -891,6 +948,7 @@ func (f Filter) Match(t Thread) bool {
 ```
 
 **Caching:**
+
 ```go
 // Cache all threads for 5 minutes
 // Invalidate on mutations (resolve, reply, etc.)
@@ -911,6 +969,7 @@ func (c *ThreadCache) IsValid() bool {
 ### Decision: Multiple Arguments, Not Stdin
 
 **Pattern:**
+
 ```bash
 # Multiple IDs as arguments
 gh talk resolve PRRT_abc123 PRRT_def456 PRRT_ghi789
@@ -920,12 +979,14 @@ gh talk resolve PRRT_abc123 PRRT_def456 PRRT_ghi789
 ```
 
 **Why:**
+
 - More explicit
 - Clear what's happening
 - Safer (can review before executing)
 - Follows shell conventions
 
 **With Confirmation:**
+
 ```bash
 gh talk resolve PRRT_abc123 PRRT_def456 PRRT_ghi789
 
@@ -938,6 +999,7 @@ gh talk resolve PRRT_abc123 PRRT_def456 PRRT_ghi789
 ```
 
 **Skip Confirmation:**
+
 ```bash
 gh talk resolve PRRT_abc123 PRRT_def456 --yes
 ```
@@ -947,11 +1009,13 @@ gh talk resolve PRRT_abc123 PRRT_def456 --yes
 ### Decision: Minimal Config for MVP
 
 **Phase 1: No Config File**
+
 - Use environment variables
 - Use flags
 - Keep it simple
 
 **Phase 2: Optional Config**
+
 ```yaml
 # ~/.config/gh-talk/config.yml
 
@@ -976,17 +1040,20 @@ aliases:
 ### Decision: Defer to Phase 3
 
 **MVP (Phase 1-2):**
+
 - Focus on command-line arguments
 - Interactive selection for missing IDs
 - No full TUI
 
 **Future (Phase 3):**
+
 - Full TUI with Bubble Tea
 - Keyboard navigation
 - Real-time updates
 - Visual thread browser
 
 **Rationale:**
+
 - TUI is complex (2-3 weeks of work)
 - Command-line covers 80% of use cases
 - Can add TUI later without breaking CLI
@@ -1013,6 +1080,7 @@ aliases:
 ### What This Enables
 
 **Clear Implementation Path:**
+
 1. ✅ Thread ID parsing logic defined
 2. ✅ Command structure finalized
 3. ✅ Flag conventions established
@@ -1020,6 +1088,7 @@ aliases:
 5. ✅ Output formats specified
 
 **What to Build First:**
+
 1. ID parsing and validation
 2. Repository context detection
 3. PR/Issue number inference
@@ -1030,6 +1099,7 @@ aliases:
 8. Resolve command
 
 **What Can Wait:**
+
 - URL → Node ID conversion (Phase 2)
 - Config file (Phase 3)
 - Full TUI (Phase 3)
@@ -1037,7 +1107,7 @@ aliases:
 
 ## Validation
 
-### These Decisions Support:
+### These Decisions Support
 
 ✅ **Scripting:** Full IDs work in automated scripts  
 ✅ **Exploration:** Interactive selection for ad-hoc use  
@@ -1052,4 +1122,3 @@ aliases:
 **Last Updated**: 2025-11-02  
 **Status**: Finalized for MVP implementation  
 **Review**: Ready to proceed with implementation
-

@@ -6,7 +6,7 @@
 
 This document captures real API responses from GitHub's GraphQL API, tested on PR #1 in the gh-talk repository. All IDs, structures, and behaviors are from production data.
 
-**Test PR:** https://github.com/hamishmorgan/gh-talk/pull/1
+**Test PR:** <https://github.com/hamishmorgan/gh-talk/pull/1>
 
 ## Real ID Formats
 
@@ -27,6 +27,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 | User | `MDQ6` | `MDQ6VXNlcjU1OTUwOA==` | User ID (legacy format) |
 
 **Key Findings:**
+
 - ✅ Our spec's assumed format `PRRT_abc123` was close to reality
 - ✅ Prefixes match our expectations
 - ⚠️ Real IDs are 20-30 characters (much longer than assumed)
@@ -36,6 +37,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### Database IDs vs Node IDs
 
 **Both Exist:**
+
 ```json
 {
   "id": "PRRC_kwDOQN97u86UHqK7",        // Node ID (GraphQL)
@@ -44,6 +46,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ```
 
 **Use Node IDs:**
+
 - GraphQL API requires Node IDs
 - Database IDs are legacy (REST API)
 - Node IDs are stable and portable
@@ -53,6 +56,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### Complete Thread Object
 
 **Real Response from Testing:**
+
 ```json
 {
   "id": "PRRT_kwDOQN97u85gQeTN",
@@ -79,12 +83,14 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### Field Analysis
 
 **Resolution Fields:**
+
 - `isResolved: false` - Thread is not resolved
 - `isCollapsed: false` - Thread is visible (not collapsed in UI)
 - `resolvedBy: null` - No user has resolved it yet
 - When resolved: `resolvedBy` contains user object
 
 **Line Information:**
+
 - `line: 7` - Current line number in file
 - `startLine: 7` - Start of multi-line comment (same for single-line)
 - `diffSide: "RIGHT"` - Comment on new code (LEFT = old, RIGHT = new)
@@ -92,15 +98,18 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 - `subjectType: "LINE"` - Type is LINE (vs FILE for file-level comments)
 
 **Position Info:**
+
 - `path: "test_file.go"` - File path in repository
 - `position` in comments - Position in diff (not in file)
 
 **Permissions:**
+
 - `viewerCanResolve: true` - Current user can resolve
 - `viewerCanUnresolve: false` - Cannot unresolve (until it's resolved)
 - `viewerCanReply: true` - Can add replies
 
 **Outdated Status:**
+
 - `isOutdated: false` - Diff hasn't changed
 - When true: diff changed since comment was made
 - Outdated threads still appear but with indicator
@@ -110,6 +119,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### Complete Comment Object
 
 **Original Comment in Thread:**
+
 ```json
 {
   "id": "PRRC_kwDOQN97u86UHqK7",
@@ -137,6 +147,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ```
 
 **Reply Comment in Thread:**
+
 ```json
 {
   "id": "PRRC_kwDOQN97u86UHqOo",
@@ -168,15 +179,18 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### Key Differences: Original vs Reply
 
 **Original Comment:**
+
 - `replyTo: null` - First in thread
 - Creates the thread
 
 **Reply Comment:**
+
 - `replyTo: { "id": "PRRC_..." }` - Points to parent comment
 - Same position/path as original
 - Same diffHunk
 
 **Threading:**
+
 - Thread contains multiple comments
 - Comments linked via `replyTo`
 - All comments share same thread ID
@@ -185,6 +199,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### Diff Hunk Format
 
 **Example:**
+
 ```
 @@ -0,0 +1,25 @@
 +package main
@@ -197,6 +212,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ```
 
 **Format:**
+
 - Standard unified diff format
 - Shows context around the commented line
 - Includes line numbers
@@ -205,6 +221,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### Author Association Values
 
 **From Testing:**
+
 - `OWNER` - Repository owner
 - Other values (not tested):
   - `COLLABORATOR` - Has write access
@@ -219,6 +236,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### Complete reactionGroups Array
 
 **Always Returns All 8 Reaction Types:**
+
 ```json
 "reactionGroups": [
   {
@@ -250,21 +268,25 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### Key Findings
 
 **Always Present:**
+
 - ✅ ALL 8 reaction types in every response
 - ✅ Even reactions with 0 count are included
 - ✅ `createdAt` is null when totalCount is 0
 - ✅ `createdAt` is timestamp of first reaction when count > 0
 
 **Viewer Context:**
+
 - `viewerHasReacted: true` - Current user has reacted with this emoji
 - `viewerHasReacted: false` - Current user hasn't reacted
 
 **User Lists:**
+
 - `users.totalCount` - Total number of reactions
 - `users.nodes` - Array of users who reacted
 - Need `first` parameter for pagination
 
 **Implications for gh-talk:**
+
 - Can show reaction counts without extra queries
 - Easy to detect if user has reacted
 - Can display all reactions or filter to non-zero
@@ -275,6 +297,7 @@ All GitHub IDs follow a pattern: `PREFIX_base64EncodedData`
 ### addReaction Response
 
 **Request:**
+
 ```graphql
 mutation {
   addReaction(input: {
@@ -285,6 +308,7 @@ mutation {
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -306,6 +330,7 @@ mutation {
 ```
 
 **Key Points:**
+
 - ✅ Returns new reaction ID
 - ✅ Confirms content type
 - ✅ Includes timestamp
@@ -315,6 +340,7 @@ mutation {
 ### addPullRequestReviewThreadReply Response
 
 **Request:**
+
 ```graphql
 mutation {
   addPullRequestReviewThreadReply(input: {
@@ -325,6 +351,7 @@ mutation {
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -349,6 +376,7 @@ mutation {
 ```
 
 **Key Points:**
+
 - ✅ Returns new comment with ID
 - ✅ Creates a new review (PRR_) automatically
 - ✅ Sets replyTo to link comments
@@ -358,6 +386,7 @@ mutation {
 ### resolveReviewThread Response
 
 **Request:**
+
 ```graphql
 mutation {
   resolveReviewThread(input: {
@@ -367,6 +396,7 @@ mutation {
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -396,6 +426,7 @@ mutation {
 ```
 
 **Key Points:**
+
 - ✅ Returns updated thread
 - ✅ Sets `isResolved: true`
 - ✅ Records `resolvedBy` user
@@ -405,6 +436,7 @@ mutation {
 ### unresolveReviewThread Response
 
 **Request:**
+
 ```graphql
 mutation {
   unresolveReviewThread(input: {
@@ -414,6 +446,7 @@ mutation {
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -429,6 +462,7 @@ mutation {
 ```
 
 **Key Points:**
+
 - ✅ Sets `isResolved: false`
 - ✅ Clears `resolvedBy` to null
 - ⚠️ viewerCanUnresolve becomes true only after resolution
@@ -436,6 +470,7 @@ mutation {
 ### minimizeComment Response
 
 **Request:**
+
 ```graphql
 mutation {
   minimizeComment(input: {
@@ -446,6 +481,7 @@ mutation {
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -461,6 +497,7 @@ mutation {
 ```
 
 **Key Points:**
+
 - ✅ Sets `isMinimized: true`
 - ✅ Records reason (lowercase: "outdated", "spam", etc.)
 - ⚠️ Comment still exists (just collapsed in UI)
@@ -469,6 +506,7 @@ mutation {
 ### addPullRequestReview Response
 
 **Request:**
+
 ```graphql
 mutation {
   addPullRequestReview(input: {
@@ -485,6 +523,7 @@ mutation {
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -517,6 +556,7 @@ mutation {
 ```
 
 **Key Points:**
+
 - ✅ Creates review AND comments atomically
 - ✅ Review gets an ID
 - ✅ Each comment gets an ID
@@ -529,6 +569,7 @@ mutation {
 ### Invalid ID Error
 
 **Request:**
+
 ```graphql
 mutation {
   resolveReviewThread(input: {
@@ -538,6 +579,7 @@ mutation {
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -555,6 +597,7 @@ mutation {
 ```
 
 **Error Structure:**
+
 - `data.<mutation>: null` - Operation failed
 - `errors` array with error objects
 - `type` field: `NOT_FOUND`, `FORBIDDEN`, `UNPROCESSABLE`, etc.
@@ -564,6 +607,7 @@ mutation {
 ### Common Error Types (Expected)
 
 **NOT_FOUND:**
+
 ```json
 {
   "type": "NOT_FOUND",
@@ -572,6 +616,7 @@ mutation {
 ```
 
 **FORBIDDEN:**
+
 ```json
 {
   "type": "FORBIDDEN",
@@ -580,6 +625,7 @@ mutation {
 ```
 
 **UNPROCESSABLE:**
+
 ```json
 {
   "type": "UNPROCESSABLE",
@@ -592,6 +638,7 @@ mutation {
 ### Relationship Hierarchy
 
 **Discovered Structure:**
+
 ```
 PullRequest
 ├── reviews[] (PRR_)
@@ -608,11 +655,13 @@ PullRequest
 ```
 
 **Key Insight:**
+
 - **Reviews** (PRR_) - Container for submission (approve, request changes, comment)
 - **Threads** (PRRT_) - Grouping of comments by file location
 - **Comments** (PRRC_) - Individual messages
 
 **Multiple Reviews Can Contribute to One Thread:**
+
 ```
 Thread PRRT_123 on line 7:
   ├── Comment PRRC_456 (from Review PRR_789)
@@ -621,6 +670,7 @@ Thread PRRT_123 on line 7:
 ```
 
 **Why This Matters:**
+
 - Each reply creates a new review
 - Many reviews per PR is normal
 - Threads group comments regardless of review
@@ -631,6 +681,7 @@ Thread PRRT_123 on line 7:
 ### Top-Level PR Comment (IC_)
 
 **Structure:**
+
 ```json
 {
   "id": "IC_kwDOQN97u87PVA8l",
@@ -645,6 +696,7 @@ Thread PRRT_123 on line 7:
 ```
 
 **Characteristics:**
+
 - ID prefix: `IC_` (IssueComment)
 - No `path` or `position` (not tied to code)
 - No `replyTo` (top-level only)
@@ -654,6 +706,7 @@ Thread PRRT_123 on line 7:
 - Same reactionGroups structure
 
 **Differences from Review Comments:**
+
 - Not part of a review thread
 - Not in `reviewThreads` collection
 - In `comments` collection instead
@@ -667,6 +720,7 @@ Thread PRRT_123 on line 7:
 **Position ≠ Line Number**
 
 **From Testing:**
+
 ```json
 {
   "position": 7,           // Position in diff (1-based)
@@ -677,17 +731,20 @@ Thread PRRT_123 on line 7:
 ```
 
 **What's the Difference?**
+
 - `position` - Index in the diff (changes as diff changes)
 - `line` - Actual line number in the file
 - `originalPosition` - Position when comment was created
 
 **When They Differ:**
+
 - File is modified after comment
 - Lines added/removed above comment
 - `position` updates, `line` updates
 - `originalPosition` stays same
 
 **Implications:**
+
 - Use `line` for display (user-facing)
 - Use `position` for API calls (creating comments)
 - Track `originalPosition` for outdated detection
@@ -697,6 +754,7 @@ Thread PRRT_123 on line 7:
 ### Viewer Permissions on Threads
 
 **From Testing:**
+
 ```json
 {
   "viewerCanResolve": true,      // Can mark as resolved
@@ -706,6 +764,7 @@ Thread PRRT_123 on line 7:
 ```
 
 **When Testing Resolved Thread:**
+
 ```json
 {
   "viewerCanResolve": false,     // Already resolved
@@ -715,6 +774,7 @@ Thread PRRT_123 on line 7:
 ```
 
 **Permission Rules:**
+
 - Can resolve: PR author, comment author, or repo admin
 - Can unresolve: Same as resolve (but only if resolved)
 - Can reply: Anyone with read access
@@ -723,6 +783,7 @@ Thread PRRT_123 on line 7:
 ### Viewer Permissions on Comments
 
 **From Testing:**
+
 ```json
 {
   "viewerCanReact": true,
@@ -733,6 +794,7 @@ Thread PRRT_123 on line 7:
 ```
 
 **Permission Logic:**
+
 - Can react: Always true for authenticated users
 - Can update: Comment author only
 - Can delete: Comment author or repo admin
@@ -743,6 +805,7 @@ Thread PRRT_123 on line 7:
 ### Query Cost Analysis
 
 **Simple Thread List (tested):**
+
 ```graphql
 query {
   repository(...) {
@@ -754,9 +817,11 @@ query {
   }
 }
 ```
+
 **Estimated Cost:** ~10-20 points
 
 **Detailed Thread Query (tested):**
+
 ```graphql
 query {
   repository(...) {
@@ -779,11 +844,13 @@ query {
   }
 }
 ```
+
 **Estimated Cost:** ~50-100 points (depends on data)
 
 ### Pagination Behavior
 
 **Tested:**
+
 ```json
 "reviewThreads": {
   "totalCount": 2,
@@ -792,11 +859,13 @@ query {
 ```
 
 **Key Fields:**
+
 - `totalCount` - Total number available
 - `nodes` - Array of current page
 - `pageInfo` - Pagination cursors (not tested, but required for next page)
 
 **Required Pattern:**
+
 ```graphql
 reviewThreads(first: 20, after: $cursor) {
   pageInfo {
@@ -812,6 +881,7 @@ reviewThreads(first: 20, after: $cursor) {
 ### 1. **Thread ID is NOT Derivable**
 
 ❌ Cannot generate thread ID from:
+
 - PR number
 - File path
 - Line number
@@ -820,6 +890,7 @@ reviewThreads(first: 20, after: $cursor) {
 ✅ Must query to get thread IDs
 
 **Implication for gh-talk:**
+
 - Must cache thread data
 - Need short ID mapping (thread #1, #2, etc.)
 - Or accept long IDs in commands
@@ -827,11 +898,13 @@ reviewThreads(first: 20, after: $cursor) {
 ### 2. **Every Reply Creates a Review**
 
 **Unexpected Behavior:**
+
 - Replying to a thread creates a new review
 - One PR can have 50+ reviews from replies
 - Reviews are just containers
 
 **Implication:**
+
 - Reviews are less important than threads
 - gh-talk should focus on threads
 - Don't confuse users with review counts
@@ -839,11 +912,13 @@ reviewThreads(first: 20, after: $cursor) {
 ### 3. **ReactionGroups Always Complete**
 
 **Behavior:**
+
 - ALL 8 reaction types always present
 - Zero-count reactions included
 - Simplifies logic (no null checks)
 
 **Implication:**
+
 - Easy to display "👍 0  🎉 0  ❤️ 3"
 - Can show all or filter non-zero
 - viewerHasReacted is convenient
@@ -851,12 +926,14 @@ reviewThreads(first: 20, after: $cursor) {
 ### 4. **Minimize is Not Hide**
 
 **Behavior:**
+
 - Minimized comments still exist
 - Still in query results
 - Just `isMinimized: true`
 - Collapsed in UI only
 
 **Implication:**
+
 - Need to filter client-side if hiding
 - Or include minimized status in display
 - Can't actually "delete" comments
@@ -864,12 +941,14 @@ reviewThreads(first: 20, after: $cursor) {
 ### 5. **Position System is Complex**
 
 **Fields:**
+
 - `position` - Current position in diff
 - `originalPosition` - Position when created
 - `line` - Current line in file
 - Can all be different!
 
 **Implication:**
+
 - Display `line` to users
 - Track when they differ (outdated indicator)
 - Understand diff position for API calls
@@ -877,6 +956,7 @@ reviewThreads(first: 20, after: $cursor) {
 ## Test Data Summary
 
 **Created in PR #1:**
+
 - ✅ 1 Pull Request
 - ✅ 3 Reviews
 - ✅ 2 Review Threads
@@ -886,6 +966,7 @@ reviewThreads(first: 20, after: $cursor) {
 - ✅ 1 Resolved thread (then unresolved for testing)
 
 **IDs Collected:**
+
 ```
 PR:      PR_kwDOQN97u86xFPR4
 PRRT:    PRRT_kwDOQN97u85gQeTN (thread 1)
@@ -906,12 +987,15 @@ REA:     REA_lATOQN97u86UHqK7zhQo4hY (rocket)
 ### For ID Handling
 
 **Options:**
+
 1. **Use Full Node IDs** (cumbersome but accurate)
+
    ```bash
    gh talk reply PRRT_kwDOQN97u85gQeTN "message"
    ```
 
 2. **Short ID Mapping** (user-friendly)
+
    ```bash
    gh talk list threads
    # 1. test_file.go:7  - Consider using constant
@@ -921,6 +1005,7 @@ REA:     REA_lATOQN97u86UHqK7zhQo4hY (rocket)
    ```
 
 3. **Interactive Selection** (best UX)
+
    ```bash
    gh talk reply
    # ? Select thread:
@@ -931,6 +1016,7 @@ REA:     REA_lATOQN97u86UHqK7zhQo4hY (rocket)
    ```
 
 **Recommendation:** Support all three
+
 - Short IDs for interactive use
 - Full IDs for scripting
 - Interactive for exploratory use
@@ -938,11 +1024,13 @@ REA:     REA_lATOQN97u86UHqK7zhQo4hY (rocket)
 ### For Data Storage
 
 **Must Cache:**
+
 - Thread ID to short ID mapping
 - Thread metadata (path, line, preview)
 - Cache per PR (invalidate on changes)
 
 **Cache Structure:**
+
 ```json
 {
   "pr": 1,
@@ -963,6 +1051,7 @@ REA:     REA_lATOQN97u86UHqK7zhQo4hY (rocket)
 ### For Display
 
 **Reaction Display:**
+
 ```
 # Option A: Show all (noisy)
 👍 0  👎 0  😄 0  🎉 0  😕 0  ❤️ 0  🚀 1  👀 0
@@ -979,6 +1068,7 @@ REA:     REA_lATOQN97u86UHqK7zhQo4hY (rocket)
 ### For Threading
 
 **Display Thread:**
+
 ```
 Thread PRRT_...gQeTN (test_file.go:7) [resolved]
 │
@@ -994,6 +1084,7 @@ Thread PRRT_...gQeTN (test_file.go:7) [resolved]
 ### 1. **No Server-Side Filtering**
 
 **Tested:**
+
 - Cannot filter `reviewThreads(isResolved: false)` in query
 - Must fetch all and filter client-side
 - Confirmed limitation from API docs
@@ -1001,6 +1092,7 @@ Thread PRRT_...gQeTN (test_file.go:7) [resolved]
 ### 2. **Pagination Required**
 
 **Tested:**
+
 - Must include `first` or `last` for all connections
 - Error if missing: `MISSING_PAGINATION_BOUNDARIES`
 - Cannot fetch "all" in one query
@@ -1008,6 +1100,7 @@ Thread PRRT_...gQeTN (test_file.go:7) [resolved]
 ### 3. **Nested Pagination Complexity**
 
 **Structure:**
+
 ```graphql
 reviewThreads(first: 20) {
   nodes {
@@ -1025,6 +1118,7 @@ reviewThreads(first: 20) {
 ```
 
 **Implication:**
+
 - Three levels of pagination
 - Complex cursor management
 - May need multiple queries for large threads
@@ -1108,6 +1202,7 @@ reviewThreads(first: 20) {
 | Label | `LA_` | `LA_kwDOQN97u88AAAACOo1ePQ` | Label ID |
 
 **Observation:**
+
 - Issue IDs use `I_` prefix (vs `PR_` for pull requests)
 - Issue comments use `IC_` prefix (same as top-level PR comments)
 - Same base64-encoded format (20-30 characters)
@@ -1115,6 +1210,7 @@ reviewThreads(first: 20) {
 ### Complete Issue Object
 
 **Real Response from Testing:**
+
 ```json
 {
   "id": "I_kwDOQN97u87VYpUq",
@@ -1169,6 +1265,7 @@ reviewThreads(first: 20) {
 ### Issue-Specific Fields
 
 **Not in PRs:**
+
 - `stateReason` - Why issue was closed
   - `COMPLETED` - Work is done
   - `NOT_PLANNED` - Won't be worked on
@@ -1179,6 +1276,7 @@ reviewThreads(first: 20) {
 - No `files` or `diff` fields
 
 **State Transitions:**
+
 ```
 OPEN → CLOSED (stateReason: COMPLETED or NOT_PLANNED)
 CLOSED → OPEN (stateReason: REOPENED)
@@ -1187,6 +1285,7 @@ CLOSED → OPEN (stateReason: REOPENED)
 ### Issue Comment Object
 
 **Structure (Identical to Top-Level PR Comment):**
+
 ```json
 {
   "id": "IC_kwDOQN97u87PVCb0",
@@ -1224,6 +1323,7 @@ CLOSED → OPEN (stateReason: REOPENED)
 ```
 
 **Key Observations:**
+
 - ✅ Same structure as top-level PR comments
 - ✅ Same `IC_` prefix for comments
 - ✅ Same reaction system (8 types, always present)
@@ -1236,6 +1336,7 @@ CLOSED → OPEN (stateReason: REOPENED)
 ### Issue Reactions
 
 **Issue Body Can Have Reactions:**
+
 ```json
 {
   "id": "I_kwDOQN97u87VYpUq",
@@ -1259,6 +1360,7 @@ CLOSED → OPEN (stateReason: REOPENED)
 ```
 
 **What Can Be Reacted To:**
+
 - ✅ Issue body (the main issue description)
 - ✅ Issue comments
 - ✅ Same 8 reaction types as PRs
@@ -1267,6 +1369,7 @@ CLOSED → OPEN (stateReason: REOPENED)
 ### Issue Comments vs PR Review Comments
 
 **Similarities:**
+
 - ✅ Same ID format (`IC_` prefix)
 - ✅ Same reaction system
 - ✅ Same minimization
@@ -1290,6 +1393,7 @@ CLOSED → OPEN (stateReason: REOPENED)
 #### Add Issue Comment
 
 **Mutation:**
+
 ```graphql
 mutation {
   addComment(input: {
@@ -1312,6 +1416,7 @@ mutation {
 #### Update Issue Comment
 
 **Mutation:**
+
 ```graphql
 mutation {
   updateIssueComment(input: {
@@ -1330,6 +1435,7 @@ mutation {
 #### Delete Issue Comment
 
 **Mutation:**
+
 ```graphql
 mutation {
   deleteIssueComment(input: {
@@ -1345,6 +1451,7 @@ mutation {
 #### Close/Reopen Issue
 
 **Close:**
+
 ```graphql
 mutation {
   closeIssue(input: {
@@ -1362,6 +1469,7 @@ mutation {
 ```
 
 **Reopen:**
+
 ```graphql
 mutation {
   reopenIssue(input: {
@@ -1377,6 +1485,7 @@ mutation {
 ```
 
 **State After Close:**
+
 ```json
 {
   "state": "CLOSED",
@@ -1387,6 +1496,7 @@ mutation {
 ```
 
 **State After Reopen:**
+
 ```json
 {
   "state": "OPEN",
@@ -1399,6 +1509,7 @@ mutation {
 ### Issue Labels
 
 **Label Structure:**
+
 ```json
 {
   "id": "LA_kwDOQN97u88AAAACOo1ePQ",
@@ -1409,6 +1520,7 @@ mutation {
 ```
 
 **Key Fields:**
+
 - `id` - Label Node ID (LA_ prefix)
 - `name` - Label text
 - `color` - Hex color (6 digits, no #)
@@ -1417,6 +1529,7 @@ mutation {
 ### Participants Field
 
 **Unique to Issues:**
+
 ```json
 {
   "participants": {
@@ -1431,6 +1544,7 @@ mutation {
 ```
 
 **Definition:** Users who have:
+
 - Created the issue
 - Commented on the issue
 - Been mentioned in the issue
@@ -1441,11 +1555,13 @@ mutation {
 ### Subscription Status
 
 **viewerSubscription Field:**
+
 - `SUBSCRIBED` - Receiving notifications
 - `UNSUBSCRIBED` - Not receiving notifications
 - `IGNORED` - Explicitly ignoring
 
 **From Testing:**
+
 ```json
 {
   "viewerSubscription": "SUBSCRIBED"
@@ -1459,6 +1575,7 @@ mutation {
 ### Issue Commands
 
 **Supported:**
+
 ```bash
 gh talk list comments --issue 2           # List issue comments
 gh talk react IC_... 👍                   # React to issue comment
@@ -1468,6 +1585,7 @@ gh talk show 2 --type issue               # Show issue details
 ```
 
 **NOT Supported (Issue Limitations):**
+
 ```bash
 # ❌ No review threads on issues
 gh talk list threads --issue 2            # N/A - issues don't have threads
@@ -1502,6 +1620,7 @@ PR Review Comment (PRRC_):
 ```
 
 **Implication for gh-talk:**
+
 - Single code path for issue/PR comments
 - Check parent type (Issue vs PullRequest)
 - Treat issue comments like PR top-level comments
@@ -1514,6 +1633,7 @@ PR Review Comment (PRRC_):
 **PR #1 has 4 threads with mixed resolution status:**
 
 **Resolved Threads (2):**
+
 ```json
 {
   "id": "PRRT_kwDOQN97u85gQfgh",
@@ -1570,6 +1690,7 @@ PR Review Comment (PRRC_):
 ```
 
 **Unresolved Threads (2):**
+
 ```json
 {
   "id": "PRRT_kwDOQN97u85gQeTN",
@@ -1624,6 +1745,7 @@ PR Review Comment (PRRC_):
 ### Key Observations: Resolved vs Unresolved
 
 **Resolved Thread Characteristics:**
+
 - ✅ `isResolved: true`
 - ✅ `resolvedBy` contains user who resolved it
 - ✅ `viewerCanResolve: false` (already resolved)
@@ -1632,6 +1754,7 @@ PR Review Comment (PRRC_):
 - ✅ Thread data unchanged except resolution status
 
 **Unresolved Thread Characteristics:**
+
 - ✅ `isResolved: false`
 - ✅ `resolvedBy: null` (no resolver)
 - ✅ `viewerCanResolve: true` (can resolve)
@@ -1643,6 +1766,7 @@ PR Review Comment (PRRC_):
 ### Display Implications
 
 **List View Should Show:**
+
 ```
 UNRESOLVED THREADS (2):
   1. test_file.go:7   Consider using a constant... (2 comments)
@@ -1654,6 +1778,7 @@ RESOLVED THREADS (2):
 ```
 
 **Filtering:**
+
 ```bash
 # Show only unresolved (default for active work)
 gh talk list threads --unresolved
@@ -1670,6 +1795,7 @@ gh talk list threads --all
 **Created in Testing:**
 
 **PR #1:**
+
 - 1 Pull Request (`PR_kwDOQN97u86xFPR4`)
 - 5 Reviews (`PRR_...`) - including auto-created from replies
 - 4 Review Threads (`PRRT_...`) - 2 resolved, 2 unresolved
@@ -1678,6 +1804,7 @@ gh talk list threads --all
 - 2 Reactions on PR comments
 
 **Issue #2:**
+
 - 1 Issue (`I_kwDOQN97u87VYpUq`)
 - 2 Issue Comments (`IC_...`)
 - 3 Reactions (1 on issue body, 2 on comments)
@@ -1686,6 +1813,7 @@ gh talk list threads --all
 - State changes (OPEN → CLOSED → OPEN)
 
 **All IDs Collected:**
+
 ```
 # Pull Requests
 PR:      PR_kwDOQN97u86xFPR4
@@ -1733,6 +1861,7 @@ REA:     REA_lAHOQN97u87VYpUqzg3x5G8 (EYES on issue body)
 ### What's the Same
 
 **Comment System:**
+
 - ✅ Same `IC_` prefix for comments
 - ✅ Same reaction system (8 types)
 - ✅ Same minimization capability
@@ -1741,6 +1870,7 @@ REA:     REA_lAHOQN97u87VYpUqzg3x5G8 (EYES on issue body)
 - ✅ Same author association
 
 **Reactions:**
+
 - ✅ Same for issue body and comments
 - ✅ All 8 types always in reactionGroups
 - ✅ Same mutation (addReaction/removeReaction)
@@ -1749,6 +1879,7 @@ REA:     REA_lAHOQN97u87VYpUqzg3x5G8 (EYES on issue body)
 ### What's Different
 
 **Issues DO NOT Have:**
+
 - ❌ Review threads (`reviewThreads` field doesn't exist)
 - ❌ Review comments (`PRRC_` type)
 - ❌ Reviews (`PRR_` type)
@@ -1757,12 +1888,14 @@ REA:     REA_lAHOQN97u87VYpUqzg3x5G8 (EYES on issue body)
 - ❌ Diff-related fields
 
 **Issues Have Unique:**
+
 - ✅ `stateReason` field (COMPLETED, NOT_PLANNED, REOPENED)
 - ✅ `participants` field (conversation participants)
 - ✅ Simpler close/reopen workflow
 - ✅ Can be transferred between repos
 
 **PRs Have Unique:**
+
 - ✅ Review threads and thread resolution
 - ✅ Review comments with code context
 - ✅ Reviews (approve, request changes)
@@ -1775,6 +1908,7 @@ REA:     REA_lAHOQN97u87VYpUqzg3x5G8 (EYES on issue body)
 ### Unified vs Separate Commands
 
 **Option A: Unified Commands**
+
 ```bash
 gh talk list comments              # Auto-detect PR or Issue
 gh talk react IC_... 👍            # Works for both
@@ -1782,6 +1916,7 @@ gh talk hide IC_... --reason spam  # Works for both
 ```
 
 **Option B: Separate Commands**
+
 ```bash
 gh talk list threads               # PR only
 gh talk list comments --pr 1       # PR comments
@@ -1789,6 +1924,7 @@ gh talk list comments --issue 2    # Issue comments
 ```
 
 **Recommendation:** Hybrid approach
+
 - Commands that work for both: unified (react, hide, show)
 - PR-specific commands: explicit (list threads, resolve)
 - Auto-detect when possible, allow explicit override
@@ -1796,6 +1932,7 @@ gh talk list comments --issue 2    # Issue comments
 ### Comment Type Detection
 
 **Strategy:**
+
 ```go
 // Detect comment type from ID prefix
 func GetCommentType(id string) CommentType {
@@ -1817,24 +1954,28 @@ func GetCommentType(id string) CommentType {
 ```
 
 **Challenge:** `IC_` is ambiguous (issue or PR)
+
 - Must query to determine parent
 - Or require context flag (--issue vs --pr)
 
 ### Issue-Specific Features
 
 **Close with Reason:**
+
 ```bash
 gh talk close issue 2 --reason completed
 gh talk close issue 2 --reason "not planned"
 ```
 
 **List Participants:**
+
 ```bash
 gh talk show issue 2 --participants
 # Shows: Users involved in conversation
 ```
 
 **Filter by Label:**
+
 ```bash
 gh talk list comments --issue 2 --label documentation
 ```
@@ -1842,6 +1983,7 @@ gh talk list comments --issue 2 --label documentation
 ### What gh-talk Should Support for Issues
 
 **Phase 1 (MVP):**
+
 - ✅ List issue comments
 - ✅ Add reactions to issue comments
 - ✅ Add reactions to issue body
@@ -1849,6 +1991,7 @@ gh talk list comments --issue 2 --label documentation
 - ✅ View issue details
 
 **Phase 2:**
+
 - ✅ Add comments to issues
 - ✅ Edit comments
 - ✅ Filter comments by author, date
@@ -1856,12 +1999,14 @@ gh talk list comments --issue 2 --label documentation
 - ✅ Close/reopen issues
 
 **Phase 3:**
+
 - ✅ Bulk comment operations
 - ✅ Issue templates
 - ✅ Label management
 - ✅ Assignee management
 
 **NOT Supported (Issue Limitations):**
+
 - ❌ Review threads (issues don't have them)
 - ❌ Thread resolution (no threads)
 - ❌ Code-specific comments (no diff)
@@ -1869,8 +2014,8 @@ gh talk list comments --issue 2 --label documentation
 
 ## References
 
-- **Test PR:** https://github.com/hamishmorgan/gh-talk/pull/1
-- **Test Issue:** https://github.com/hamishmorgan/gh-talk/issues/2
+- **Test PR:** <https://github.com/hamishmorgan/gh-talk/pull/1>
+- **Test Issue:** <https://github.com/hamishmorgan/gh-talk/issues/2>
 - **Full PR Response:** `testdata/pr_full_response.json`
 - **Full Issue Response:** `testdata/issue_full_response.json`
 - **PR with Mixed States:** `testdata/pr_with_resolved_threads.json`
@@ -1884,4 +2029,3 @@ gh talk list comments --issue 2 --label documentation
 **Test Environment**: Real GitHub repository with live API  
 **Data Sources**: PR #1 and Issue #2 in hamishmorgan/gh-talk  
 **Test Fixtures**: `testdata/` directory contains real API responses
-

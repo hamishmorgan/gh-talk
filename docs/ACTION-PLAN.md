@@ -64,12 +64,14 @@ total < 80 → total < 60
 #### 1. `gh talk list threads`
 
 **Functionality:**
+
 - List review threads for current PR
 - Filter: --unresolved (default), --resolved, --all
 - Output: Table (TTY) or TSV (non-TTY)
 - Context: Auto-detect or --pr flag
 
 **Why First:**
+
 - Foundation for all other commands
 - Immediately useful (see what needs attention)
 - Tests our architecture end-to-end
@@ -79,12 +81,14 @@ total < 80 → total < 60
 #### 2. `gh talk reply`
 
 **Functionality:**
+
 - Reply to thread by full ID
 - Interactive selection if no ID
 - Message as argument or --editor
 - Optional --resolve flag
 
 **Why Second:**
+
 - Most common action (address feedback)
 - Tests mutations and error handling
 - Validates thread ID system
@@ -94,12 +98,14 @@ total < 80 → total < 60
 #### 3. `gh talk resolve`
 
 **Functionality:**
+
 - Resolve thread by full ID
 - Interactive selection if no ID
 - Bulk support (multiple IDs)
 - Confirmation for bulk
 
 **Why Third:**
+
 - Common workflow completion action
 - Tests bulk operations
 - Simple mutation (good learning)
@@ -136,6 +142,7 @@ total < 80 → total < 60
 ### Day 1-2: Foundation
 
 **Tasks:**
+
 1. Add Cobra dependency
 2. Fix go.mod (Go version)
 3. Create `internal/commands/root.go`
@@ -148,6 +155,7 @@ total < 80 → total < 60
 ### Day 3-4: First Query
 
 **Tasks:**
+
 1. Create `internal/api/types.go` (Thread, Comment structs)
 2. Create `internal/api/threads.go` (ListThreads method)
 3. Write actual GraphQL query
@@ -159,6 +167,7 @@ total < 80 → total < 60
 ### Day 5-6: List Command
 
 **Tasks:**
+
 1. Create `internal/commands/list.go`
 2. Create `internal/format/table.go`
 3. Implement runListThreads
@@ -171,6 +180,7 @@ total < 80 → total < 60
 ### Day 7-8: Reply Command
 
 **Tasks:**
+
 1. Create `internal/api/mutations.go` (ReplyToThread)
 2. Create `internal/commands/reply.go`
 3. Implement runReply
@@ -183,6 +193,7 @@ total < 80 → total < 60
 ### Day 9-10: Resolve Command
 
 **Tasks:**
+
 1. Add ResolveThread to mutations.go
 2. Create `internal/commands/resolve.go`
 3. Implement runResolve
@@ -195,6 +206,7 @@ total < 80 → total < 60
 ### Day 11-12: Testing
 
 **Tasks:**
+
 1. Unit tests for api package
 2. Integration tests for commands
 3. Mock client implementation
@@ -206,6 +218,7 @@ total < 80 → total < 60
 ### Day 13-14: Polish
 
 **Tasks:**
+
 1. Error message improvements
 2. Documentation updates
 3. README examples
@@ -217,6 +230,7 @@ total < 80 → total < 60
 ### Day 15: Release
 
 **Tasks:**
+
 1. Tag v0.1.0
 2. Trigger release workflow
 3. Test installation
@@ -230,6 +244,7 @@ total < 80 → total < 60
 ### Reconsideration: Add Short IDs
 
 **Why Reconsider:**
+
 - UX is critical for adoption
 - 30-char IDs are unusable
 - Interactive mode friction
@@ -274,12 +289,14 @@ func getThreadID(arg string) (string, error) {
 ```
 
 **Rules:**
+
 - Cache populated by `list threads`
 - Valid for current session only
 - Clear on PR context change
 - Fallback to full ID always works
 
 **Implementation:**
+
 - 30-60 minutes of work
 - Huge UX improvement
 - Simple (no persistent storage)
@@ -362,16 +379,19 @@ func TestListThreads(t *testing.T) {
 ### MVP Success = Can Use Daily
 
 **Must Be Able To:**
+
 1. See unresolved threads in current PR
 2. Reply to threads
 3. Resolve threads after addressing
 
 **If This Works:**
+
 - Saves time vs browser
 - Actually used in workflow
 - Validated the concept
 
 **Then Add:**
+
 - More commands based on what's missing
 - Features users actually request
 - Improvements from real usage
@@ -381,26 +401,31 @@ func TestListThreads(t *testing.T) {
 ### For Each Risk in Critical Review
 
 **Analysis Paralysis:**
+
 - ✅ STOP researching after this
 - ✅ Commit to implementation timeline
 - ✅ 2-week MVP deadline
 
 **Thread ID UX:**
+
 - 🔄 ADD short IDs (session-scoped)
 - ✅ 30 min investment, huge UX win
 - ✅ Best of both worlds
 
 **GraphQL Complexity:**
+
 - ✅ Start with simplest query
 - ✅ Test against fixtures first
 - ✅ Iterate on structure
 
 **Coverage Goals:**
+
 - ✅ Lower to 60% for MVP
 - ✅ Focus on API package
 - ✅ Increase coverage in Phase 2
 
 **Scope Creep:**
+
 - ✅ TRUE MVP: 3 commands only
 - ✅ Defer everything else
 - ✅ User feedback drives roadmap
@@ -410,6 +435,7 @@ func TestListThreads(t *testing.T) {
 ### This Commit
 
 **Commit Message:**
+
 ```
 Add engineering infrastructure and critical review
 
@@ -438,6 +464,7 @@ Status: Research complete, problems identified, ready to build
 ### Next Commit
 
 **Commit Message:**
+
 ```
 Add Cobra and implement foundation
 
@@ -451,6 +478,7 @@ Add Cobra and implement foundation
 ### Third Commit
 
 **Commit Message:**
+
 ```
 Implement list threads command (MVP #1)
 
@@ -468,6 +496,7 @@ First working feature!
 ### Problems Found
 
 **Critical:**
+
 1. Too much planning, not enough building
 2. Thread ID system may have poor UX
 3. Scope too large for MVP
@@ -485,12 +514,14 @@ First working feature!
 ### Actions Required
 
 **Before Next Coding Session:**
+
 1. ✅ Fix go.mod (Go version, add Cobra)
 2. ✅ Lower coverage target (60%)
 3. ✅ Add LICENSE file
 4. ✅ Reconsider short IDs (add them!)
 
 **First Implementation Sprint:**
+
 1. Root command setup
 2. API client wrapper
 3. List threads command
@@ -498,6 +529,7 @@ First working feature!
 5. Iterate
 
 **Success Metric:**
+
 - Working `gh talk list threads` in 3-4 days
 - Usable for real code review
 - Validated our architecture
@@ -505,11 +537,13 @@ First working feature!
 ## The Hard Truth
 
 **We've done:**
+
 - ✅ Exceptional research
 - ✅ Thorough planning
 - ✅ Quality infrastructure
 
 **We haven't done:**
+
 - ❌ Built anything
 - ❌ Validated with real code
 - ❌ Proven it works
@@ -521,5 +555,3 @@ First working feature!
 **Last Updated**: 2025-11-02  
 **Status**: Problems identified, action plan created  
 **Next Action**: Fix go.mod and start implementing
-
-
