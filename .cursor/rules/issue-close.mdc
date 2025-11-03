@@ -108,7 +108,7 @@ gh issue comment <NUMBER> --body "Cannot reproduce this issue.
 
 Could you provide:
 - Exact command run
-- Full error output  
+- Full error output
 - Version: gh-talk --version
 
 Will reopen once we have more details.
