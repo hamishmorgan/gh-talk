@@ -35,7 +35,7 @@ func (c *Client) ListThreads(ctx context.Context, owner, name string, pr int) ([
 							Nodes      []struct {
 								ID        graphql.String
 								Body      graphql.String
-								CreatedAt graphql.DateTime
+								CreatedAt string
 								Author    struct {
 									Login graphql.String
 								}
@@ -98,12 +98,18 @@ func (c *Client) ListThreads(ctx context.Context, owner, name string, pr int) ([
 		thread.Comments = make([]Comment, 0, len(node.Comments.Nodes))
 		for _, c := range node.Comments.Nodes {
 			comment := Comment{
-				ID:        string(c.ID),
-				Body:      string(c.Body),
-				CreatedAt: time.Time(c.CreatedAt),
+				ID:   string(c.ID),
+				Body: string(c.Body),
 				Author: User{
 					Login: string(c.Author.Login),
 				},
+			}
+
+			// Parse CreatedAt
+			if c.CreatedAt != "" {
+				if t, err := time.Parse(time.RFC3339, c.CreatedAt); err == nil {
+					comment.CreatedAt = t
+				}
 			}
 
 			// Convert reaction groups
