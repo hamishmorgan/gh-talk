@@ -310,24 +310,53 @@ git push --force-with-lease  # Safe force push
 - [ ] AGENTS.md updated (if new patterns)
 - [ ] Branch is up to date with main
 
-### 11. Request Merge (User Approval Required)
+### 11. Post Status Updates
+
+**When posting status updates:**
+
+```bash
+# Hide previous status updates as outdated
+gh pr view <PR> --comments --json comments | \
+  jq -r '.comments[] | select(.body | contains("Status Update")) | .node_id' | \
+  xargs -I {} gh talk hide {} --reason outdated
+
+# Post new status update
+gh pr comment <PR> --body "## Status Update
+
+Progress summary here...
+
+✓ Items completed
+⏳ Items in progress
+❌ Items blocked
+
+🤖 Cursor"
+```
+
+**Rules:**
+- Title: "Status Update" (not "Final" or "Ready to Merge")
+- Hide previous status updates as outdated
+- Don't claim finality (there may be more to do)
+- Always include agent signature
+
+### 12. Request Merge (User Approval Required)
 
 **DO NOT merge yourself** - wait for user to approve and merge.
 
-**Report readiness:**
+**When all work is complete:**
 ```
+## Status Update
+
 ✓ All checks passing
-✓ All feedback addressed
+✓ All feedback addressed  
 ✓ Tests added
 ✓ Documentation updated
-✓ Ready for merge
 
 Awaiting your approval to merge.
 
 🤖 Cursor
 ```
 
-**Required**: All PR comments requesting merge MUST include agent signature
+**Required**: All PR comments MUST include agent signature
 
 ## Using gh-talk for PR Reviews
 
