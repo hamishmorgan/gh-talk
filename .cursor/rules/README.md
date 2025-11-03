@@ -4,19 +4,49 @@ This directory contains workflow files for AI agents working on gh-talk in Curso
 
 ## Files
 
-### Workflows
+### PR Workflows (Slash Commands: `/pr-*`)
 
-**`pr-workflow.mdc`** - Pull request workflow with branch protection
-- **Load strategy**: Always (`alwaysApply: true`)
-- **Rationale**: All changes go through PRs due to branch protection
-- **Purpose**: Complete PR lifecycle from branch creation to merge
-- **Includes**: Branch naming (cursor_feature_name), commit format, testing, review handling with gh-talk, agent attribution requirements
+**`pr-create.mdc`** - Create and submit pull requests
+- **Slash command**: `/pr-create`
+- **Load strategy**: On-demand
+- **Purpose**: Branch creation → PR submission → Request review
+- **Next**: → `/pr-iterate`
 
-**`creating-rules.mdc`** - Guide for creating new cursor rules
+**`pr-iterate.mdc`** - Handle feedback and iterations
+- **Slash command**: `/pr-iterate`
+- **Load strategy**: On-demand
+- **Purpose**: Monitor CI → Address feedback → Push fixes → Re-review
+- **Previous**: `/pr-create` | **Next**: → `/pr-merge`
+
+**`pr-merge.mdc`** - Final review and merge
+- **Slash command**: `/pr-merge`
+- **Load strategy**: On-demand
+- **Purpose**: Verify CI → Final checks → Request merge → Cleanup
+- **Previous**: `/pr-iterate`
+
+**`pr-review.mdc`** - Review others' pull requests
+- **Slash command**: `/pr-review`
+- **Load strategy**: On-demand
+- **Purpose**: Check out PR → Review code → Leave feedback → Approve/request changes
+
+### Issue Workflows (Slash Commands: `/issue-*`)
+
+**`issue-create.mdc`** - Create well-structured issues
+- **Slash command**: `/issue-create`
+- **Load strategy**: On-demand
+- **Purpose**: Bug reports, feature requests, tasks with proper templates
+
+**`issue-respond.mdc`** - Respond to issue discussions
+- **Slash command**: `/issue-respond`
+- **Load strategy**: On-demand
+- **Purpose**: Answer questions, provide updates, close issues
+
+### Meta Workflow
+
+**`creating-rules.mdc`** - Guide for creating cursor rules
+- **Slash command**: `/creating-rules`
 - **Load strategy**: Context-based (`globs: [".cursor/rules/**/*.mdc", "AGENTS.md"]`)
-- **Rationale**: Only needed when editing rules or AGENTS.md
-- **Purpose**: Meta-workflow explaining how to create effective rules
-- **Includes**: Frontmatter format, loading strategies, content structure, best practices, template
+- **Purpose**: Meta-workflow for creating new .mdc files
 
 ## Frontmatter Patterns
 
@@ -30,7 +60,7 @@ alwaysApply: true
 ---
 ```
 
-**Current**: `pr-workflow.mdc` (all work uses PRs)
+**Current**: None (kept minimal to reduce context size)
 
 ### Context-Based (Globs)
 ```yaml
@@ -50,7 +80,7 @@ alwaysApply: false
 ---
 ```
 
-**Current**: None yet (but pattern available for future)
+**Current**: All PR and issue workflows (invoked via slash commands)
 
 ## Content Structure
 
@@ -109,12 +139,22 @@ See `creating-rules.mdc` for detailed guide.
 
 ## Current Rules Summary
 
-| File | Strategy | Purpose |
-|------|----------|---------|
-| `pr-workflow.mdc` | Always | PR lifecycle with branch protection |
-| `creating-rules.mdc` | Globs | Guide for creating new rules |
+| File | Slash Command | Strategy | Purpose |
+|------|---------------|----------|---------|
+| `pr-create.mdc` | `/pr-create` | On-demand | Create PRs |
+| `pr-iterate.mdc` | `/pr-iterate` | On-demand | Handle feedback |
+| `pr-merge.mdc` | `/pr-merge` | On-demand | Merge PRs |
+| `pr-review.mdc` | `/pr-review` | On-demand | Review PRs |
+| `issue-create.mdc` | `/issue-create` | On-demand | Create issues |
+| `issue-respond.mdc` | `/issue-respond` | On-demand | Respond to issues |
+| `creating-rules.mdc` | `/creating-rules` | Globs | Meta-workflow |
 
-**Total**: 2 workflow files
+**Total**: 7 workflow files
+
+**Organized by prefix:**
+- `pr-*` (4 files) - Pull request workflows
+- `issue-*` (2 files) - Issue workflows
+- `creating-*` (1 file) - Meta workflow
 
 ## Design Principles
 

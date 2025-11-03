@@ -1,0 +1,319 @@
+---
+description: "Review pull requests: check code, leave feedback, approve/request changes"
+alwaysApply: false
+---
+
+# Reviewing Pull Requests
+
+**Purpose**: Workflow for reviewing code in pull requests and providing feedback.
+
+**When to Use**: When reviewing someone else's PR (invoke with `/pr-review`)
+
+**Prerequisites**:
+- PR number or URL
+- `gh` CLI and `gh-talk` installed
+- Understanding of project's code standards (AGENTS.md)
+
+## Review Process
+
+### 1. Check Out PR Branch
+
+```bash
+# Check out PR locally
+gh pr checkout <PR>
+
+# Or view without checkout
+gh pr view <PR>
+gh pr diff <PR>
+```
+
+### 2. Understand the Changes
+
+**Read PR description:**
+```bash
+gh pr view <PR>
+```
+
+**Check what changed:**
+```bash
+gh pr diff <PR>
+
+# Or specific files
+gh pr diff <PR> -- path/to/file.go
+```
+
+**Check commits:**
+```bash
+gh pr view <PR> --json commits
+```
+
+### 3. Review Code Quality
+
+**What to check:**
+
+**Correctness:**
+- Logic is sound
+- Edge cases handled
+- Error handling present
+- No obvious bugs
+
+**Tests:**
+- New code has tests (100% coverage)
+- Tests are meaningful (not just coverage)
+- Edge cases tested
+- Error paths tested
+
+**Code Quality:**
+- Follows AGENTS.md standards
+- Clear variable names
+- No code smells
+- Appropriate comments
+- No unnecessary complexity
+
+**Performance:**
+- No obvious performance issues
+- Efficient algorithms
+- Proper resource management
+
+**Security:**
+- No hardcoded secrets
+- Input validation present
+- No SQL injection risks
+- Secure API usage
+
+**Documentation:**
+- README updated if needed
+- AGENTS.md updated if new patterns
+- Code comments where necessary
+- Help text clear
+
+### 4. Leave Feedback
+
+**Use gh-talk for inline comments:**
+
+```bash
+# List existing threads first
+gh talk list threads --pr <PR>
+
+# For issues found, use GitHub web UI to create review threads
+# (gh-talk can reply but not create new threads yet)
+```
+
+**Types of feedback:**
+
+**Request Changes** - Issues that must be fixed:
+```
+❌ This will cause a bug when X happens
+
+Expected: Handle null case
+Found: No null check
+
+Please add validation before using this value.
+```
+
+**Suggestions** - Nice to haves:
+```
+💡 Consider using a map here instead of array
+
+This would be O(1) instead of O(n) for lookups.
+Not blocking, but worth considering.
+```
+
+**Nitpicks** - Minor style/preference:
+```
+nit: Variable name could be more descriptive
+
+`x` → `threadCount` would be clearer
+```
+
+**Praise** - Acknowledge good work:
+```
+✨ Nice refactoring here!
+
+Much cleaner than the previous approach.
+```
+
+### 5. Check CI Status
+
+```bash
+# Verify all checks pass
+gh pr checks <PR>
+
+# If failing, may want to wait for author to fix
+```
+
+### 6. Make Decision
+
+**Approve** - When:
+- Code is correct and complete
+- Tests are comprehensive
+- No major issues
+- Minor issues are truly minor (nitpicks OK)
+- CI passing
+
+```bash
+gh pr review <PR> --approve -b "LGTM! Great work.
+
+Minor suggestions but not blocking.
+
+🤖 Cursor"
+```
+
+**Request Changes** - When:
+- Bugs or correctness issues
+- Missing tests
+- Security concerns
+- Major code quality problems
+- CI failing
+
+```bash
+gh pr review <PR> --request-changes -b "Changes needed
+
+See inline comments for details.
+
+🤖 Cursor"
+```
+
+**Comment** - When:
+- Need clarification
+- Have questions
+- Suggestions but not blocking
+
+```bash
+gh pr review <PR> --comment -b "Few questions/suggestions
+
+See inline comments.
+
+🤖 Cursor"
+```
+
+### 7. Follow Up
+
+**After author addresses feedback:**
+
+```bash
+# Check their responses
+gh talk list threads --pr <PR>
+
+# Verify fixes
+gh pr diff <PR>
+
+# Approve if satisfied
+gh pr review <PR> --approve -b "All feedback addressed. Thanks!
+
+🤖 Cursor"
+```
+
+## Review Checklist
+
+**Before approving:**
+- [ ] Code is correct
+- [ ] Tests comprehensive (100% for new code)
+- [ ] No security issues
+- [ ] No performance issues
+- [ ] Follows code standards
+- [ ] Documentation updated
+- [ ] CI passing
+- [ ] All your comments addressed
+
+## Using gh-talk for Reviews
+
+**Check threads:**
+```bash
+gh talk list threads --pr <PR>
+gh talk show PRRT_xxx
+```
+
+**Comment on threads:**
+```bash
+gh talk reply PRRT_xxx "Good point! I'd also suggest...
+
+🤖 Cursor"
+```
+
+**React to responses:**
+```bash
+gh talk react PRRC_xxx 👍  # Agree with fix
+gh talk react PRRC_xxx ❤️  # Thanks for explaining
+```
+
+**Track progress:**
+```bash
+gh talk status --pr <PR>
+```
+
+## Best Practices
+
+### DO ✅
+
+**Be constructive:**
+- Explain why something is an issue
+- Suggest alternatives
+- Link to relevant docs/standards
+- Acknowledge good work
+
+**Be specific:**
+- Point to exact lines
+- Give examples of better approach
+- Explain impact of issue
+
+**Be respectful:**
+- Remember author is learning/improving
+- Praise good work
+- Frame feedback as suggestions when possible
+
+### DON'T ❌
+
+**Be vague:**
+❌ "This looks wrong"
+✅ "This will cause NPE when user is null - add null check"
+
+**Block on style:**
+❌ Request changes for minor style preferences
+✅ Comment with "nit:" for minor suggestions
+
+**Be negative:**
+❌ "This code is terrible"
+✅ "Consider refactoring this for clarity"
+
+**Ignore context:**
+❌ Perfect code in review
+✅ Good enough + learning opportunity
+
+## Quick Reference
+
+```bash
+# Review flow
+gh pr checkout <PR>
+gh pr diff <PR>
+gh talk list threads --pr <PR>
+
+# Leave feedback (web UI for now)
+# Use gh-talk to reply to threads
+
+# Approve
+gh pr review <PR> --approve -b "LGTM!
+
+🤖 Cursor"
+
+# Or request changes
+gh pr review <PR> --request-changes -b "See comments
+
+🤖 Cursor"
+```
+
+## Agent Signature
+
+**ALL review comments MUST end with:**
+```
+🤖 Cursor
+```
+
+---
+
+**Related**:
+- `pr-create.mdc` - For creating PRs
+- `pr-iterate.mdc` - For addressing review feedback
+- `AGENTS.md` - Code standards to check against
+
+🤖 *Generated by Cursor*
