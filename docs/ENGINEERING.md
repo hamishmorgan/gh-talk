@@ -628,9 +628,9 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-### Workflow 7: PR Validation
+### Workflow 7: PR Validation (Planned)
 
-**File: `.github/workflows/pr.yml`**
+**Planned file: `.github/workflows/pr.yml`** (not yet implemented)
 
 ```yaml
 name: PR Checks
@@ -692,9 +692,9 @@ jobs:
           config_file: .markdownlint.json
 ```
 
-### Workflow 8: Dependency Updates
+### Workflow 8: Dependency Updates (Planned)
 
-**File: `.github/workflows/dependabot-auto-merge.yml`**
+**Planned file: `.github/workflows/dependabot-auto-merge.yml`** (not yet implemented)
 
 ```yaml
 name: Dependabot Auto-merge
