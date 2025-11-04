@@ -1,17 +1,195 @@
 # pr-merge
 
-@.cursor/rules/pr-merge.mdc
+# Merging Pull Requests
 
-Final verification and merge workflow for PRs.
+**Purpose**: Final verification and merge workflow.
 
-**Usage:**
-- `/pr-merge <PR>` - Verify CI passes, then merge (squash and delete branch)
+**When to Use**: 
+- When all feedback addressed and CI passing (invoke with `/pr-merge <PR>`)
+- User invoking `/pr-merge` IS their instruction to merge
 
-**Behavior:**
+**Previous Step**: Iterations complete via `/pr-iterate`
+
+**Prerequisites**:
+
+- All review feedback addressed
+- All CI checks passing (verified)
+
+**Behavior**:
 - Verifies all CI checks pass (exit code 0)
-- Posts status update
+- Posts final status update
 - Merges PR with `--squash --delete-branch`
 - Updates local main branch
 
-**When invoked:** Your use of `/pr-merge` IS your instruction to merge
+## Final Verification
 
+### 1. Verify CI Passes (CRITICAL)
+
+```bash
+# This MUST return exit code 0
+gh pr checks <PR>
+
+# If exit code 1: NOT ready
+# Go back to /pr-iterate
+```
+
+### 2. Check Review Status
+
+```bash
+# All threads resolved?
+gh talk status --pr <PR>
+
+# Copilot satisfied?
+gh pr view <PR> --json reviewDecision --jq '.reviewDecision'
+```
+
+### 3. Self-Review Checklist
+
+- [ ] **All CI checks passing** (verified `gh pr checks` exit code 0)
+- [ ] All review comments addressed
+- [ ] All review threads resolved
+- [ ] All resolved comments hidden
+- [ ] Copilot review satisfied
+- [ ] Tests added (100% coverage for new code)
+- [ ] Code formatted (`make fmt`)
+- [ ] Documentation updated
+- [ ] Coverage maintained at >60%
+- [ ] **PR description updated** (reflects final state)
+- [ ] AGENTS.md updated (if new patterns)
+- [ ] Branch up to date with main
+
+## Post Status Update
+
+**CRITICAL: ALWAYS hide old status updates FIRST:**
+
+```bash
+# Step 1: Hide ALL previous status updates (REQUIRED)
+gh pr view <PR> --comments --json comments | \
+  jq -r '.comments[] | select(.body | contains("Status Update")) | .id' | \
+  xargs -I {} gh talk hide {} --reason outdated
+
+# Step 2: Then post new status
+gh pr comment <PR> --body "## Status Update
+
+✓ All checks passing (verified: gh pr checks returned 0)
+✓ All feedback addressed
+✓ All threads resolved
+✓ Tests added
+✓ Documentation updated
+
+Awaiting your approval to merge.
+
+🤖 Cursor"
+```
+
+**CRITICAL Rules:**
+
+- **ALWAYS hide old status updates BEFORE posting new one** (prevents clutter)
+- Title: "Status Update" only (not "Final" or "Ready")
+- NEVER claim ready if CI failing/pending
+- Verify exit code 0 before posting
+- Include agent signature
+
+## Merge Workflow
+
+**Merge Policy:**
+
+- User invoking `/pr-merge <PR>` IS their instruction to merge
+- **ALWAYS verify** `gh pr checks` returns exit code 0 before merging
+- If CI not passing, STOP and notify user
+
+**Steps:**
+
+```bash
+# 1. Verify CI passes (CRITICAL)
+gh pr checks <PR>  # MUST be exit code 0
+
+# 2. If exit code 0, proceed to merge
+gh pr merge <PR> --squash --delete-branch
+
+# 3. Confirm completion
+echo "✓ PR merged and branch deleted"
+```
+
+**If CI fails (exit code ≠ 0):**
+
+```bash
+# DO NOT merge - notify user
+gh pr comment <PR> --body "## ❌ Cannot Merge
+
+CI checks are not passing. Please fix:
+
+[List failing checks]
+
+Run /pr-iterate to address failures.
+
+🤖 Cursor"
+```
+
+## Post-Merge Cleanup
+
+**After PR is merged:**
+
+```bash
+# Update local main
+git checkout main
+git pull origin main
+
+# Delete feature branch (if not auto-deleted by --delete-branch)
+git branch -d <branch-name>
+
+# Delete remote if not auto-deleted
+git push origin --delete <branch-name>
+```
+
+**Note:** If using `gh pr merge --delete-branch`, the remote branch is automatically deleted.
+
+## Anti-Patterns
+
+❌ **Merging without verifying CI** - ALWAYS check `gh pr checks` returns 0
+❌ **Claiming ready without exit code 0** - Verify CI!
+❌ **Leaving old status comments** - Hide as outdated
+❌ **Merging while CI failing/pending** - Always verify `gh pr checks` returns 0 first
+
+## Quick Reference
+
+```bash
+# User runs: /pr-merge <PR>
+# This IS their instruction to merge
+
+# Step 1: Verify CI (CRITICAL)
+gh pr checks <PR>  # Must return exit code 0
+
+# Step 2: Hide old status updates
+gh pr view <PR> --comments --json comments | \
+  jq -r '.comments[] | select(.body | contains("Status Update")) | .id' | \
+  xargs -I {} gh talk hide {} --reason outdated
+
+# Step 3: Post final status
+gh pr comment <PR> --body "✓ All checks passing
+✓ Merging now...
+
+🤖 Cursor"
+
+# Step 4: Merge (if CI passed)
+gh pr merge <PR> --squash --delete-branch
+
+# Step 5: Update local main
+git checkout main && git pull
+```
+
+## Cycle Complete
+
+**For next PR:**
+→ Use `/pr-create` to start fresh
+
+---
+
+**Related**:
+
+- `pr-create.mdc` - Creating PRs
+- `pr-iterate.mdc` - Handling feedback
+- `AGENTS.md` - Code standards
+
+---
+Note: This content duplicated in .cursor/rules/pr-merge.mdc for auto-loading
