@@ -48,4 +48,5 @@ func init() {
 	rootCmd.AddCommand(unhideCmd)
 	rootCmd.AddCommand(showCmd)
 	rootCmd.AddCommand(statusCmd)
+	rootCmd.AddCommand(cleanupCmd)
 }
