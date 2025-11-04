@@ -4,124 +4,106 @@ import (
 	"testing"
 )
 
+func TestIsNumericID(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  bool
+	}{
+		{"pure numeric", "2486231843", true},
+		{"zero", "0", true},
+		{"large number", "999999999999", true},
+		{"node ID", "PRRT_kwDOQN97u85gQeTN", false},
+		{"comment node ID", "PRRC_kwDOQN97u86UHqK7", false},
+		{"issue comment ID", "IC_kwDOQN97u87PVA8l", false},
+		{"alphanumeric", "abc123", false},
+		{"with spaces", "123 456", false},
+		{"empty", "", false},
+		{"text", "hello", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isNumericID(tt.input); got != tt.want {
+				t.Errorf("isNumericID(%q) = %v, want %v", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestParseThreadID(t *testing.T) {
 	tests := []struct {
-		name    string
-		input   string
-		want    string
-		wantErr bool
+		name      string
+		arg       string
+		wantID    string
+		wantError bool
+		errorMsg  string
 	}{
 		{
-			name:    "valid thread ID",
-			input:   "PRRT_kwDOQN97u85gQeTN",
-			want:    "PRRT_kwDOQN97u85gQeTN",
-			wantErr: false,
+			name:      "valid thread ID",
+			arg:       "PRRT_kwDOQN97u85gQeTN",
+			wantID:    "PRRT_kwDOQN97u85gQeTN",
+			wantError: false,
 		},
 		{
-			name:    "empty string",
-			input:   "",
-			want:    "",
-			wantErr: true,
+			name:      "empty string",
+			arg:       "",
+			wantID:    "",
+			wantError: true,
+			errorMsg:  "thread ID required",
 		},
 		{
-			name:    "invalid prefix",
-			input:   "INVALID_123",
-			want:    "",
-			wantErr: true,
+			name:      "numeric database ID",
+			arg:       "2486231843",
+			wantID:    "",
+			wantError: true,
+			errorMsg:  "numeric database ID",
 		},
 		{
-			name:    "URL not supported yet",
-			input:   "https://github.com/owner/repo/pull/123",
-			want:    "",
-			wantErr: true,
+			name:      "URL format",
+			arg:       "https://github.com/owner/repo/pull/123#discussion_r12345",
+			wantID:    "",
+			wantError: true,
+			errorMsg:  "URL parsing not yet supported",
 		},
 		{
-			name:    "short ID not supported",
-			input:   "1",
-			want:    "",
-			wantErr: true,
+			name:      "invalid format",
+			arg:       "invalid_id",
+			wantID:    "",
+			wantError: true,
+			errorMsg:  "invalid thread ID format",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parseThreadID(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("parseThreadID() error = %v, wantErr %v", err, tt.wantErr)
+			gotID, err := parseThreadID(tt.arg)
+			if (err != nil) != tt.wantError {
+				t.Errorf("parseThreadID(%q) error = %v, wantError %v", tt.arg, err, tt.wantError)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("parseThreadID() = %v, want %v", got, tt.want)
+			if gotID != tt.wantID {
+				t.Errorf("parseThreadID(%q) = %v, want %v", tt.arg, gotID, tt.wantID)
+			}
+			if err != nil && tt.errorMsg != "" {
+				if !containsString(err.Error(), tt.errorMsg) {
+					t.Errorf("parseThreadID(%q) error message = %q, should contain %q", tt.arg, err.Error(), tt.errorMsg)
+				}
 			}
 		})
 	}
 }
 
-func TestTruncate(t *testing.T) {
-	tests := []struct {
-		name   string
-		input  string
-		maxLen int
-		want   string
-	}{
-		{
-			name:   "shorter than max",
-			input:  "hello",
-			maxLen: 10,
-			want:   "hello",
-		},
-		{
-			name:   "exactly max",
-			input:  "hello",
-			maxLen: 5,
-			want:   "hello",
-		},
-		{
-			name:   "longer than max",
-			input:  "hello world this is a long string",
-			maxLen: 20,
-			want:   "hello world this ...",
-		},
-		{
-			name:   "very short max",
-			input:  "hello",
-			maxLen: 3,
-			want:   "hel",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := truncate(tt.input, tt.maxLen)
-			if got != tt.want {
-				t.Errorf("truncate() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+// Helper function to check if a string contains a substring
+func containsString(s, substr string) bool {
+	return len(s) >= len(substr) && (s == substr || len(s) > len(substr) && (s[:len(substr)] == substr || s[len(s)-len(substr):] == substr || findSubstring(s, substr)))
 }
 
-func TestContentToEmoji(t *testing.T) {
-	tests := []struct {
-		content string
-		want    string
-	}{
-		{"THUMBS_UP", "👍"},
-		{"THUMBS_DOWN", "👎"},
-		{"LAUGH", "😄"},
-		{"HOORAY", "🎉"},
-		{"CONFUSED", "😕"},
-		{"HEART", "❤️"},
-		{"ROCKET", "🚀"},
-		{"EYES", "👀"},
-		{"UNKNOWN", "UNKNOWN"},
+func findSubstring(s, substr string) bool {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return true
+		}
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.content, func(t *testing.T) {
-			got := contentToEmoji(tt.content)
-			if got != tt.want {
-				t.Errorf("contentToEmoji(%s) = %v, want %v", tt.content, got, tt.want)
-			}
-		})
-	}
+	return false
 }

@@ -3,6 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 
 	gh "github.com/cli/go-gh/v2"
@@ -53,6 +54,12 @@ func getCurrentPR(cmd *cobra.Command) (int, error) {
 	return result.Number, nil
 }
 
+// isNumericID checks if a string looks like a numeric database ID
+func isNumericID(s string) bool {
+	matched, _ := regexp.MatchString(`^\d+$`, s)
+	return matched
+}
+
 // parseThreadID validates and returns thread ID
 func parseThreadID(arg string) (string, error) {
 	if arg == "" {
@@ -63,12 +70,17 @@ func parseThreadID(arg string) (string, error) {
 		return arg, nil
 	}
 
+	// Check if user provided numeric database ID
+	if isNumericID(arg) {
+		return "", fmt.Errorf("invalid thread ID: %s\n\nYou provided a numeric database ID, but gh-talk requires node IDs\n\nTo find the correct node ID:\n  gh talk list threads --pr <PR>\n\nExpected format: PRRT_kwDOQN97u85gQeTN", arg)
+	}
+
 	// Could add URL parsing here in Phase 2
 	if strings.Contains(arg, "github.com") || strings.Contains(arg, "http") {
 		return "", fmt.Errorf("URL parsing not yet supported\n\nUse the full thread ID (PRRT_...)\nRun 'gh talk list threads' to see thread IDs")
 	}
 
-	return "", fmt.Errorf("invalid thread ID format: %s\n\nExpected format: PRRT_kwDOQN97u85gQeTN", arg)
+	return "", fmt.Errorf("invalid thread ID format: %s\n\nExpected format: PRRT_kwDOQN97u85gQeTN\nRun 'gh talk list threads' to see available thread IDs", arg)
 }
 
 // truncate truncates a string to maxLen with "..." if needed

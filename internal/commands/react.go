@@ -53,7 +53,10 @@ func runReact(cmd *cobra.Command, args []string) error {
 	// Validate all comment IDs
 	for _, commentID := range commentIDs {
 		if !strings.HasPrefix(commentID, "PRRC_") && !strings.HasPrefix(commentID, "IC_") {
-			return fmt.Errorf("invalid comment ID %s - expected format: PRRC_ or IC_", commentID)
+			if isNumericID(commentID) {
+				return fmt.Errorf("invalid comment ID: %s\n\nYou provided a numeric database ID, but gh-talk requires node IDs\n\nTo find the correct node ID:\n  gh talk list threads --pr <PR>\n\nExpected format: PRRC_kwDO... or IC_kwDO", commentID)
+			}
+			return fmt.Errorf("invalid comment ID: %s\n\nExpected format: PRRC_kwDO... or IC_kwDO\nRun 'gh talk list threads' to see available comment IDs", commentID)
 		}
 	}
 
