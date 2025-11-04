@@ -1,6 +1,546 @@
 # create-rule
 
-@.cursor/rules/create-rule.mdc
+# Creating Cursor Rules and Commands
 
-This guide covers creating new cursor workflow rules in .cursor/rules/ with proper frontmatter, loading strategies, and structure.
+**Purpose**: Meta-workflow for creating new `.mdc` workflow files in `.cursor/rules/`
 
+**When to Use**: When creating new cursor rules, editing existing rules, or updating AGENTS.md with workflow content.
+
+**Prerequisites**:
+
+- Understanding of cursor rules frontmatter format (YAML)
+- Markdown knowledge
+- Familiarity with project's AGENTS.md structure
+- Knowledge of when to use workflows vs reference material
+
+## When to Create a Rule
+
+### Create a Cursor Rule (.mdc) When
+
+- ✅ **Procedural workflow** - Step-by-step process to follow
+- ✅ **Repeated process** - Same steps used multiple times
+- ✅ **Enforcement needed** - Must follow specific sequence
+- ✅ **Context-specific** - Only relevant to certain files/tasks
+- ✅ **Reference from other workflows** - Linked from main workflows
+
+### Add to AGENTS.md Instead When
+
+- ❌ **Reference material** - Standards, patterns, architecture
+- ❌ **Always relevant** - Core project context
+- ❌ **Taxonomy** - Categories, types, definitions
+- ❌ **Rationale** - Why things are done this way
+
+## Rule File Structure
+
+### Frontmatter (YAML)
+
+**Required fields:**
+
+```yaml
+---
+description: "Brief one-line purpose (shows in Cursor UI)"
+---
+```
+
+**Optional fields:**
+
+```yaml
+---
+description: "Brief one-line purpose"
+alwaysApply: false      # true|false - load in every conversation
+globs: ["pattern/**"]   # Load when editing matching files
+---
+```
+
+### Content (Markdown)
+
+**Structure:**
+
+```markdown
+# Rule Title
+
+Brief introduction.
+
+## Section 1: When/Why
+
+Explain when this workflow applies.
+
+## Section 2: Prerequisites
+
+What's needed before starting.
+
+## Section 3: Steps
+
+1. **First Step**: What to do
+   ```bash
+   commands if applicable
+   ```
+
+2. **Second Step**: Next action
+   - Sub-details
+   - Important notes
+
+## Section 4: Common Patterns
+
+Frequently used variations.
+
+## Section 5: Anti-Patterns
+
+What NOT to do and why.
+
+## Quick Reference
+
+Condensed cheat sheet.
+
+```
+
+## Loading Strategies
+
+### Strategy 1: Always Loaded (`alwaysApply: true`)
+
+**Use for:**
+- Critical enforcement (pre-commit checks)
+- Universal requirements (all code must follow)
+- Safety guardrails
+
+**Example:**
+```yaml
+---
+description: "Pre-commit validation gates"
+alwaysApply: true
+---
+```
+
+**Current usage**: Only `validation-workflow.mdc`
+
+**WARNING**: Use VERY sparingly - adds to context for every conversation
+
+### Strategy 2: Context-Based (`globs`)
+
+**Use for:**
+
+- File-type specific workflows
+- Component-specific patterns
+- Auto-load when editing relevant files
+
+**Example:**
+
+```yaml
+---
+description: "Testing workflow - loads when editing tests"
+globs: ["**/tests/**", "**/*_test.go", "**/*.bats"]
+---
+```
+
+**Glob patterns:**
+
+- `**/*.go` - All Go files
+- `tests/**` - Everything in tests directory
+- `.github/workflows/**` - GitHub Actions files
+- `AGENTS.md` - Specific file
+
+**Current usage**: `testing-workflow.mdc`, `ci-cd.mdc`, `update-instructions-workflow.mdc`
+
+### Strategy 3: On-Demand (`alwaysApply: false`)
+
+**Use for:**
+
+- Workflows requested by agent
+- Referenced from other workflows
+- Infrequently needed procedures
+
+**Example:**
+
+```yaml
+---
+description: "Pull request workflow"
+alwaysApply: false
+---
+```
+
+**Current usage**: `pull-request-workflow.mdc`, `troubleshooting-workflow.mdc`, `github-integration.mdc`
+
+## Writing Effective Rules
+
+### DO ✅
+
+**1. Clear, Actionable Steps**
+
+```markdown
+### 1. Create Feature Branch
+
+```bash
+git checkout -b cursor_feature_name
+```
+
+```
+
+**2. Use Enforcing Language**
+- MUST, ALWAYS, NEVER (for requirements)
+- SHOULD (for strong recommendations)
+- CONSIDER (for suggestions)
+
+**3. Provide Examples**
+```markdown
+Example:
+  gh talk reply PRRT_xxx "Fixed!"
+```
+
+**4. Include Quick Reference**
+
+```markdown
+## Quick Reference
+
+```bash
+# Common command
+command --flag value
+```
+
+```
+
+**5. Explain Rationale**
+```markdown
+**Why**: Context helps agents understand, not just execute
+```
+
+**6. Link to Related Content**
+
+```markdown
+See: AGENTS.md for detailed patterns
+Related: `.cursor/rules/testing-workflow.mdc`
+```
+
+### DON'T ❌
+
+**1. Duplicate AGENTS.md Content**
+
+- Reference it, don't repeat it
+- AGENTS.md is for context, rules are for process
+
+**2. Make Everything `alwaysApply: true`**
+
+- Bloats context unnecessarily
+- Only for critical enforcement
+
+**3. Write Novel-Length Rules**
+
+- Keep concise and scannable
+- Focus on actionable steps
+- Detailed rationale goes in AGENTS.md
+
+**4. Mix Workflows and Reference**
+
+- Workflows: How to do something
+- Reference: What/why something is
+
+**5. Use Vague Language**
+
+```markdown
+❌ "Maybe run tests"
+✅ "Run tests: make test"
+```
+
+## Creating a New Rule
+
+### Step 1: Determine Type
+
+**Is this a workflow or reference material?**
+
+- Workflow → New .mdc file
+- Reference → Add to AGENTS.md
+
+### Step 2: Choose Name
+
+**Naming convention:**
+
+```
+<topic>-workflow.mdc     # For workflows
+<component>.mdc          # For component reference
+```
+
+**Examples:**
+
+- `deployment-workflow.mdc`
+- `debugging-workflow.mdc`
+- `api-integration.mdc`
+
+### Step 3: Write Frontmatter
+
+**Decide loading strategy:**
+
+```yaml
+# Critical enforcement (rare)
+---
+description: "What this enforces"
+alwaysApply: true
+---
+
+# File-specific (common)
+---
+description: "What this covers"
+globs: ["relevant/**/*.ext"]
+---
+
+# On-demand (default)
+---
+description: "What this covers"
+alwaysApply: false
+---
+```
+
+### Step 4: Structure Content
+
+**Template:**
+
+```markdown
+# Title
+
+Brief intro (1-2 sentences).
+
+## When to Use
+
+Explain applicability.
+
+## Prerequisites
+
+What's needed.
+
+## Steps
+
+1. **Step one**
+2. **Step two**
+
+## Examples
+
+Real usage examples.
+
+## Anti-Patterns
+
+What to avoid.
+
+## Quick Reference
+
+Condensed version.
+```
+
+### Step 5: Validate
+
+**Check:**
+
+- [ ] Frontmatter valid YAML
+- [ ] Description is clear and brief
+- [ ] Loading strategy appropriate
+- [ ] No duplicate content with AGENTS.md
+- [ ] Examples are copy-paste-able
+- [ ] Linked from other rules if needed
+
+**Test:**
+
+```bash
+# Lint markdown
+markdownlint .cursor/rules/your-rule.mdc
+
+# Test glob pattern (if using globs)
+# Edit a matching file and verify rule loads
+```
+
+### Step 6: Update README
+
+**Add to `.cursor/rules/README.md`:**
+
+- File name and purpose
+- Loading strategy and rationale
+- When it's used
+
+## Examples from This Project
+
+### Example 1: PR Workflow (On-Demand)
+
+```yaml
+---
+description: "Pull request workflow for gh-talk development"
+alwaysApply: true  # Actually true because we always use PRs
+---
+
+# Pull Request Workflow
+
+**Branch Protection Enabled**: All changes via PRs.
+
+## Steps
+1. Create branch: cursor_feature_name
+2. Make changes
+...
+```
+
+**Rationale**: Always loaded because all work uses PRs
+
+### Example 2: Testing (Context-Based)
+
+```yaml
+---
+description: "Testing workflow for new code"
+globs: ["**/*_test.go", "internal/**/*.go"]
+---
+
+# Testing Workflow
+
+**Requirement**: 100% coverage for all new code
+
+## Steps
+1. Write test before implementation (TDD)
+2. Test edge cases
+...
+```
+
+**Rationale**: Loads when editing Go code or tests
+
+### Example 3: Debugging (On-Demand)
+
+```yaml
+---
+description: "Debugging procedures for common issues"
+alwaysApply: false
+---
+
+# Debugging Workflow
+
+## Common Issues
+
+### Issue: Build fails
+1. Check: go mod tidy
+2. Check: ...
+```
+
+**Rationale**: Only needed when debugging, not always
+
+## Best Practices from Analysis
+
+### From ~/.dotfiles/.cursor/rules
+
+**Patterns observed:**
+
+1. ✅ Frontmatter always has `description`
+2. ✅ Most are `alwaysApply: false` (on-demand)
+3. ✅ Globs used for file-specific workflows
+4. ✅ Clear step-by-step format
+5. ✅ Examples in bash code blocks
+6. ✅ Anti-patterns documented
+7. ✅ Quick reference sections
+8. ✅ Links to related workflows
+
+**Frontmatter patterns:**
+
+- `description`: Clear, concise (10-15 words)
+- `alwaysApply`: Usually false
+- `globs`: Specific patterns for auto-loading
+
+**Content patterns:**
+
+- Headers (##) for major sections
+- Numbered lists for steps
+- Code blocks with bash/language tags
+- ✅/❌ for do/don't
+- Bold for emphasis on requirements
+
+## Template for New Rules
+
+```markdown
+---
+description: "Brief one-line purpose"
+alwaysApply: false
+# globs: ["pattern/**"] # Uncomment if context-based
+---
+
+# Rule Title
+
+**Purpose**: What this workflow helps accomplish.
+
+**When to Use**: Situations where this applies.
+
+## Prerequisites
+
+- Requirement 1
+- Requirement 2
+
+## Steps
+
+### 1. First Step
+
+**Action**: What to do.
+
+```bash
+command --flag value
+```
+
+**Why**: Rationale for this step.
+
+### 2. Second Step
+
+**Action**: Next action.
+
+**Important**: Critical notes.
+
+## Examples
+
+### Common Use Case
+
+```bash
+# Example command
+command arg1 arg2
+
+# Expected output:
+✓ Success message
+```
+
+## Anti-Patterns
+
+❌ **Don't do this** - Reason why
+✅ **Do this instead** - Better approach
+
+## Quick Reference
+
+```bash
+# Quick command list
+step1
+step2
+step3
+```
+
+---
+
+**Related**: Link to other workflows or AGENTS.md sections
+
+```
+
+## Checklist for New Rule
+
+**Before committing:**
+- [ ] Frontmatter valid YAML
+- [ ] Description clear (10-15 words)
+- [ ] Loading strategy chosen appropriately
+- [ ] Content structured with clear sections
+- [ ] Steps numbered and actionable
+- [ ] Examples provided
+- [ ] Anti-patterns documented
+- [ ] Quick reference included
+- [ ] No duplication with AGENTS.md
+- [ ] Markdown linted
+- [ ] Globs tested (if using)
+- [ ] README.md updated
+- [ ] Linked from other rules (if referenced)
+
+---
+
+**Related**:
+- `.cursor/commands/` - Slash command workflows (see official docs)
+- `.cursor/rules/README.md` - Directory index
+- `AGENTS.md` - Reference material (what NOT to put in rules)
+- `~/.dotfiles/.cursor/rules/README.md` - Patterns from other projects
+
+**Official Documentation**:
+- [Cursor Slash Commands](https://cursor.com/changelog/1-6) - Custom slash commands feature
+
+**Last Updated**: 2025-11-03
+
+---
+Note: This content duplicated in .cursor/rules/create-rule.mdc for auto-loading
